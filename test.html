@@ -2396,6 +2396,22 @@
       let currentPromoCode = "";
       let currentDiscount = 0;
 
+      // === ⏰ 截止時間工具函式 ===
+      function formatDeadline(str) {
+        if (!str) return '';
+        if (str.includes('T')) {
+          // datetime-local 格式：2026-05-10T21:00
+          const d = new Date(str);
+          if (isNaN(d)) return str;
+          return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+        return str; // 舊文字格式直接顯示
+      }
+      function isDeadlinePassed(str) {
+        if (!str || !str.includes('T')) return false;
+        return new Date() > new Date(str);
+      }
+
       // === 📋 Notice 公告欄動態渲染 ===
       function renderNoticeboard(notices) {
         const board = document.getElementById("memo-board");
@@ -2601,6 +2617,9 @@
           renderCategoryButtons();
           renderProducts(allProductsData);
 
+          // 每 60 秒重新渲染一次，讓截止時間到的商品自動顯示「已結單」
+          setInterval(() => switchCategory(currentCategory), 60000);
+
           // 若管理員開啟結單公告，顯示進站公告
           if (isNoticeShown) {
             const gData = globalSnap.exists() ? globalSnap.data() : {};
@@ -2692,12 +2711,13 @@
             else if (product.tag === "SALE") badgeHtml = `<span class="badge sale">SALE</span>`;
           }
 
-          // 現貨商品不受結單影響
-          const isEnded = isOrderEnded && (product.type !== '現貨');
+          // 現貨商品不受結單影響；或個別商品截止時間已過
+          const isDeadlineOver = isDeadlinePassed(product.deadline);
+          const isEnded = (isOrderEnded && product.type !== '現貨') || isDeadlineOver;
 
           let btnHtml = "";
           if (isEnded) {
-            btnHtml = `<button class="btn-add" style="background-color: #ccc; border-color: #ccc; cursor: not-allowed; max-width: 200px;" disabled>已結束</button>`;
+            btnHtml = `<button class="btn-add" style="background-color: #ccc; border-color: #ccc; cursor: not-allowed; max-width: 200px;" disabled>已結單</button>`;
           } else if (isAllOutOfStock) {
             btnHtml = `<button class="btn-add" style="background-color: #ccc; border-color: #ccc; cursor: not-allowed; max-width: 200px;" disabled>已售完</button>`;
           } else {
@@ -2712,7 +2732,7 @@
           card.className = "product-card";
           card.innerHTML = `
             <div class="img-wrapper" style="cursor: ${cursorStyle}; background: #fff;" ${clickEvent}>
-              ${product.deadline ? `<div class="deadline-overlay">⏰ ${product.deadline}</div>` : ''}
+              ${product.deadline ? `<div class="deadline-overlay">⏰ ${formatDeadline(product.deadline)}</div>` : ''}
               <img src="${product.imgUrl}" alt="${product.name}" loading="lazy" style="${imgOpacity}">
             </div>
             <div class="info">
@@ -2732,8 +2752,8 @@
       // 🌟 2. 打開快速購物視窗 (自動顯示變更價格)
       function openQuickShop(index) {
         const product = allProductsData[index];
-        if (isOrderEnded && product.type !== '現貨') {
-          alert("預購已結單，感謝您的熱情支持。");
+        if ((isOrderEnded && product.type !== '現貨') || isDeadlinePassed(product.deadline)) {
+          alert("此商品已結單，感謝您的熱情支持。");
           return;
         }
 
@@ -2937,6 +2957,7 @@
           productId:    product.firestoreId || null,
           variantIndex: hasVariantSelector ? _currentVariantIndex : 0,
           type:         product.type || '預購',
+          deadline:     product.deadline || '',
         };
 
         cart.push(cartItem);
@@ -3097,6 +3118,14 @@
             alert("購物車內含有預購商品，目前預購已結單，請移除後再結帳。");
             return;
           }
+        }
+        // 逐件檢查個別截止時間
+        const now = new Date();
+        const expiredItems = cart.filter(item => item.deadline && now > new Date(item.deadline));
+        if (expiredItems.length > 0) {
+          const names = [...new Set(expiredItems.map(i => i.name.replace(/<br\s*\/?>/gi, ' ')))].join('、');
+          alert(`以下商品已結單，請從購物車移除後再結帳：\n${names}`);
+          return;
         }
         if (cart.length === 0) return;
 
