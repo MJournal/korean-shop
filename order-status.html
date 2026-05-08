@@ -462,12 +462,12 @@
 
   // Status configs: icon, label, desc, banner class
   const STATUS_CONFIG = {
-    waiting:  { icon: '⏳', label: '備貨中',    desc: '我們正在為您備齊商品，有進度會主動通知',     cls: 'sbn-waiting' },
-    buying:   { icon: '🛍️', label: '採購進行中', desc: '商品採購中，部分品項已在路上，請耐心等候',   cls: 'sbn-buying' },
-    arrived:  { icon: '✅', label: '全數備妥',   desc: '所有商品已備齊，即將安排出貨，敬請期待',     cls: 'sbn-arrived' },
-    shipped:  { icon: '📦', label: '已出貨',     desc: '您的訂單已寄出！如未收到請與我們聯繫',       cls: 'sbn-shipped' },
-    pending:  { icon: '🕐', label: '訂單待確認', desc: '我們收到您的訂單，確認後會盡快通知您',       cls: 'sbn-pending' },
-    cancel:   { icon: '✕',  label: '訂單已取消', desc: '此訂單已取消，如有疑問請聯絡我們',           cls: 'sbn-cancel' },
+    waiting:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
+    buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
+    arrived:  { icon: '✅', label: '採購完成', desc: '已順利採購到貨，正在整理並安排出貨事宜',   cls: 'sbn-arrived' },
+    shipped:  { icon: '📦', label: '已出貨',   desc: '包裹已經寄出，再麻煩留意簡訊通知～',       cls: 'sbn-shipped' },
+    pending:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
+    cancel:   { icon: '✕',  label: '訂單已取消', desc: '此訂單已取消，如有疑問請聯絡我們',       cls: 'sbn-cancel' },
   };
 
   function getStatusKey(o) {
@@ -479,10 +479,10 @@
 
   function getItemStatus(cfItem, orderShipped) {
     if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
-    if (!cfItem || (!cfItem.bought && !cfItem.arrived)) return { cls: 'ist-waiting', label: '⏳ 備貨中' };
-    if (cfItem.arrived) return { cls: 'ist-arrived', label: '✅ 已備妥' };
+    if (!cfItem || (!cfItem.bought && !cfItem.arrived)) return { cls: 'ist-waiting', label: '🕐 待確認' };
+    if (cfItem.arrived) return { cls: 'ist-arrived', label: '✅ 採購完成' };
     if (cfItem.bought)  return { cls: 'ist-buying',  label: '🛍️ 採購中' };
-    return { cls: 'ist-waiting', label: '⏳ 備貨中' };
+    return { cls: 'ist-waiting', label: '🕐 待確認' };
   }
 
   async function renderReceipt(o) {
