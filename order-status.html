@@ -398,10 +398,21 @@
       const profile = await liff.getProfile();
       const userId  = profile.userId;
 
+      // 暫時偵錯：顯示 userId 前幾碼
+      appEl.innerHTML = `<div style="padding:24px;font-size:0.85rem;color:#666">
+        LIFF userId：<b>${userId.slice(0,10)}…</b><br>
+        查詢中…
+      </div>`;
+
       const snap = await getDocs(query(
         collection(db, 'orders'),
         where('lineUserId', '==', userId)
       ));
+
+      // 暫時偵錯：顯示找到幾筆
+      appEl.innerHTML += `<div style="padding:0 24px;font-size:0.85rem;color:#666">
+        找到訂單：<b>${snap.size} 筆</b>
+      </div>`;
 
       const orders = snap.docs
         .map(d => ({ ...d.data(), id: d.id }))
