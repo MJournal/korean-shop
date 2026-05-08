@@ -472,9 +472,18 @@
 
   function getStatusKey(o) {
     if (o.status === '已取消') return 'cancel';
-    if (o.status === '待確認') return 'pending';
-    const fs = o.fulfillmentStatus || '待採購';
-    return { '待採購':'waiting', '等待出貨':'buying', '全數到貨':'arrived', '已出貨':'shipped' }[fs] || 'waiting';
+    if (o.fulfillmentStatus === '已出貨')   return 'shipped';
+    if (o.fulfillmentStatus === '全數到貨') return 'arrived';
+
+    // 從品項實際進度判斷（解決手動建單不經確認流程的問題）
+    const cart = o.confirmedCart || o.cart || [];
+    const cf   = o.cartFulfillment || [];
+    const allArrived = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i]?.arrived);
+    const anyBought  = cf.some(item => item.bought || item.arrived);
+
+    if (allArrived) return 'arrived';
+    if (anyBought)  return 'buying';
+    return 'waiting';
   }
 
   function getItemStatus(cfItem, orderShipped) {
@@ -576,12 +585,3 @@
       document.getElementById('spinner').style.display = 'none';
       document.getElementById('btn-search').disabled   = false;
       const em = document.getElementById('error-msg');
-      em.textContent = '查詢失敗，請稍後再試。';
-      em.style.display = 'block';
-      console.error(e);
-    }
-  };
-</script>
-
-</body>
-</html>
