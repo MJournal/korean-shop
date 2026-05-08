@@ -8,25 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --accent:       #d4a373;
-      --accent-dark:  #b8855a;
-      --accent-light: #faeadd;
-      --accent-mid:   #c9906b;
-      --paper:        #fdfbf7;
-      --card-bg:      #ffffff;
-      --text:         #2c2c2c;
-      --text-sub:     #888888;
-      --border:       #ecddd3;
-      --danger:       #c97c7c;
-      --warning:      #c8a24a;
-      --warning-bg:   #fef8ec;
-      --blue:         #5b7fa6;
-      --blue-bg:      #eaf1f9;
-      --purple:       #9a6fa8;
-      --purple-bg:    #f5eefa;
-    }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -37,7 +18,7 @@
         radial-gradient(at 80% 0%,  rgba(181,131,141,0.12) 0px, transparent 50%),
         radial-gradient(at 0%  50%, rgba(229,152,155,0.10) 0px, transparent 50%);
       background-attachment: fixed;
-      color: var(--text);
+      color: #1a1510;
       min-height: 100vh;
       display: flex;
       align-items: flex-start;
@@ -48,80 +29,44 @@
     /* ── A5 Paper ── */
     .paper {
       width: 100%;
-      max-width: 500px;
-      background: var(--paper);
-      border-radius: 4px;
+      max-width: 480px;
+      background: #fff;
+      border-radius: 3px;
       box-shadow:
-        0 2px 6px rgba(180,140,100,0.10),
-        0 8px 32px rgba(180,140,100,0.08),
-        0 1px 2px rgba(0,0,0,0.04);
-      overflow: hidden;
+        0 2px 8px rgba(160,120,80,0.10),
+        0 12px 40px rgba(160,120,80,0.09);
     }
 
-    /* ── Header ── */
-    .header {
-      padding: 36px 28px 28px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
+    /* ── Search section (top, outside receipt area) ── */
+    .search-section {
+      padding: 28px 28px 22px;
+      border-bottom: 1px solid #ede5db;
     }
-    .header-brand {
+    .brand-heading {
       font-family: "Cormorant Garamond", serif;
-      font-size: 2.4rem;
+      font-size: 2.2rem;
       font-weight: 600;
       font-style: italic;
-      color: var(--text);
-      letter-spacing: 1px;
-      line-height: 1.1;
-      margin-bottom: 6px;
-    }
-    .header-sub {
-      font-family: "Noto Sans TC", sans-serif;
-      font-size: 0.68rem;
-      letter-spacing: 5px;
-      color: var(--text-sub);
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    .header-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 0 auto 16px;
-      max-width: 200px;
-    }
-    .header-divider::before,
-    .header-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .header-divider span {
-      color: var(--accent);
-      font-size: 0.55rem;
+      color: #2a2520;
       letter-spacing: 2px;
+      text-align: center;
+      margin-bottom: 2px;
     }
-    .header-title {
-      font-family: "Noto Sans TC", sans-serif;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 4px;
-      color: var(--text-sub);
-    }
-
-    /* ── Body Padding ── */
-    .paper-body {
-      padding: 24px 24px;
-    }
-
-    /* ── Search Box ── */
-    .search-label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: var(--text-sub);
-      letter-spacing: 1.5px;
+    .brand-sub {
+      text-align: center;
+      font-size: 0.62rem;
+      letter-spacing: 5px;
+      color: #b8a898;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 20px;
+    }
+    .search-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: #9a8878;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
       display: block;
     }
     .search-row {
@@ -130,27 +75,27 @@
     }
     .search-input {
       flex: 1;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
+      padding: 10px 13px;
+      border: 1px solid #ddd3c8;
       border-radius: 3px;
       font-size: 0.88rem;
       font-family: inherit;
-      color: var(--text);
-      background: var(--card-bg);
+      color: #1a1510;
+      background: #fdfbf7;
       outline: none;
       transition: border-color 0.15s;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-    .search-input::placeholder { color: #cbb8ac; letter-spacing: 0; text-transform: none; }
-    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: #c8b8a8; letter-spacing: 0; text-transform: none; }
+    .search-input:focus { border-color: #c8a882; }
     .btn-search {
       padding: 10px 18px;
-      background: var(--accent);
+      background: #b07352;
       color: #fff;
       border: none;
       border-radius: 3px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-family: inherit;
       font-weight: 500;
       letter-spacing: 1.5px;
@@ -158,220 +103,260 @@
       white-space: nowrap;
       transition: background 0.15s;
     }
-    .btn-search:hover { background: var(--accent-dark); }
-    .btn-search:disabled { background: #d9c5b5; cursor: not-allowed; }
+    .btn-search:hover { background: #8a5a3e; }
+    .btn-search:disabled { background: #d0bfb0; cursor: not-allowed; }
 
     /* ── Hint ── */
     .hint {
-      margin-top: 14px;
-      padding: 10px 12px;
-      background: var(--accent-light);
-      border-radius: 3px;
-      font-size: 0.72rem;
-      color: var(--text-sub);
+      margin-top: 12px;
+      font-size: 0.7rem;
+      color: #b8a898;
       line-height: 1.7;
+      text-align: center;
     }
+    .hint strong { color: #9a8878; }
 
     /* ── States ── */
     .state-msg {
-      margin-top: 28px;
+      padding: 36px 28px;
       text-align: center;
-      color: var(--text-sub);
+      color: #b8a898;
       font-size: 0.82rem;
     }
-    .state-msg .icon { font-size: 1.8rem; margin-bottom: 8px; }
+    .state-msg .icon { font-size: 1.8rem; margin-bottom: 10px; }
 
     .error-msg {
-      margin-top: 14px;
-      padding: 10px 12px;
+      margin: 12px 28px 0;
+      padding: 9px 12px;
       background: #fdeaea;
       border-radius: 3px;
-      color: var(--danger);
-      font-size: 0.78rem;
+      color: #c97c7c;
+      font-size: 0.75rem;
       display: none;
     }
 
     /* ── Loading ── */
     .spinner {
       display: none;
-      margin: 28px auto 0;
-      width: 30px; height: 30px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
+      margin: 32px auto;
+      width: 28px; height: 28px;
+      border: 2px solid #ede5db;
+      border-top-color: #c8a882;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Section divider ── */
-    .result-divider {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 24px 0 16px;
-    }
-    .result-divider::before,
-    .result-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .result-divider span {
-      font-size: 0.62rem;
-      letter-spacing: 3px;
-      color: var(--text-sub);
-      text-transform: uppercase;
+    /* ── Receipt area ── */
+    .receipt-area {
+      display: none;
+      padding: 28px 28px 0;
     }
 
-    /* ── Receipt Card ── */
-    .receipt-card { display: none; }
-
-    .rcpt-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 14px;
-    }
-    .rcpt-order-id {
-      font-size: 0.68rem;
-      color: var(--text-sub);
-      letter-spacing: 1px;
-      margin-bottom: 2px;
-    }
-    .rcpt-customer {
+    /* Receipt header */
+    .rcpt-title {
       font-family: "Cormorant Garamond", serif;
-      font-size: 1.3rem;
+      font-size: 2rem;
+      font-style: italic;
       font-weight: 600;
-      color: var(--text);
-      letter-spacing: 0.5px;
+      letter-spacing: 6px;
+      color: #2a2520;
+      text-align: center;
+      margin-bottom: 4px;
     }
-    .rcpt-date {
-      font-size: 0.68rem;
-      color: var(--text-sub);
-      margin-top: 3px;
-      letter-spacing: 0.5px;
+    .rcpt-date-line {
+      text-align: center;
+      font-size: 0.66rem;
+      letter-spacing: 3px;
+      color: #a08878;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .rcpt-orderid-line {
+      text-align: center;
+      font-size: 0.66rem;
+      letter-spacing: 2px;
+      color: #c0aba0;
+      margin-bottom: 6px;
+    }
+    .rcpt-customer-line {
+      text-align: center;
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #3a2e28;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
     }
 
-    /* Overall status badge */
+    /* Overall status */
+    .rcpt-status-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
     .order-status-badge {
-      padding: 3px 10px;
+      padding: 4px 14px;
       border-radius: 2px;
       font-size: 0.68rem;
       font-weight: 500;
-      letter-spacing: 1px;
-      white-space: nowrap;
+      letter-spacing: 2px;
       border: 1px solid currentColor;
     }
-    .status-waiting  { color: var(--warning);   background: var(--warning-bg); border-color: #e0c880; }
-    .status-buying   { color: var(--accent-dark); background: var(--accent-light); border-color: var(--accent); }
-    .status-arrived  { color: var(--blue);        background: var(--blue-bg);    border-color: #90b4d4; }
-    .status-shipped  { color: var(--purple);      background: var(--purple-bg);  border-color: #c09aca; }
-    .status-pending  { color: var(--text-sub);    background: #f2f0ed;           border-color: #ccc; }
-    .status-cancel   { color: var(--danger);      background: #fdeaea;           border-color: #e8b4b4; }
+    .status-waiting  { color: #c8a24a; background: #fef8ec; }
+    .status-buying   { color: #b07352; background: #fdf0e8; }
+    .status-arrived  { color: #5b7fa6; background: #eaf1f9; }
+    .status-shipped  { color: #7a5a8a; background: #f5eefa; }
+    .status-pending  { color: #9a8878; background: #f4f0ec; }
+    .status-cancel   { color: #c97c7c; background: #fdeaea; }
+
+    .rcpt-divider { border: none; border-top: 1px solid #c8a882; margin: 0; }
+    .rcpt-divider-dash { border: none; border-top: 1px dashed #e0d0c0; margin: 0; }
 
     /* ── Items ── */
-    .rcpt-items {
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
+    .rcpt-items { padding: 4px 0; }
+
     .rcpt-item {
       display: flex;
+      gap: 12px;
       align-items: flex-start;
-      gap: 10px;
-      padding: 12px 0;
-      border-bottom: 1px dashed var(--border);
+      padding: 14px 0;
     }
-    .rcpt-item:last-child { border-bottom: none; }
 
-    .rcpt-item-body { flex: 1; min-width: 0; }
+    .rcpt-item-img {
+      width: 52px;
+      height: 52px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #f0ebe3;
+      border: 1px solid #e8ddd4;
+      display: block;
+    }
+    .rcpt-item-img-placeholder {
+      width: 52px;
+      height: 52px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: #f0ebe3;
+      border: 1px dashed #c8a882;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      color: #d0bfb0;
+    }
+
+    .rcpt-item-content { flex: 1; min-width: 0; }
     .rcpt-item-name {
-      font-size: 0.85rem;
       font-weight: 500;
-      color: var(--text);
+      font-size: 0.88rem;
+      color: #1a1510;
+      margin-bottom: 3px;
       line-height: 1.4;
     }
     .rcpt-item-spec {
-      font-size: 0.72rem;
-      color: var(--text-sub);
-      margin-top: 2px;
+      display: inline-block;
+      background: #f0ebe3;
+      color: #7a6050;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 5px;
     }
     .rcpt-item-gift {
-      font-size: 0.68rem;
-      color: var(--accent-dark);
-      background: var(--accent-light);
       display: inline-block;
-      padding: 1px 6px;
-      border-radius: 2px;
-      margin-top: 3px;
+      background: #fdf0e8;
+      color: #a06020;
+      font-size: 0.68rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-bottom: 5px;
+      margin-left: 4px;
     }
-    .rcpt-item-right {
-      text-align: right;
-      flex-shrink: 0;
+    .rcpt-item-price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
-    .rcpt-item-price {
-      font-size: 0.78rem;
-      color: var(--text-sub);
-      white-space: nowrap;
-    }
+    .rcpt-item-unit { font-size: 0.75rem; color: #a09080; }
+    .rcpt-item-subtotal { font-weight: 600; font-size: 0.88rem; color: #1a1510; }
 
-    /* Per-item status pill */
+    /* Per-item status */
     .item-status {
       display: inline-block;
       padding: 2px 7px;
-      border-radius: 2px;
-      font-size: 0.65rem;
+      border-radius: 10px;
+      font-size: 0.62rem;
       font-weight: 500;
-      letter-spacing: 0.5px;
-      margin-top: 5px;
+      margin-top: 4px;
       white-space: nowrap;
     }
-    .ist-waiting { background: var(--warning-bg);  color: var(--warning); }
-    .ist-buying  { background: var(--accent-light); color: var(--accent-dark); }
-    .ist-arrived { background: var(--blue-bg);      color: var(--blue); }
-    .ist-shipped { background: var(--purple-bg);    color: var(--purple); }
-    .ist-cancel  { background: #fdeaea;             color: var(--danger); }
+    .ist-waiting { background: #fef8ec; color: #c8a24a; }
+    .ist-buying  { background: #fdf0e8; color: #b07352; }
+    .ist-arrived { background: #eaf1f9; color: #5b7fa6; }
+    .ist-shipped { background: #f5eefa; color: #7a5a8a; }
+    .ist-cancel  { background: #fdeaea; color: #c97c7c; }
 
     /* ── Summary ── */
     .rcpt-summary {
-      padding: 14px 0 0;
+      padding: 12px 0 4px;
     }
-    .rcpt-sum-row {
+    .rcpt-summary-row {
       display: flex;
       justify-content: space-between;
-      font-size: 0.78rem;
-      color: var(--text-sub);
-      margin-bottom: 5px;
+      padding: 3px 0;
     }
-    .rcpt-sum-row:last-child { margin-bottom: 0; }
-    .rcpt-sum-row.total {
-      font-size: 0.9rem;
+    .rcpt-summary-label { font-size: 0.78rem; color: #9a8878; }
+    .rcpt-summary-value { font-size: 0.78rem; color: #6a5848; }
+
+    .rcpt-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 16px 0 4px;
+    }
+    .rcpt-total-label {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.4rem;
       font-weight: 600;
-      color: var(--text);
-      border-top: 1px solid var(--border);
-      padding-top: 10px;
-      margin-top: 6px;
+      font-style: italic;
+      letter-spacing: 4px;
+      color: #b07352;
     }
+    .rcpt-total-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #b07352;
+      letter-spacing: 1px;
+    }
+    .rcpt-balance-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0 10px;
+    }
+    .rcpt-balance-label { font-size: 0.72rem; color: #b8a898; }
+    .rcpt-balance-value { font-size: 0.72rem; color: #9a8878; }
+
     .rcpt-note {
-      margin-top: 10px;
+      margin: 4px 0 12px;
       padding: 8px 10px;
-      background: var(--accent-light);
+      background: #fdf6f0;
       border-radius: 3px;
       font-size: 0.72rem;
-      color: var(--text-sub);
+      color: #9a8878;
+      line-height: 1.6;
     }
 
     /* ── Footer ── */
-    .paper-footer {
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
+    .rcpt-footer {
       text-align: center;
-      font-family: "Cormorant Garamond", serif;
-      font-style: italic;
-      font-size: 0.78rem;
-      color: #ccc;
-      letter-spacing: 1px;
+      font-size: 0.58rem;
+      letter-spacing: 4px;
+      color: #c8b8a8;
+      padding: 20px 28px 24px;
+      text-transform: uppercase;
     }
   </style>
 </head>
@@ -379,18 +364,11 @@
 
 <div class="paper">
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-brand">Mina</div>
-    <div class="header-sub">妝日子</div>
-    <div class="header-divider"><span>✦</span></div>
-    <div class="header-title">訂單查詢</div>
-  </div>
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="brand-heading">Mina</div>
+    <div class="brand-sub">妝日子 · Order Status</div>
 
-  <!-- Body -->
-  <div class="paper-body">
-
-    <!-- Search -->
     <label class="search-label">Order Number</label>
     <div class="search-row">
       <input type="text" class="search-input" id="order-input"
@@ -402,39 +380,48 @@
     </div>
 
     <div class="error-msg" id="error-msg"></div>
-    <div class="spinner" id="spinner"></div>
 
     <div id="hint" class="hint">
       訂單編號格式範例：<strong>ORD-20240501-001</strong><br>
       如有任何問題，歡迎直接傳訊息給我們 ☺
     </div>
+  </div>
 
-    <div class="state-msg" id="empty-state" style="display:none">
-      <div class="icon">🔍</div>
-      <p>找不到此訂單編號<br><span style="font-size:0.72rem">請確認編號是否正確，或聯絡客服</span></p>
+  <!-- Loading / Empty states -->
+  <div class="spinner" id="spinner"></div>
+
+  <div class="state-msg" id="empty-state" style="display:none">
+    <div class="icon">🔍</div>
+    <p>找不到此訂單編號<br><span style="font-size:0.72rem;color:#c8b8a8">請確認編號是否正確，或聯絡客服</span></p>
+  </div>
+
+  <!-- Receipt Area -->
+  <div class="receipt-area" id="receipt-area">
+
+    <div class="rcpt-title">ORDER LIST</div>
+    <div class="rcpt-date-line" id="r-date"></div>
+    <div class="rcpt-orderid-line" id="r-order-id"></div>
+    <div class="rcpt-customer-line" id="r-customer"></div>
+
+    <div class="rcpt-status-bar">
+      <span class="order-status-badge" id="r-order-status"></span>
     </div>
 
-    <!-- Receipt -->
-    <div class="receipt-card" id="receipt-card">
-      <div class="result-divider"><span>Order Detail</span></div>
+    <hr class="rcpt-divider">
 
-      <div class="rcpt-meta">
-        <div>
-          <div class="rcpt-order-id" id="r-order-id"></div>
-          <div class="rcpt-customer" id="r-customer"></div>
-          <div class="rcpt-date" id="r-date"></div>
-        </div>
-        <span class="order-status-badge" id="r-order-status"></span>
-      </div>
+    <div class="rcpt-items" id="r-items"></div>
 
-      <div class="rcpt-items" id="r-items"></div>
-      <div class="rcpt-summary" id="r-summary"></div>
-    </div>
+    <hr class="rcpt-divider">
 
-    <!-- Footer -->
-    <div class="paper-footer">Thank you for your order</div>
+    <div class="rcpt-summary" id="r-summary"></div>
 
-  </div><!-- /paper-body -->
+    <div id="r-note"></div>
+
+  </div>
+
+  <!-- Footer (always visible at bottom of paper) -->
+  <div class="rcpt-footer">Thank you for your order</div>
+
 </div><!-- /paper -->
 
 <script type="module">
@@ -455,24 +442,53 @@
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
 
+  // Products cache (loaded once, used for images)
+  let allProducts = null;
+
+  async function getProducts() {
+    if (allProducts) return allProducts;
+    try {
+      const snap = await getDocs(collection(db, 'products'));
+      allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch(e) {
+      allProducts = [];
+    }
+    return allProducts;
+  }
+
+  function findProductImage(item, products) {
+    if (!products || !products.length) return null;
+    if (item.productId) {
+      const p = products.find(p => p.id === item.productId);
+      if (p) return (p.images || []).find(Boolean) || null;
+    }
+    const n = (item.name || '').replace(/<br>/gi, ' ').trim().toLowerCase();
+    if (!n) return null;
+    const p = products.find(p => {
+      const pn = (p.name || '').replace(/<br>/gi, ' ').trim().toLowerCase();
+      return pn === n || n.includes(pn) || pn.includes(n);
+    });
+    return p ? (p.images || []).find(Boolean) || null : null;
+  }
+
   function esc(s) {
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
   function fmtDate(ts) {
-    if (!ts) return '—';
+    if (!ts) return '';
     const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    return `DATE: ${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
   }
   function fmtMoney(n) {
     return `NT$${Number(n||0).toLocaleString()}`;
   }
 
   function getItemStatus(cfItem, orderShipped) {
-    if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
-    if (!cfItem || (!cfItem.bought && !cfItem.arrived)) return { cls: 'ist-waiting', label: '⏳ 備貨中' };
-    if (cfItem.arrived) return { cls: 'ist-arrived', label: '✅ 已備妥' };
-    if (cfItem.bought)  return { cls: 'ist-buying',  label: '🚚 採購中' };
-    return { cls: 'ist-waiting', label: '⏳ 備貨中' };
+    if (orderShipped) return { cls: 'ist-shipped', label: '已出貨' };
+    if (!cfItem || (!cfItem.bought && !cfItem.arrived)) return { cls: 'ist-waiting', label: '備貨中' };
+    if (cfItem.arrived) return { cls: 'ist-arrived', label: '已備妥' };
+    if (cfItem.bought)  return { cls: 'ist-buying',  label: '採購中' };
+    return { cls: 'ist-waiting', label: '備貨中' };
   }
 
   function getOrderBadge(o) {
@@ -488,20 +504,23 @@
     return map[fs] || { cls: 'status-waiting', label: fs };
   }
 
-  function renderReceipt(o) {
-    const cart = o.confirmedCart || o.cart || [];
-    const cf   = o.cartFulfillment || cart.map(() => ({ bought: false, arrived: false }));
-    const isShipped   = (o.fulfillmentStatus === '已出貨');
-    const isCancelled = (o.status === '已取消');
+  async function renderReceipt(o) {
+    const products   = await getProducts();
+    const cart       = o.confirmedCart || o.cart || [];
+    const cf         = o.cartFulfillment || cart.map(() => ({ bought: false, arrived: false }));
+    const isShipped  = (o.fulfillmentStatus === '已出貨');
+    const isCancelled= (o.status === '已取消');
 
+    // Header
     const badge = getOrderBadge(o);
+    document.getElementById('r-date').textContent      = fmtDate(o.confirmedAt || o.createdAt);
     document.getElementById('r-order-id').textContent  = o.orderId || '';
-    document.getElementById('r-customer').textContent  = o.customerName || '訂單詳情';
-    document.getElementById('r-date').textContent      = '下單日期：' + fmtDate(o.confirmedAt || o.createdAt);
+    document.getElementById('r-customer').textContent  = o.customerName || '';
     const statusEl = document.getElementById('r-order-status');
     statusEl.className = 'order-status-badge ' + badge.cls;
     statusEl.textContent = badge.label;
 
+    // Items (sorted alphabetically)
     const sortedItems = cart
       .map((it, idx) => ({ it, cfItem: cf[idx] || {}, idx }))
       .sort((a, b) =>
@@ -509,54 +528,86 @@
           .localeCompare((b.it.name||'').replace(/<br>/gi,' '), 'zh-TW')
       );
 
-    document.getElementById('r-items').innerHTML = sortedItems.map(({ it, cfItem }) => {
-      const qty = Number(it.qty) || 1;
-      const sub = (Number(it.price) || 0) * qty;
-      const st  = isCancelled
+    document.getElementById('r-items').innerHTML = sortedItems.map(({ it, cfItem }, i) => {
+      const qty    = Number(it.qty) || 1;
+      const sub    = (Number(it.price) || 0) * qty;
+      const st     = isCancelled
         ? { cls: 'ist-cancel', label: '已取消' }
         : getItemStatus(cfItem, isShipped);
+
+      const imgUrl  = findProductImage(it, products);
+      const imgHtml = imgUrl
+        ? `<img class="rcpt-item-img" src="${esc(imgUrl)}" crossorigin="anonymous" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+        : '';
+      const placeholderHtml = `<div class="rcpt-item-img-placeholder" style="${imgUrl ? 'display:none' : ''}">✦</div>`;
+
       const specHtml = (it.spec && it.spec !== '單一規格')
-        ? `<div class="rcpt-item-spec">${esc(it.spec)}</div>` : '';
+        ? `<span class="rcpt-item-spec">${esc(it.spec)}</span>` : '';
       const giftHtml = it.gift
-        ? `<div class="rcpt-item-gift">贈：${esc(it.gift)}</div>` : '';
+        ? `<span class="rcpt-item-gift">贈：${esc(it.gift)}</span>` : '';
+
+      const divider = i < sortedItems.length - 1
+        ? '<hr class="rcpt-divider-dash">' : '';
+
       return `<div class="rcpt-item">
-        <div class="rcpt-item-body">
+        ${imgHtml}${placeholderHtml}
+        <div class="rcpt-item-content">
           <div class="rcpt-item-name">${esc((it.name||'').replace(/<br>/gi,' '))}</div>
-          ${specHtml}${giftHtml}
-        </div>
-        <div class="rcpt-item-right">
-          <div class="rcpt-item-price">${fmtMoney(it.price)} × ${qty}</div>
+          <div>${specHtml}${giftHtml}</div>
+          <div class="rcpt-item-price-row">
+            <span class="rcpt-item-unit">NT$${Number(it.price||0).toLocaleString()} × ${qty}</span>
+            <span class="rcpt-item-subtotal">NT$${sub.toLocaleString()}</span>
+          </div>
           <span class="item-status ${st.cls}">${st.label}</span>
         </div>
-      </div>`;
+      </div>${divider}`;
     }).join('');
 
+    // Summary
     const subtotal = cart.reduce((s, i) => s + (Number(i.price)||0) * (Number(i.qty)||1), 0);
     const deposit  = Number(o.confirmedDeposit ?? o.deposit ?? 0);
     const discount = Number(o.discount || 0);
     const total    = Number(o.confirmedTotal ?? o.total ?? subtotal);
-    let sumHtml = '';
+    const balance  = Math.max(0, total - deposit);
+
+    let sumHtml = `<div class="rcpt-summary-row">
+      <span class="rcpt-summary-label">商品小計</span>
+      <span class="rcpt-summary-value">$ ${subtotal.toLocaleString()}</span>
+    </div>`;
     if (discount > 0)
-      sumHtml += `<div class="rcpt-sum-row"><span>折扣</span><span>-${fmtMoney(discount)}</span></div>`;
+      sumHtml += `<div class="rcpt-summary-row">
+        <span class="rcpt-summary-label">折扣</span>
+        <span class="rcpt-summary-value">-$ ${discount.toLocaleString()}</span>
+      </div>`;
     if (deposit > 0)
-      sumHtml += `<div class="rcpt-sum-row"><span>已付定金</span><span>-${fmtMoney(deposit)}</span></div>`;
-    sumHtml += `<div class="rcpt-sum-row total"><span>總金額</span><span>${fmtMoney(total)}</span></div>`;
-    if (deposit > 0) {
-      const balance = Math.max(0, total - deposit);
-      sumHtml += `<div class="rcpt-sum-row" style="font-size:0.72rem;color:var(--text-sub)"><span>尾款</span><span>${fmtMoney(balance)}</span></div>`;
-    }
-    if (o.note)
-      sumHtml += `<div class="rcpt-note">📝 ${esc(o.note)}</div>`;
+      sumHtml += `<div class="rcpt-summary-row">
+        <span class="rcpt-summary-label">已付定金</span>
+        <span class="rcpt-summary-value">-$ ${deposit.toLocaleString()}</span>
+      </div>`;
+
+    sumHtml += `<div class="rcpt-total-row">
+      <span class="rcpt-total-label">Total</span>
+      <span class="rcpt-total-value">${fmtMoney(total)}</span>
+    </div>`;
+
+    if (deposit > 0)
+      sumHtml += `<div class="rcpt-balance-row">
+        <span class="rcpt-balance-label">尚餘尾款</span>
+        <span class="rcpt-balance-value">${fmtMoney(balance)}</span>
+      </div>`;
 
     document.getElementById('r-summary').innerHTML = sumHtml;
-    document.getElementById('receipt-card').style.display = 'block';
+    document.getElementById('r-note').innerHTML = o.note
+      ? `<div class="rcpt-note">📝 ${esc(o.note)}</div>` : '';
+
+    document.getElementById('receipt-area').style.display = 'block';
   }
 
   window.doSearch = async function() {
     const raw = document.getElementById('order-input').value.trim().toUpperCase();
     if (!raw) return;
 
-    document.getElementById('receipt-card').style.display = 'none';
+    document.getElementById('receipt-area').style.display = 'none';
     document.getElementById('empty-state').style.display  = 'none';
     document.getElementById('error-msg').style.display    = 'none';
     document.getElementById('hint').style.display         = 'none';
@@ -574,7 +625,7 @@
         document.getElementById('empty-state').style.display = 'block';
       } else {
         const o = { id: snap.docs[0].id, ...snap.docs[0].data() };
-        renderReceipt(o);
+        await renderReceipt(o);
       }
     } catch(e) {
       document.getElementById('spinner').style.display = 'none';
