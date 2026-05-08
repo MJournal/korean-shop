@@ -556,7 +556,7 @@
     }).join('');
 
     // Note
-    const debugInfo = cart.map((it, i) => `[${i}] ${(it.name||'?').substring(0,15)} | imageUrl: ${it.imageUrl ? '有('+it.imageUrl.length+'字)' : '無'}`).join('\n');
+    const debugInfo = cart.map((it, i) => `[${i}] ${(it.name||'?').substring(0,15)} | imageUrl: ${it.imageUrl ? '有('+it.imageUrl.length+'字) 開頭:'+it.imageUrl.substring(0,30) : '無'}`).join('\n');
     document.getElementById('r-note').innerHTML =
       (o.note ? `<div class="rcpt-note">📝 ${esc(o.note)}</div>` : '') +
       `<pre style="font-size:11px;background:#ffe;padding:8px;border-radius:4px;white-space:pre-wrap;margin-top:8px;">${debugInfo}</pre>`;
