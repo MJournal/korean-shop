@@ -531,7 +531,7 @@
         : getItemStatus(cfItem, isShipped);
 
       const imgUrl = findProductImage(it, products);
-      console.log('[DEBUG] item:', it.name, '| imageUrl:', imgUrl ? imgUrl.substring(0,40)+'...' : 'null');
+      const imgSrc = imgUrl ? (imgUrl.startsWith('data:') ? '【手動上傳base64】' : '【商品資料庫】') : '【無圖片】';
       const imgHtml = imgUrl
         ? `<img class="rcpt-item-img" src="${imgUrl}"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
@@ -556,7 +556,11 @@
     }).join('');
 
     // Note
-    const debugInfo = cart.map((it, i) => `[${i}] ${(it.name||'?').substring(0,15)} | imageUrl: ${it.imageUrl ? '有('+it.imageUrl.length+'字) 開頭:'+it.imageUrl.substring(0,30) : '無'}`).join('\n');
+    const debugInfo = sortedItems.map(({ it }, i) => {
+      const url = findProductImage(it, products);
+      const src = url ? (url.startsWith('data:') ? '【手動上傳】' : '【商品庫】') : '【無圖】';
+      return `顯示第${i+1}項: ${(it.name||'?').replace(/<br>/gi,' ').substring(0,18)} → ${src}`;
+    }).join('\n');
     document.getElementById('r-note').innerHTML =
       (o.note ? `<div class="rcpt-note">📝 ${esc(o.note)}</div>` : '') +
       `<pre style="font-size:11px;background:#ffe;padding:8px;border-radius:4px;white-space:pre-wrap;margin-top:8px;">${debugInfo}</pre>`;
