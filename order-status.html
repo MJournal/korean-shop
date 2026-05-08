@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>訂單查詢 │ Mina．妝日子</title>
+  <link rel="icon" type="image/png" href="favicon.png?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=Zen+Maru+Gothic:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root {
+      --bg: #f9f8f6;
+      --white: #ffffff;
+      --text: #2c2c2c;
+      --sub: #888888;
+      --accent: #d4a373;
+      --accent-light: #faeadd;
+      --success: #6abf8b;
+      --danger: #d65a5a;
+      --step-done: #d4a373;
+      --step-active: #d4a373;
+      --step-idle: #ddd;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans TC', 'Zen Maru Gothic', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 0 0 60px;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: var(--white);
+      text-align: center;
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid #f0ece6;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header .brand {
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .header h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ── State screens ── */
+    .state-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      padding: 40px 24px;
+      text-align: center;
+      gap: 16px;
+    }
+    .state-icon { font-size: 2.8rem; }
+    .state-title { font-size: 1rem; font-weight: 500; color: var(--text); }
+    .state-sub { font-size: 0.85rem; color: var(--sub); line-height: 1.7; }
+
+    /* ── User bar ── */
+    .user-bar {
+      background: var(--accent-light);
+      padding: 12px 20px;
+      font-size: 0.85rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .user-bar img {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* ── Order list ── */
+    .order-list {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Order card ── */
+    .order-card {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .order-card-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid #f5f0ea;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .order-id {
+      font-size: 0.8rem;
+      color: var(--sub);
+      margin-bottom: 2px;
+    }
+    .order-date {
+      font-size: 0.75rem;
+      color: var(--sub);
+    }
+
+    /* ── Status badge ── */
+    .status-badge {
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-pending  { background: #fff8e6; color: #a06800; }
+    .badge-confirm  { background: #e8f5ee; color: #2e7d52; }
+    .badge-buying   { background: #e8f0ff; color: #3a5bbf; }
+    .badge-shipping { background: #f3e8ff; color: #7b2d8b; }
+    .badge-shipped  { background: #e8f5ee; color: #1a6640; }
+    .badge-cancel   { background: #fdecea; color: #c0392b; }
+
+    /* ── Step tracker ── */
+    .step-tracker {
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+    }
+    .step-tracker::before {
+      content: '';
+      position: absolute;
+      top: 25px;
+      left: 36px;
+      right: 36px;
+      height: 2px;
+      background: var(--step-idle);
+      z-index: 0;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 1;
+      flex: 1;
+    }
+    .step-dot {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--step-idle);
+      border: 2px solid var(--step-idle);
+      flex-shrink: 0;
+    }
+    .step.done .step-dot  { background: var(--step-done); border-color: var(--step-done); }
+    .step.active .step-dot { background: var(--white); border-color: var(--step-active); box-shadow: 0 0 0 3px var(--accent-light); }
+    .step-label {
+      font-size: 0.65rem;
+      color: var(--sub);
+      text-align: center;
+      line-height: 1.3;
+    }
+    .step.done .step-label   { color: var(--accent); }
+    .step.active .step-label { color: var(--accent); font-weight: 500; }
+
+    /* ── Cart items ── */
+    .cart-items {
+      padding: 0 20px 4px;
+      border-top: 1px solid #f5f0ea;
+    }
+    .cart-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #f9f8f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .item-name {
+      font-size: 0.85rem;
+      color: var(--text);
+      flex: 1;
+    }
+    .item-spec {
+      font-size: 0.75rem;
+      color: var(--sub);
+      margin-top: 2px;
+    }
+    .item-qty-price {
+      font-size: 0.82rem;
+      color: var(--text);
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    /* ── Order footer ── */
+    .order-card-footer {
+      padding: 12px 20px;
+      background: #fdfcfa;
+      border-top: 1px solid #f5f0ea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .shipping-label {
+      font-size: 0.78rem;
+      color: var(--sub);
+    }
+    .total-label {
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+    .total-amount {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* ── Empty ── */
+    .empty-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px 24px;
+      text-align: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-text { font-size: 0.9rem; color: var(--sub); line-height: 1.8; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="brand">│ Mina．妝日子 │</div>
+    <h1>訂單查詢</h1>
+  </div>
+
+  <div id="app">
+    <div class="state-screen">
+      <div class="state-icon">⏳</div>
+      <div class="state-title">載入中…</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
+      authDomain: "minashop-c089a.firebaseapp.com",
+      projectId: "minashop-c089a",
+      storageBucket: "minashop-c089a.firebasestorage.app",
+      messagingSenderId: "201093013608",
+      appId: "1:201093013608:web:8b4e6b0f5506ca437fdbdd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+    const appEl = document.getElementById('app');
+
+    function showError(icon, title, sub) {
+      appEl.innerHTML = `
+        <div class="state-screen">
+          <div class="state-icon">${icon}</div>
+          <div class="state-title">${title}</div>
+          <div class="state-sub">${sub}</div>
+        </div>`;
+    }
+
+    // ── 狀態對應 ──
+    function resolveStatus(order) {
+      const s  = order.status || '待確認';
+      const fs = order.fulfillmentStatus || '';
+      if (s === '已取消') return { label: '已取消',    badge: 'badge-cancel',   step: -1 };
+      if (s === '待確認') return { label: '待確認',    badge: 'badge-pending',  step: 0  };
+      if (fs === '待採購' || fs === '') return { label: '已確認',  badge: 'badge-confirm', step: 1 };
+      if (fs === '等待出貨')            return { label: '採購完成', badge: 'badge-buying',  step: 2 };
+      if (fs === '全數到貨')            return { label: '等待出貨', badge: 'badge-shipping',step: 3 };
+      if (fs === '已出貨')              return { label: '已出貨',   badge: 'badge-shipped', step: 4 };
+      return { label: s, badge: 'badge-pending', step: 0 };
+    }
+
+    const STEPS = ['待確認','已確認','採購完成','等待出貨','已出貨'];
+
+    function formatDate(ts) {
+      if (!ts) return '';
+      const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function renderOrders(orders, profile) {
+      if (orders.length === 0) {
+        appEl.innerHTML = `
+          <div class="user-bar">
+            <img src="${profile.pictureUrl}" onerror="this.style.display='none'">
+            <span>${profile.displayName}</span>
+          </div>
+          <div class="order-list">
+            <div class="empty-card">
+              <div class="empty-icon">🛍️</div>
+              <div class="empty-text">目前還沒有訂單紀錄<br>快去逛逛吧！</div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const cards = orders.map(o => {
+        const { label, badge, step } = resolveStatus(o);
+        const isCancelled = step === -1;
+
+        const stepsHtml = isCancelled ? '' : `
+          <div class="step-tracker">
+            ${STEPS.map((s, i) => `
+              <div class="step ${i < step ? 'done' : i === step ? 'active' : ''}">
+                <div class="step-dot"></div>
+                <div class="step-label">${s}</div>
+              </div>`).join('')}
+          </div>`;
+
+        const itemsHtml = (o.cart || []).map(item => {
+          const name = (item.name || '').replace(/<br\s*\/?>/gi, ' ');
+          const spec = (item.spec || '').replace(/<br\s*\/?>/gi, ' ');
+          return `
+            <div class="cart-item">
+              <div>
+                <div class="item-name">${name}</div>
+                ${spec ? `<div class="item-spec">${spec}</div>` : ''}
+              </div>
+              <div class="item-qty-price">× ${item.qty}<br>NT$ ${(item.price * item.qty).toLocaleString()}</div>
+            </div>`;
+        }).join('');
+
+        const discountRow = o.discount > 0
+          ? `<div style="font-size:0.78rem;color:var(--sub)">折扣 [${o.promoCode}]：-NT$ ${o.discount}</div>` : '';
+
+        return `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="order-id">訂單編號：${o.orderId || o.id}</div>
+                <div class="order-date">${formatDate(o.createdAt)}</div>
+              </div>
+              <span class="status-badge ${badge}">${label}</span>
+            </div>
+            ${stepsHtml}
+            <div class="cart-items">${itemsHtml}</div>
+            <div class="order-card-footer">
+              <div>
+                <div class="shipping-label">📦 ${o.shipping || ''}</div>
+                ${discountRow}
+              </div>
+              <div style="text-align:right">
+                <div class="total-label">合計</div>
+                <div class="total-amount">NT$ ${(o.total || 0).toLocaleString()}</div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      appEl.innerHTML = `
+        <div class="user-bar">
+          <img src="${profile.pictureUrl}" onerror="this.style.display='none'">
+          <span>${profile.displayName} 的訂單</span>
+        </div>
+        <div class="order-list">${cards}</div>`;
+    }
+
+    // ── 主流程 ──
+    try {
+      await liff.init({ liffId: '2010012544-xPI15gVH' });
+
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+
+      const profile = await liff.getProfile();
+      const userId  = profile.userId;
+
+      const snap = await getDocs(query(
+        collection(db, 'orders'),
+        where('lineUserId', '==', userId)
+      ));
+
+      const orders = snap.docs
+        .map(d => ({ ...d.data(), id: d.id }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+      renderOrders(orders, profile);
+
+    } catch (e) {
+      console.error(e);
+      showError('⚠️', '載入失敗', '請關閉後重新開啟，<br>或聯繫 LINE 官方帳號 @139gqqwy');
+    }
+  </script>
+
+</body>
+</html>
