@@ -523,9 +523,6 @@
           .localeCompare((b.it.name||'').replace(/<br>/gi,' '), 'zh-TW')
       );
 
-    // 暫時診斷：直接顯示在頁面上
-    const debugInfo = cart.map((it, i) => `[${i}] ${(it.name||'?').substring(0,15)} | imageUrl: ${it.imageUrl ? '有('+it.imageUrl.length+'字元)' : '無'}`).join('\n');
-    document.getElementById('r-note').innerHTML = `<pre style="font-size:11px;background:#ffe;padding:8px;border-radius:4px;white-space:pre-wrap;">${debugInfo}</pre>`;
 
     document.getElementById('r-items').innerHTML = sortedItems.map(({ it, cfItem }, i) => {
       const qty   = Number(it.qty) || 1;
@@ -559,8 +556,10 @@
     }).join('');
 
     // Note
-    document.getElementById('r-note').innerHTML = o.note
-      ? `<div class="rcpt-note">📝 ${esc(o.note)}</div>` : '';
+    const debugInfo = cart.map((it, i) => `[${i}] ${(it.name||'?').substring(0,15)} | imageUrl: ${it.imageUrl ? '有('+it.imageUrl.length+'字)' : '無'}`).join('\n');
+    document.getElementById('r-note').innerHTML =
+      (o.note ? `<div class="rcpt-note">📝 ${esc(o.note)}</div>` : '') +
+      `<pre style="font-size:11px;background:#ffe;padding:8px;border-radius:4px;white-space:pre-wrap;margin-top:8px;">${debugInfo}</pre>`;
 
     document.getElementById('receipt-area').style.display = 'block';
   }
