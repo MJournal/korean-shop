@@ -1,440 +1,506 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>訂單查詢 │ Mina．妝日子</title>
-  <link rel="icon" type="image/png" href="favicon.png?v=2">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500&family=Zen+Maru+Gothic:wght@300;400;500&display=swap" rel="stylesheet" />
-  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>訂單查詢 | Mina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f9f8f6;
-      --white: #ffffff;
-      --text: #2c2c2c;
-      --sub: #888888;
-      --accent: #d4a373;
-      --accent-light: #faeadd;
-      --success: #6abf8b;
-      --danger: #d65a5a;
-      --step-done: #d4a373;
-      --step-active: #d4a373;
-      --step-idle: #ddd;
+      --green:       #2a7c5f;
+      --green-dark:  #1b4d38;
+      --green-light: #d4ead9;
+      --green-mid:   #52b788;
+      --page-bg:     #f0f5f2;
+      --card-bg:     #ffffff;
+      --text:        #1a2e25;
+      --text-sub:    #5a7a6a;
+      --border:      #d0e4d8;
+      --danger:      #e05c5c;
+      --warning:     #d4a017;
+      --warning-bg:  #fef8e3;
+      --blue:        #1565c0;
+      --blue-bg:     #e3f2fd;
+      --purple:      #7b2d8b;
+      --purple-bg:   #f3e8ff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background: var(--bg);
+      font-family: "Noto Sans TC", sans-serif;
+      background: var(--page-bg);
       color: var(--text);
-      font-family: 'Noto Sans TC', 'Zen Maru Gothic', sans-serif;
-      font-weight: 300;
       min-height: 100vh;
-      padding: 0 0 60px;
+      padding-bottom: 32px;
     }
 
     /* ── Header ── */
     .header {
-      background: var(--white);
+      background: var(--green);
+      padding: 20px 20px 24px;
       text-align: center;
-      padding: 24px 20px 20px;
-      border-bottom: 1px solid #f0ece6;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .header .brand {
-      font-size: 0.85rem;
-      letter-spacing: 4px;
-      color: var(--accent);
-      margin-bottom: 4px;
     }
     .header h1 {
+      color: #fff;
       font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+    .header p {
+      color: rgba(255,255,255,0.65);
+      font-size: 0.75rem;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Search Box ── */
+    .search-wrap {
+      background: var(--card-bg);
+      margin: 0 16px;
+      margin-top: -12px;
+      border-radius: 12px;
+      padding: 20px 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      border: 1px solid var(--border);
+    }
+    .search-label {
+      font-size: 0.78rem;
       font-weight: 500;
-      color: var(--text);
+      color: var(--text-sub);
+      margin-bottom: 8px;
+      display: block;
     }
-
-    /* ── State screens ── */
-    .state-screen {
+    .search-row {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-      padding: 40px 24px;
-      text-align: center;
-      gap: 16px;
-    }
-    .state-icon { font-size: 2.8rem; }
-    .state-title { font-size: 1rem; font-weight: 500; color: var(--text); }
-    .state-sub { font-size: 0.85rem; color: var(--sub); line-height: 1.7; }
-
-    /* ── User bar ── */
-    .user-bar {
-      background: var(--accent-light);
-      padding: 12px 20px;
-      font-size: 0.85rem;
-      color: var(--text);
-      display: flex;
-      align-items: center;
       gap: 8px;
     }
-    .user-bar img {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      object-fit: cover;
+    .search-input {
+      flex: 1;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .search-input::placeholder { color: #aac2b5; letter-spacing: 0; text-transform: none; }
+    .search-input:focus { border-color: var(--green-mid); }
+    .btn-search {
+      padding: 11px 20px;
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .btn-search:hover { background: var(--green-dark); }
+    .btn-search:disabled { background: #a5c8b8; cursor: not-allowed; }
+
+    /* ── States ── */
+    .state-msg {
+      margin: 32px 16px 0;
+      text-align: center;
+      color: var(--text-sub);
+      font-size: 0.85rem;
+    }
+    .state-msg .icon { font-size: 2rem; margin-bottom: 8px; }
+
+    .error-msg {
+      margin: 16px 16px 0;
+      padding: 12px 14px;
+      background: #fde8e8;
+      border-radius: 8px;
+      color: var(--danger);
+      font-size: 0.82rem;
+      display: none;
     }
 
-    /* ── Order list ── */
-    .order-list {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* ── Order card ── */
-    .order-card {
-      background: var(--white);
-      border-radius: 16px;
+    /* ── Receipt Card ── */
+    .receipt-card {
+      margin: 16px 16px 0;
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      display: none;
     }
 
-    .order-card-header {
-      padding: 16px 20px 12px;
-      border-bottom: 1px solid #f5f0ea;
+    .rcpt-header {
+      background: var(--green);
+      padding: 16px 20px;
+      color: #fff;
+    }
+    .rcpt-header-row {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 8px;
     }
-    .order-id {
-      font-size: 0.8rem;
-      color: var(--sub);
+    .rcpt-order-id {
+      font-size: 0.78rem;
+      opacity: 0.75;
+      letter-spacing: 1px;
       margin-bottom: 2px;
     }
-    .order-date {
-      font-size: 0.75rem;
-      color: var(--sub);
+    .rcpt-customer {
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .rcpt-date {
+      font-size: 0.72rem;
+      opacity: 0.65;
+      margin-top: 4px;
     }
 
-    /* ── Status badge ── */
-    .status-badge {
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 4px 12px;
+    /* Overall status badge */
+    .order-status-badge {
+      padding: 4px 10px;
       border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
       white-space: nowrap;
-      flex-shrink: 0;
     }
-    .badge-pending  { background: #fff8e6; color: #a06800; }
-    .badge-confirm  { background: #e8f5ee; color: #2e7d52; }
-    .badge-buying   { background: #e8f0ff; color: #3a5bbf; }
-    .badge-shipping { background: #f3e8ff; color: #7b2d8b; }
-    .badge-shipped  { background: #e8f5ee; color: #1a6640; }
-    .badge-cancel   { background: #fdecea; color: #c0392b; }
+    .status-waiting  { background: rgba(255,255,255,0.2); color: #fff; }
+    .status-buying   { background: rgba(255,255,255,0.2); color: #fff; }
+    .status-arrived  { background: rgba(255,255,255,0.2); color: #fff; }
+    .status-shipped  { background: rgba(255,255,255,0.85); color: var(--green-dark); }
+    .status-pending  { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85); }
+    .status-cancel   { background: rgba(255,100,100,0.3); color: #fff; }
 
-    /* ── Step tracker ── */
-    .step-tracker {
-      padding: 16px 20px;
+    /* ── Items ── */
+    .rcpt-items { padding: 4px 0; }
+
+    .rcpt-item {
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
-      position: relative;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
     }
-    .step-tracker::before {
-      content: '';
-      position: absolute;
-      top: 25px;
-      left: 36px;
-      right: 36px;
-      height: 2px;
-      background: var(--step-idle);
-      z-index: 0;
-    }
-    .step {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      z-index: 1;
-      flex: 1;
-    }
-    .step-dot {
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: var(--step-idle);
-      border: 2px solid var(--step-idle);
+    .rcpt-item:last-child { border-bottom: none; }
+
+    .rcpt-item-icon {
+      font-size: 1.2rem;
+      margin-top: 1px;
       flex-shrink: 0;
     }
-    .step.done .step-dot  { background: var(--step-done); border-color: var(--step-done); }
-    .step.active .step-dot { background: var(--white); border-color: var(--step-active); box-shadow: 0 0 0 3px var(--accent-light); }
-    .step-label {
-      font-size: 0.65rem;
-      color: var(--sub);
-      text-align: center;
-      line-height: 1.3;
-    }
-    .step.done .step-label   { color: var(--accent); }
-    .step.active .step-label { color: var(--accent); font-weight: 500; }
-
-    /* ── Cart items ── */
-    .cart-items {
-      padding: 0 20px 4px;
-      border-top: 1px solid #f5f0ea;
-    }
-    .cart-item {
-      padding: 10px 0;
-      border-bottom: 1px solid #f9f8f6;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 8px;
-    }
-    .cart-item:last-child { border-bottom: none; }
-    .item-name {
-      font-size: 0.85rem;
+    .rcpt-item-body { flex: 1; min-width: 0; }
+    .rcpt-item-name {
+      font-size: 0.88rem;
+      font-weight: 500;
       color: var(--text);
-      flex: 1;
+      line-height: 1.4;
     }
-    .item-spec {
+    .rcpt-item-spec {
       font-size: 0.75rem;
-      color: var(--sub);
+      color: var(--text-sub);
       margin-top: 2px;
     }
-    .item-qty-price {
-      font-size: 0.82rem;
-      color: var(--text);
-      white-space: nowrap;
+    .rcpt-item-gift {
+      font-size: 0.72rem;
+      color: #a06020;
+      background: #fdf0e8;
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-top: 3px;
+    }
+    .rcpt-item-right {
       text-align: right;
+      flex-shrink: 0;
+    }
+    .rcpt-item-price {
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      white-space: nowrap;
     }
 
-    /* ── Order footer ── */
-    .order-card-footer {
-      padding: 12px 20px;
-      background: #fdfcfa;
-      border-top: 1px solid #f5f0ea;
+    /* Per-item status pill */
+    .item-status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-top: 5px;
+      white-space: nowrap;
+    }
+    .ist-waiting  { background: var(--warning-bg);  color: var(--warning); }
+    .ist-buying   { background: #fff8e6;            color: #a06800; }
+    .ist-arrived  { background: var(--blue-bg);     color: var(--blue); }
+    .ist-shipped  { background: var(--purple-bg);   color: var(--purple); }
+    .ist-cancel   { background: #fde8e8;            color: var(--danger); }
+
+    /* ── Summary ── */
+    .rcpt-summary {
+      padding: 14px 16px;
+      background: #f8fcf9;
+      border-top: 1px solid var(--border);
+    }
+    .rcpt-sum-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      font-size: 0.82rem;
+      color: var(--text-sub);
+      margin-bottom: 5px;
     }
-    .shipping-label {
-      font-size: 0.78rem;
-      color: var(--sub);
+    .rcpt-sum-row:last-child { margin-bottom: 0; }
+    .rcpt-sum-row.total {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      border-top: 1px dashed var(--border);
+      padding-top: 9px;
+      margin-top: 9px;
     }
-    .total-label {
-      font-size: 0.85rem;
-      color: var(--text);
-    }
-    .total-amount {
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--accent);
+    .rcpt-note {
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: var(--green-light);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--text-sub);
     }
 
-    /* ── Empty ── */
-    .empty-card {
-      background: var(--white);
-      border-radius: 16px;
-      padding: 48px 24px;
-      text-align: center;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    /* ── Hint ── */
+    .hint {
+      margin: 16px 16px 0;
+      padding: 12px 14px;
+      background: var(--green-light);
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      line-height: 1.6;
     }
-    .empty-icon { font-size: 2.5rem; margin-bottom: 12px; }
-    .empty-text { font-size: 0.9rem; color: var(--sub); line-height: 1.8; }
+
+    /* ── Loading ── */
+    .spinner {
+      display: none;
+      margin: 32px auto 0;
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="brand">│ Mina．妝日子 │</div>
-    <h1>訂單查詢</h1>
-  </div>
+<div class="header">
+  <h1>訂單查詢</h1>
+  <p>MINA · ORDER STATUS</p>
+</div>
 
-  <div id="app">
-    <div class="state-screen">
-      <div class="state-icon">⏳</div>
-      <div class="state-title">載入中…</div>
+<div class="search-wrap">
+  <label class="search-label">請輸入您的訂單編號</label>
+  <div class="search-row">
+    <input type="text" class="search-input" id="order-input"
+      placeholder="ORD-XXXXXXXX"
+      autocomplete="off" autocorrect="off" spellcheck="false"
+      oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')doSearch()">
+    <button class="btn-search" id="btn-search" onclick="doSearch()">查詢</button>
+  </div>
+</div>
+
+<div class="error-msg" id="error-msg"></div>
+<div class="spinner" id="spinner"></div>
+
+<div id="hint" class="hint">
+  訂單編號格式範例：<strong>ORD-20240501-001</strong><br>
+  如有任何問題，歡迎直接傳訊息給我們 ☺
+</div>
+
+<div class="state-msg" id="empty-state" style="display:none">
+  <div class="icon">🔍</div>
+  <p>找不到此訂單編號<br><span style="font-size:0.75rem">請確認編號是否正確，或聯絡客服</span></p>
+</div>
+
+<!-- Receipt -->
+<div class="receipt-card" id="receipt-card">
+  <div class="rcpt-header">
+    <div class="rcpt-header-row">
+      <div>
+        <div class="rcpt-order-id" id="r-order-id"></div>
+        <div class="rcpt-customer" id="r-customer"></div>
+        <div class="rcpt-date" id="r-date"></div>
+      </div>
+      <span class="order-status-badge" id="r-order-status"></span>
     </div>
   </div>
+  <div class="rcpt-items" id="r-items"></div>
+  <div class="rcpt-summary" id="r-summary"></div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getFirestore, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import {
+    getFirestore, collection, query, where, getDocs, limit
+  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
-      authDomain: "minashop-c089a.firebaseapp.com",
-      projectId: "minashop-c089a",
-      storageBucket: "minashop-c089a.firebasestorage.app",
-      messagingSenderId: "201093013608",
-      appId: "1:201093013608:web:8b4e6b0f5506ca437fdbdd"
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
+    authDomain: "minashop-c089a.firebaseapp.com",
+    projectId: "minashop-c089a",
+    storageBucket: "minashop-c089a.firebasestorage.app",
+    messagingSenderId: "201093013608",
+    appId: "1:201093013608:web:8b4e6b0f5506ca437fdbdd"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ── Helpers ──
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function fmtDate(ts) {
+    if (!ts) return '—';
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  }
+  function fmtMoney(n) {
+    return `NT$${Number(n||0).toLocaleString()}`;
+  }
+
+  // ── Item status per cartFulfillment ──
+  function getItemStatus(cfItem, orderShipped) {
+    if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
+    if (!cfItem || (!cfItem.bought && !cfItem.arrived)) return { cls: 'ist-waiting', label: '⏳ 備貨中' };
+    if (cfItem.arrived) return { cls: 'ist-arrived', label: '✅ 已備妥' };
+    if (cfItem.bought)  return { cls: 'ist-buying',  label: '🚚 採購中' };
+    return { cls: 'ist-waiting', label: '⏳ 備貨中' };
+  }
+
+  // ── Order overall status ──
+  function getOrderBadge(o) {
+    if (o.status === '已取消') return { cls: 'status-cancel', label: '已取消' };
+    if (o.status === '待確認') return { cls: 'status-pending', label: '待確認' };
+    const fs = o.fulfillmentStatus || '待採購';
+    const map = {
+      '待採購':  { cls: 'status-waiting', label: '備貨中' },
+      '等待出貨':{ cls: 'status-buying',  label: '採購中' },
+      '全數到貨':{ cls: 'status-arrived', label: '已備妥' },
+      '已出貨':  { cls: 'status-shipped', label: '已出貨' },
     };
+    return map[fs] || { cls: 'status-waiting', label: fs };
+  }
 
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
-    const appEl = document.getElementById('app');
+  // ── Render receipt ──
+  function renderReceipt(o) {
+    const cart = o.confirmedCart || o.cart || [];
+    const cf   = o.cartFulfillment || cart.map(() => ({ bought: false, arrived: false }));
+    const isShipped = (o.fulfillmentStatus === '已出貨');
+    const isCancelled = (o.status === '已取消');
 
-    function showError(icon, title, sub) {
-      appEl.innerHTML = `
-        <div class="state-screen">
-          <div class="state-icon">${icon}</div>
-          <div class="state-title">${title}</div>
-          <div class="state-sub">${sub}</div>
-        </div>`;
-    }
+    const badge = getOrderBadge(o);
+    document.getElementById('r-order-id').textContent  = o.orderId || '';
+    document.getElementById('r-customer').textContent  = o.customerName || '訂單詳情';
+    document.getElementById('r-date').textContent      = '下單日期：' + fmtDate(o.confirmedAt || o.createdAt);
+    const statusEl = document.getElementById('r-order-status');
+    statusEl.className = 'order-status-badge ' + badge.cls;
+    statusEl.textContent = badge.label;
 
-    // ── 狀態對應 ──
-    function resolveStatus(order) {
-      const s  = order.status || '待確認';
-      const fs = order.fulfillmentStatus || '';
-      if (s === '已取消') return { label: '已取消',    badge: 'badge-cancel',   step: -1 };
-      if (s === '待確認') return { label: '待確認',    badge: 'badge-pending',  step: 0  };
-      if (fs === '待採購' || fs === '') return { label: '已確認',  badge: 'badge-confirm', step: 1 };
-      if (fs === '等待出貨')            return { label: '採購完成', badge: 'badge-buying',  step: 2 };
-      if (fs === '全數到貨')            return { label: '等待出貨', badge: 'badge-shipping',step: 3 };
-      if (fs === '已出貨')              return { label: '已出貨',   badge: 'badge-shipped', step: 4 };
-      return { label: s, badge: 'badge-pending', step: 0 };
-    }
+    // Sort items alphabetically (same as admin)
+    const sortedItems = cart
+      .map((it, idx) => ({ it, cfItem: cf[idx] || {}, idx }))
+      .sort((a, b) =>
+        (a.it.name||'').replace(/<br>/gi,' ')
+          .localeCompare((b.it.name||'').replace(/<br>/gi,' '), 'zh-TW')
+      );
 
-    const STEPS = ['待確認','已確認','採購完成','等待出貨','已出貨'];
-
-    function formatDate(ts) {
-      if (!ts) return '';
-      const d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
-      return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
-    }
-
-    function renderOrders(orders, profile) {
-      if (orders.length === 0) {
-        appEl.innerHTML = `
-          <div class="user-bar">
-            <img src="${profile.pictureUrl}" onerror="this.style.display='none'">
-            <span>${profile.displayName}</span>
-          </div>
-          <div class="order-list">
-            <div class="empty-card">
-              <div class="empty-icon">🛍️</div>
-              <div class="empty-text">目前還沒有訂單紀錄<br>快去逛逛吧！</div>
-            </div>
-          </div>`;
-        return;
-      }
-
-      const cards = orders.map(o => {
-        const { label, badge, step } = resolveStatus(o);
-        const isCancelled = step === -1;
-
-        const stepsHtml = isCancelled ? '' : `
-          <div class="step-tracker">
-            ${STEPS.map((s, i) => `
-              <div class="step ${i < step ? 'done' : i === step ? 'active' : ''}">
-                <div class="step-dot"></div>
-                <div class="step-label">${s}</div>
-              </div>`).join('')}
-          </div>`;
-
-        const itemsHtml = (o.cart || []).map(item => {
-          const name = (item.name || '').replace(/<br\s*\/?>/gi, ' ');
-          const spec = (item.spec || '').replace(/<br\s*\/?>/gi, ' ');
-          return `
-            <div class="cart-item">
-              <div>
-                <div class="item-name">${name}</div>
-                ${spec ? `<div class="item-spec">${spec}</div>` : ''}
-              </div>
-              <div class="item-qty-price">× ${item.qty}<br>NT$ ${(item.price * item.qty).toLocaleString()}</div>
-            </div>`;
-        }).join('');
-
-        const discountRow = o.discount > 0
-          ? `<div style="font-size:0.78rem;color:var(--sub)">折扣 [${o.promoCode}]：-NT$ ${o.discount}</div>` : '';
-
-        return `
-          <div class="order-card">
-            <div class="order-card-header">
-              <div>
-                <div class="order-id">訂單編號：${o.orderId || o.id}</div>
-                <div class="order-date">${formatDate(o.createdAt)}</div>
-              </div>
-              <span class="status-badge ${badge}">${label}</span>
-            </div>
-            ${stepsHtml}
-            <div class="cart-items">${itemsHtml}</div>
-            <div class="order-card-footer">
-              <div>
-                <div class="shipping-label">📦 ${o.shipping || ''}</div>
-                ${discountRow}
-              </div>
-              <div style="text-align:right">
-                <div class="total-label">合計</div>
-                <div class="total-amount">NT$ ${(o.total || 0).toLocaleString()}</div>
-              </div>
-            </div>
-          </div>`;
-      }).join('');
-
-      appEl.innerHTML = `
-        <div class="user-bar">
-          <img src="${profile.pictureUrl}" onerror="this.style.display='none'">
-          <span>${profile.displayName} 的訂單</span>
+    document.getElementById('r-items').innerHTML = sortedItems.map(({ it, cfItem }) => {
+      const qty = Number(it.qty) || 1;
+      const sub = (Number(it.price) || 0) * qty;
+      const st  = isCancelled
+        ? { cls: 'ist-cancel', label: '已取消' }
+        : getItemStatus(cfItem, isShipped);
+      const specHtml = (it.spec && it.spec !== '單一規格')
+        ? `<div class="rcpt-item-spec">${esc(it.spec)}</div>` : '';
+      const giftHtml = it.gift
+        ? `<div class="rcpt-item-gift">贈：${esc(it.gift)}</div>` : '';
+      return `<div class="rcpt-item">
+        <div class="rcpt-item-body">
+          <div class="rcpt-item-name">${esc((it.name||'').replace(/<br>/gi,' '))}</div>
+          ${specHtml}${giftHtml}
         </div>
-        <div class="order-list">${cards}</div>`;
-    }
+        <div class="rcpt-item-right">
+          <div class="rcpt-item-price">${fmtMoney(it.price)} × ${qty}</div>
+          <span class="item-status ${st.cls}">${st.label}</span>
+        </div>
+      </div>`;
+    }).join('');
 
-    // ── 主流程 ──
+    // Summary
+    const subtotal = cart.reduce((s, i) => s + (Number(i.price)||0) * (Number(i.qty)||1), 0);
+    const deposit  = Number(o.confirmedDeposit ?? o.deposit ?? 0);
+    const discount = Number(o.discount || 0);
+    const total    = Number(o.confirmedTotal ?? o.total ?? subtotal);
+    let sumHtml = '';
+    if (discount > 0)
+      sumHtml += `<div class="rcpt-sum-row"><span>折扣</span><span>-${fmtMoney(discount)}</span></div>`;
+    if (deposit > 0)
+      sumHtml += `<div class="rcpt-sum-row"><span>已付定金</span><span>-${fmtMoney(deposit)}</span></div>`;
+    sumHtml += `<div class="rcpt-sum-row total"><span>總金額</span><span>${fmtMoney(total)}</span></div>`;
+    if (deposit > 0) {
+      const balance = Math.max(0, total - deposit);
+      sumHtml += `<div class="rcpt-sum-row" style="font-size:0.78rem;color:var(--text-sub)"><span>尾款</span><span>${fmtMoney(balance)}</span></div>`;
+    }
+    if (o.note)
+      sumHtml += `<div class="rcpt-note">📝 ${esc(o.note)}</div>`;
+
+    document.getElementById('r-summary').innerHTML = sumHtml;
+    document.getElementById('receipt-card').style.display = 'block';
+  }
+
+  // ── Search ──
+  window.doSearch = async function() {
+    const raw = document.getElementById('order-input').value.trim().toUpperCase();
+    if (!raw) return;
+
+    // reset
+    document.getElementById('receipt-card').style.display = 'none';
+    document.getElementById('empty-state').style.display  = 'none';
+    document.getElementById('error-msg').style.display    = 'none';
+    document.getElementById('hint').style.display         = 'none';
+    document.getElementById('spinner').style.display      = 'block';
+    document.getElementById('btn-search').disabled        = true;
+
     try {
-      // 5秒超時偵錯
-      const timeout = setTimeout(() => {
-        appEl.innerHTML = `<div style="padding:24px;font-size:0.85rem;color:#c00">
-          LIFF init 超時，請截圖給客服<br>
-          liff.isInClient: ${liff.isInClient()}<br>
-          URL: ${location.href.slice(0,60)}
-        </div>`;
-      }, 5000);
+      const q    = query(collection(db,'orders'), where('orderId','==',raw), limit(1));
+      const snap = await getDocs(q);
 
-      await liff.init({ liffId: '2010012544-xPI15gVH' });
-      clearTimeout(timeout);
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('btn-search').disabled   = false;
 
-      if (!liff.isLoggedIn()) {
-        liff.login();
-        return;
+      if (snap.empty) {
+        document.getElementById('empty-state').style.display = 'block';
+      } else {
+        const o = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        renderReceipt(o);
       }
-
-      const profile = await liff.getProfile();
-      const userId  = profile.userId;
-
-      // 暫時偵錯：顯示 userId 前幾碼
-      appEl.innerHTML = `<div style="padding:24px;font-size:0.85rem;color:#666">
-        LIFF userId：<b>${userId.slice(0,10)}…</b><br>
-        查詢中…
-      </div>`;
-
-      const snap = await getDocs(query(
-        collection(db, 'orders'),
-        where('lineUserId', '==', userId)
-      ));
-
-      // 暫時偵錯：顯示找到幾筆
-      appEl.innerHTML += `<div style="padding:0 24px;font-size:0.85rem;color:#666">
-        找到訂單：<b>${snap.size} 筆</b>
-      </div>`;
-
-      const orders = snap.docs
-        .map(d => ({ ...d.data(), id: d.id }))
-        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-      renderOrders(orders, profile);
-
-    } catch (e) {
+    } catch(e) {
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('btn-search').disabled   = false;
+      const em = document.getElementById('error-msg');
+      em.textContent = '查詢失敗，請稍後再試。';
+      em.style.display = 'block';
       console.error(e);
-      showError('⚠️', '載入失敗', '請關閉後重新開啟，<br>或聯繫 LINE 官方帳號 @139gqqwy');
     }
-  </script>
+  };
+</script>
 
 </body>
 </html>
