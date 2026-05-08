@@ -239,16 +239,16 @@
     }
 
     .rcpt-item-img {
-      width: 56px; height: 56px;
-      object-fit: cover;
+      width: 72px; height: 72px;
+      object-fit: contain;
       border-radius: 6px;
       flex-shrink: 0;
-      background: #f0ebe3;
+      background: #f8f5f0;
       border: 1px solid #e8ddd4;
       display: block;
     }
     .rcpt-item-img-placeholder {
-      width: 56px; height: 56px;
+      width: 72px; height: 72px;
       border-radius: 6px;
       flex-shrink: 0;
       background: #f5f0eb;
@@ -440,11 +440,15 @@
   }
 
   function findProductImage(item, products) {
-    if (!products?.length) return null;
+    // 優先：後台手動上傳的圖片（已存進 Firebase Storage）
+    if (item.imageUrl) return item.imageUrl;
+    if (!products || !products.length) return null;
+    // 次：用 productId 比對商品庫
     if (item.productId) {
       const p = products.find(p => p.id === item.productId);
       if (p) return (p.images || []).find(Boolean) || null;
     }
+    // 末：用商品名模糊比對
     const n = (item.name || '').replace(/<br>/gi, ' ').trim().toLowerCase();
     if (!n) return null;
     const p = products.find(p => {
@@ -519,6 +523,10 @@
           .localeCompare((b.it.name||'').replace(/<br>/gi,' '), 'zh-TW')
       );
 
+    // 暫時診斷：直接顯示在頁面上
+    const debugInfo = cart.map((it, i) => `[${i}] ${(it.name||'?').substring(0,15)} | imageUrl: ${it.imageUrl ? '有('+it.imageUrl.length+'字元)' : '無'}`).join('\n');
+    document.getElementById('r-note').innerHTML = `<pre style="font-size:11px;background:#ffe;padding:8px;border-radius:4px;white-space:pre-wrap;">${debugInfo}</pre>`;
+
     document.getElementById('r-items').innerHTML = sortedItems.map(({ it, cfItem }, i) => {
       const qty   = Number(it.qty) || 1;
       const st    = isCancelled
@@ -526,8 +534,9 @@
         : getItemStatus(cfItem, isShipped);
 
       const imgUrl = findProductImage(it, products);
+      console.log('[DEBUG] item:', it.name, '| imageUrl:', imgUrl ? imgUrl.substring(0,40)+'...' : 'null');
       const imgHtml = imgUrl
-        ? `<img class="rcpt-item-img" src="${esc(imgUrl)}" crossorigin="anonymous"
+        ? `<img class="rcpt-item-img" src="${imgUrl}"
              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
         : '';
       const placeholder = `<div class="rcpt-item-img-placeholder" style="${imgUrl ? 'display:none' : ''}">✦</div>`;
