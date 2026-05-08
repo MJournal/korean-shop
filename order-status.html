@@ -388,7 +388,17 @@
 
     // ── 主流程 ──
     try {
+      // 5秒超時偵錯
+      const timeout = setTimeout(() => {
+        appEl.innerHTML = `<div style="padding:24px;font-size:0.85rem;color:#c00">
+          LIFF init 超時，請截圖給客服<br>
+          liff.isInClient: ${liff.isInClient()}<br>
+          URL: ${location.href.slice(0,60)}
+        </div>`;
+      }, 5000);
+
       await liff.init({ liffId: '2010012544-xPI15gVH' });
+      clearTimeout(timeout);
 
       if (!liff.isLoggedIn()) {
         liff.login();
