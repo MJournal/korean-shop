@@ -361,10 +361,8 @@
     <div class="search-row">
       <input type="text" class="search-input" id="order-input"
         placeholder="ORD-XXXXXXXX"
-        autocomplete="off" autocorrect="off" spellcheck="false"
-        oninput="this.value=this.value.toUpperCase()"
-        onkeydown="if(event.key==='Enter')doSearch()">
-      <button class="btn-search" id="btn-search" onclick="doSearch()">查詢</button>
+        autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="btn-search" id="btn-search">查詢</button>
     </div>
     <div class="error-msg" id="error-msg"></div>
     <div id="hint" class="hint">
@@ -558,7 +556,7 @@
     document.getElementById('receipt-area').style.display = 'block';
   }
 
-  window.doSearch = async function() {
+  async function doSearch() {
     const raw = document.getElementById('order-input').value.trim().toUpperCase();
     if (!raw) return;
 
@@ -589,7 +587,12 @@
       em.style.display = 'block';
       console.error(e);
     }
-  };
+  }
+
+  const input = document.getElementById('order-input');
+  input.addEventListener('input', () => { input.value = input.value.toUpperCase(); });
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
+  document.getElementById('btn-search').addEventListener('click', doSearch);
 </script>
 
 </body>
