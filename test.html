@@ -6,6 +6,7 @@
     <link rel="apple-touch-icon" href="favicon.png?v=2">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
     <title>│Mina．妝日子│</title>
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -2369,6 +2370,20 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      // === LINE LIFF 初始化（靜默，不強制登入）===
+      let _lineUserId = null;
+      let _lineName   = null;
+      (async () => {
+        try {
+          await liff.init({ liffId: '2010012544-xPI15gVH' });
+          if (liff.isLoggedIn()) {
+            const profile = await liff.getProfile();
+            _lineUserId = profile.userId;
+            _lineName   = profile.displayName;
+          }
+        } catch(_) {}
+      })();
+
       // === 🔒 手機版背景鎖定大神器 ===
       let savedScrollPosition = 0;
       let isOrderEnded  = false;
@@ -3165,6 +3180,8 @@
             promoCode: currentPromoCode || '',
             shipping:  selectedShipping,
             createdAt: serverTimestamp(),
+            lineUserId: _lineUserId || null,
+            lineName:   _lineName   || null,
           });
 
           // ⑤ 組 LINE 訊息（訂單編號在第一行）
