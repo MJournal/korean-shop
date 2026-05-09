@@ -216,6 +216,10 @@
       background: #fdeaea; border-color: #d08080;
       color: #8a3838;
     }
+    .sbn-new {
+      background: #eef7ee; border-color: #7ab87a;
+      color: #2e6e2e;
+    }
 
     /* ── Section divider ── */
     .rcpt-section-label {
@@ -464,6 +468,7 @@
 
   // Status configs: icon, label, desc, banner class
   const STATUS_CONFIG = {
+    new:      { icon: '🎉', label: '訂單成立',  desc: '訂單已收到！我們將盡快確認並安排採購。',    cls: 'sbn-new' },
     waiting:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
     arrived:  { icon: '✅', label: '採購完成', desc: '已順利採購到貨，正在整理並安排出貨事宜',   cls: 'sbn-arrived' },
@@ -474,25 +479,27 @@
 
   function getStatusKey(o) {
     if (o.status === '已取消') return 'cancel';
+    // 網站下單、尚未後台確認
+    if (o.status === '待確認') return 'new';
     if (o.fulfillmentStatus === '已出貨')   return 'shipped';
     if (o.fulfillmentStatus === '全數到貨') return 'arrived';
 
-    // 從品項實際進度判斷（解決手動建單不經確認流程的問題）
     const cart = o.confirmedCart || o.cart || [];
     const cf   = o.cartFulfillment || [];
-    const allArrived = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && cf[i].arrived);
-    const anyBought  = cf.some(function(item){ return item.bought || item.arrived; });
+    const allDone = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && (cf[i].bought || cf[i].arrived));
+    if (allDone) return 'arrived';
 
-    if (allArrived) return 'arrived';
-    if (anyBought)  return 'buying';
+    // 後台手動設定採購中，或有任何商品已採購/到貨
+    if (o.fulfillmentStatus === '採購中') return 'buying';
+    const anyBought = cf.some(function(item){ return item.bought || item.arrived; });
+    if (anyBought) return 'buying';
     return 'waiting';
   }
 
-  function getItemStatus(cfItem, orderShipped) {
+  function getItemStatus(cfItem, orderShipped, orderBuying) {
     if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
-    if (!cfItem || (!cfItem.bought && !cfItem.arrived)) return { cls: 'ist-waiting', label: '🕐 待確認' };
-    if (cfItem.arrived) return { cls: 'ist-arrived', label: '✅ 採購完成' };
-    if (cfItem.bought)  return { cls: 'ist-buying',  label: '🛍️ 採購中' };
+    if (cfItem && (cfItem.bought || cfItem.arrived)) return { cls: 'ist-arrived', label: '✅ 採購完成' };
+    if (orderBuying) return { cls: 'ist-buying', label: '🛍️ 採購中' };
     return { cls: 'ist-waiting', label: '🕐 待確認' };
   }
 
@@ -528,7 +535,7 @@
       const qty   = Number(it.qty) || 1;
       const st    = isCancelled
         ? { cls: 'ist-cancel', label: '✕ 已取消' }
-        : getItemStatus(cfItem, isShipped);
+        : getItemStatus(cfItem, isShipped, statusKey === 'buying');
 
       const imgUrl = findProductImage(it, products);
       const imgHtml = imgUrl
@@ -595,10 +602,3 @@
   }
 
   const input = document.getElementById('order-input');
-  input.addEventListener('input', () => { input.value = input.value.toUpperCase(); });
-  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
-  document.getElementById('btn-search').addEventListener('click', doSearch);
-</script>
-
-</body>
-</html>
