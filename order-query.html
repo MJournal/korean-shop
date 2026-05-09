@@ -214,6 +214,7 @@
       font-size: 0.72rem;
       line-height: 1.5;
       opacity: 0.8;
+      white-space: pre-line;
     }
 
     /* Status color variants */
@@ -509,7 +510,7 @@
 
   // Status configs: icon, label, desc, banner class
   const STATUS_CONFIG = {
-    ordered:  { icon: '🎉', label: '訂單成立',  desc: '已收到訂單！確認後會主動與您聯繫。若超過 12 小時未回覆，請私訊官方 LINE…',    cls: 'sbn-new' },
+    ordered:  { icon: '🎉', label: '訂單成立',  desc: '訂單已收到！請等待賣家回覆…\n若 8 小時內未回覆您，請私訊官方 LINE',    cls: 'sbn-new' },
     waiting:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
     arrived:  { icon: '✅', label: '採購完成', desc: '商品已全數採購完畢，正陸續到貨中…',          cls: 'sbn-arrived' },
