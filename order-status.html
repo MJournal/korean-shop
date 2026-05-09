@@ -359,6 +359,10 @@
       background: #f2eefa; color: #5a3080;
       border-color: #a080c8;
     }
+    .ist-oos {
+      background: #fdeaea; color: #8a2020;
+      border-color: #c07070;
+    }
     .ist-cancel {
       background: #fdeaea; color: #883030;
       border-color: #d09090;
@@ -453,7 +457,6 @@
   import {
     getFirestore, collection, query, where, getDocs, limit
   } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  console.log('[OQ] 模組已載入');
 
   const firebaseConfig = {
     apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
@@ -507,7 +510,7 @@
     buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
     arrived:  { icon: '✅', label: '採購完成', desc: '商品已全數採購完畢，正陸續到貨中…',          cls: 'sbn-arrived' },
     ready:    { icon: '✈️', label: '商品已到齊', desc: '商品全數抵台！正在努力整理包裹～即將安排出貨…', cls: 'sbn-ready' },
-    shipped:  { icon: '📦', label: '已出貨',   desc: '包裹已經寄出，再麻煩留意簡訊通知～',       cls: 'sbn-shipped' },
+    shipped:  { icon: '📦', label: '已出貨',   desc: '包裹已寄出，請留意到貨簡訊通知…',          cls: 'sbn-shipped' },
     pending:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     cancel:   { icon: '✕',  label: '訂單已取消', desc: '此訂單已取消，如有疑問請聯絡我們',       cls: 'sbn-cancel' },
   };
@@ -522,12 +525,21 @@
     const cart = o.confirmedCart || o.cart || [];
     const cf   = o.cartFulfillment || [];
 
-    // 全部已到貨 → 商品已到齊
-    const allArrived = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && cf[i].arrived);
+    // 缺貨品項視為「已結案」，不列入剩餘採購判斷
+    const nonOos = cart.filter((_, i) => !cf[i] || !cf[i].oos);
+
+    // 全部非缺貨品項已到貨 → 商品已到齊
+    const allArrived = nonOos.length > 0 && nonOos.every((_, j) => {
+      const i = cart.indexOf(nonOos[j]);
+      return cf[i] && cf[i].arrived;
+    });
     if (allArrived) return 'ready';
 
-    // 全部已採購（含到貨）→ 採購完成
-    const allBought = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && (cf[i].bought || cf[i].arrived));
+    // 全部非缺貨品項已採購（含到貨）→ 採購完成
+    const allBought = nonOos.length > 0 && nonOos.every((_, j) => {
+      const i = cart.indexOf(nonOos[j]);
+      return cf[i] && (cf[i].bought || cf[i].arrived);
+    });
     if (allBought) return 'arrived';
 
     // 後台手動設定採購中，或任一商品已採購/到貨 → 採購中
@@ -539,6 +551,7 @@
 
   function getItemStatus(cfItem, orderShipped, orderBuying) {
     if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
+    if (cfItem && cfItem.oos)     return { cls: 'ist-oos',      label: '⚠️ 缺貨' };
     if (cfItem && cfItem.arrived) return { cls: 'ist-arriving', label: '🇹🇼 商品抵台～待出貨' };
     if (cfItem && cfItem.bought)  return { cls: 'ist-arrived',  label: '✅ 採購完成' };
     if (orderBuying) return { cls: 'ist-buying', label: '🛍️ 採購中' };
@@ -647,7 +660,6 @@
   input.addEventListener('input', () => { input.value = input.value.toUpperCase(); });
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
   document.getElementById('btn-search').addEventListener('click', doSearch);
-  console.log('[OQ] 事件監聽已綁定');
 </script>
 
 </body>
