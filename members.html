@@ -3203,7 +3203,12 @@
       function _updateGiftInfo(vObj) {
         const giftBox = document.getElementById('qs-gift-info');
         const d = _getVariantDisplay(vObj);
-        giftBox.textContent = d.gift ? '🎁 ' + d.gift : '無';
+        if (d.gift) {
+          const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
+          giftBox.innerHTML = items.map(g => `🎁 ${g}`).join('<br>');
+        } else {
+          giftBox.textContent = '無';
+        }
       }
 
       function _selectVariantOption(vIndex) {
