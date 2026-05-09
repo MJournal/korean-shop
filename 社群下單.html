@@ -3204,26 +3204,28 @@
           // ⑤ 組 LINE 訊息（訂單編號在第一行）
           const now     = new Date();
           const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
-          let message = `【訂單編號：${orderId}】📍社群　${dateStr}\n\n`;
+          let message = `【訂單編號：${orderId}】📍社群\n\n`;
 
-          cart.forEach((item) => {
+          cart.forEach((item, index) => {
             const cleanName = item.name.replace(/<br\s*\/?>/gi, " ");
             const cleanSpec = item.spec ? item.spec.replace(/<br\s*\/?>/gi, " ") : "單一規格";
-            const lineTotal = item.price * item.qty;
-            message += `${cleanName}\n`;
-            message += `└ ${cleanSpec} × ${item.qty}　NT$${lineTotal.toLocaleString()}${item.gift ? `　🎁${item.gift}` : ''}\n\n`;
+            const num = (index + 1).toString().padStart(2, "0");
+            message += `[${num}] ${cleanName}\n`;
+            message += `- 規格: ${cleanSpec}${item.gift ? ` (贈: ${item.gift})` : ''}\n`;
+            message += `- 數量: ${item.qty} ($${item.price})\n`;
           });
 
+          message += `\n`;
           if (currentDiscount > 0) {
-            message += `總計：NT$${finalTotal.toLocaleString()}（折扣 -$${currentDiscount} [${currentPromoCode}]）\n`;
+            message += `小計: NT$ ${total}\n折扣 [${currentPromoCode}]: -$${currentDiscount}\n總金額: NT$ ${finalTotal}\n`;
           } else {
-            message += `總計：NT$${total.toLocaleString()}\n`;
+            message += `總金額: NT$ ${total}\n`;
           }
           if (finalTotal >= 1500) {
             const finalDeposit = Math.min(Math.round(finalTotal * 0.1 / 100) * 100, 500);
-            message += `定金（10%）：NT$${finalDeposit}\n`;
+            message += `(預付定金10%: NT$ ${finalDeposit})\n`;
           }
-          message += `平台：${selectedShipping}`;
+          message += `平台: ${selectedShipping}`;
 
           // ⑥ 跳轉 LINE
           const lineUrl  = `https://line.me/R/oaMessage/@139gqqwy/?${encodeURIComponent(message)}`;
