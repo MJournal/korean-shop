@@ -2150,19 +2150,17 @@
 
             <div id="qs-price-box">NT$ 0</div>
 
-            <div class="qs-row-group">
-              <div class="qs-section qs-col-grow">
-                <label class="qs-label">規格 / 款式</label>
-                <div class="variant-pills" id="qs-variant-options"></div>
-              </div>
+            <div class="qs-section" id="qs-variant-section">
+              <label class="qs-label">規格 / 款式</label>
+              <div class="variant-pills" id="qs-variant-options"></div>
+            </div>
 
-              <div class="qs-section qs-col-fixed">
-                <label class="qs-label">數量</label>
-                <div class="qs-qty-wrapper">
-                  <button onclick="updateQsQty(-1)">−</button>
-                  <input type="number" id="qs-qty" value="1" min="1" readonly />
-                  <button onclick="updateQsQty(1)">+</button>
-                </div>
+            <div class="qs-section">
+              <label class="qs-label">數量</label>
+              <div class="qs-qty-wrapper">
+                <button onclick="updateQsQty(-1)">−</button>
+                <input type="number" id="qs-qty" value="1" min="1" readonly />
+                <button onclick="updateQsQty(1)">+</button>
               </div>
             </div>
 
