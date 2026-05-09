@@ -506,7 +506,7 @@
     waiting:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
     arrived:  { icon: '✅', label: '採購完成', desc: '商品已全數採購，正在等待陸續到貨中。',      cls: 'sbn-arrived' },
-    ready:    { icon: '✈️', label: '商品已到齊', desc: '您的商品全數抵台！我們正在整理包裹，即將安排出貨。', cls: 'sbn-ready' },
+    ready:    { icon: '✈️', label: '商品已到齊', desc: '商品全數抵台！正在努力整理包裹～即將安排出貨…', cls: 'sbn-ready' },
     shipped:  { icon: '📦', label: '已出貨',   desc: '包裹已經寄出，再麻煩留意簡訊通知～',       cls: 'sbn-shipped' },
     pending:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     cancel:   { icon: '✕',  label: '訂單已取消', desc: '此訂單已取消，如有疑問請聯絡我們',       cls: 'sbn-cancel' },
@@ -539,7 +539,7 @@
 
   function getItemStatus(cfItem, orderShipped, orderBuying) {
     if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
-    if (cfItem && cfItem.arrived) return { cls: 'ist-arriving', label: '🛬 商品抵台～待出貨' };
+    if (cfItem && cfItem.arrived) return { cls: 'ist-arriving', label: '🇹🇼 商品抵台～待出貨' };
     if (cfItem && cfItem.bought)  return { cls: 'ist-arrived',  label: '✅ 採購完成' };
     if (orderBuying) return { cls: 'ist-buying', label: '🛍️ 採購中' };
     return { cls: 'ist-waiting', label: '🕐 待確認' };
