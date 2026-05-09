@@ -1328,20 +1328,13 @@
         }
       }
 
-      /* 選中規格的贈品提示 */
-      .qs-variant-gift {
-        display: flex;
-        align-items: flex-start;
-        gap: 4px;
-        margin-top: 10px;
-        padding: 8px 12px;
-        background: #fff8f0;
-        border-radius: 8px;
-        border-left: 3px solid var(--accent);
+      /* 贈品欄位 */
+      .qs-variant-gift-row {
         font-family: "Noto Sans TC", sans-serif;
-        font-size: 0.82rem;
+        font-size: 0.85rem;
         color: #c47a3a;
         line-height: 1.5;
+        min-height: 1.2em;
       }
 
       /* 數量加減 */
@@ -2168,9 +2161,11 @@
             <div class="qs-section" id="qs-variant-section">
               <label class="qs-label">規格 / 款式</label>
               <div class="variant-pills" id="qs-variant-options"></div>
-              <div id="qs-gift-info" class="qs-variant-gift" style="display:none;">
-                🎁 <span id="qs-gift-info-text"></span>
-              </div>
+            </div>
+
+            <div class="qs-section" id="qs-gift-section">
+              <label class="qs-label">贈品</label>
+              <div id="qs-gift-info" class="qs-variant-gift-row"></div>
             </div>
 
             <div class="qs-section" style="width: fit-content;">
@@ -3206,15 +3201,9 @@
       }
 
       function _updateGiftInfo(vObj) {
-        const giftBox  = document.getElementById('qs-gift-info');
-        const giftText = document.getElementById('qs-gift-info-text');
+        const giftBox = document.getElementById('qs-gift-info');
         const d = _getVariantDisplay(vObj);
-        if (d.gift) {
-          giftText.textContent = '加贈：' + d.gift;
-          giftBox.style.display = 'flex';
-        } else {
-          giftBox.style.display = 'none';
-        }
+        giftBox.textContent = d.gift ? '🎁 ' + d.gift : '';
       }
 
       function _selectVariantOption(vIndex) {
