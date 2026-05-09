@@ -3204,7 +3204,7 @@
           // ⑤ 組 LINE 訊息（訂單編號在第一行）
           const now     = new Date();
           const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
-          let message = `【訂單編號：${orderId}】📍社群\n\n`;
+          let message = `【訂單編號：🅼${orderId}】\n\n`;
 
           cart.forEach((item, index) => {
             const cleanName = item.name.replace(/<br\s*\/?>/gi, " ");
