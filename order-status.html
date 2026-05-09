@@ -468,7 +468,7 @@
 
   // Status configs: icon, label, desc, banner class
   const STATUS_CONFIG = {
-    new:      { icon: '🎉', label: '訂單成立',  desc: '訂單已收到！我們將盡快確認並安排採購。',    cls: 'sbn-new' },
+    ordered:  { icon: '🎉', label: '訂單成立',  desc: '訂單已收到！我們將盡快確認並安排採購。',    cls: 'sbn-new' },
     waiting:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
     arrived:  { icon: '✅', label: '採購完成', desc: '已順利採購到貨，正在整理並安排出貨事宜',   cls: 'sbn-arrived' },
@@ -480,7 +480,7 @@
   function getStatusKey(o) {
     if (o.status === '已取消') return 'cancel';
     // 網站下單、尚未後台確認
-    if (o.status === '待確認') return 'new';
+    if (o.status === '待確認') return 'ordered';
     if (o.fulfillmentStatus === '已出貨')   return 'shipped';
     if (o.fulfillmentStatus === '全數到貨') return 'arrived';
 
