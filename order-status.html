@@ -662,6 +662,9 @@
   input.addEventListener('input', () => { input.value = input.value.toUpperCase(); });
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSearch(); });
   document.getElementById('btn-search').addEventListener('click', doSearch);
+
+  const _urlId = new URLSearchParams(window.location.search).get('id');
+  if (_urlId) { input.value = _urlId.toUpperCase(); doSearch(); }
 </script>
 
 </body>
