@@ -229,6 +229,10 @@
       background: #eaf1f9; border-color: #6090be;
       color: #2a4e72;
     }
+    .sbn-ready {
+      background: #edf6f0; border-color: #60a87a;
+      color: #1e5a38;
+    }
     .sbn-shipped {
       background: #f2eefa; border-color: #9878b8;
       color: #5a3878;
@@ -346,6 +350,10 @@
     .ist-arrived {
       background: #eaf1f9; color: #2a5080;
       border-color: #80a8d0;
+    }
+    .ist-arriving {
+      background: #edf6f0; color: #1e5a38;
+      border-color: #70b888;
     }
     .ist-shipped {
       background: #f2eefa; color: #5a3080;
@@ -497,7 +505,8 @@
     ordered:  { icon: '🎉', label: '訂單成立',  desc: '訂單已收到！我們將盡快確認並安排採購。',    cls: 'sbn-new' },
     waiting:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     buying:   { icon: '🛍️', label: '採購中',   desc: '商品採購中⋯請耐心等候',                   cls: 'sbn-buying' },
-    arrived:  { icon: '✅', label: '採購完成', desc: '已順利採購到貨，正在整理並安排出貨事宜',   cls: 'sbn-arrived' },
+    arrived:  { icon: '✅', label: '採購完成', desc: '商品已全數採購，正在等待陸續到貨中。',      cls: 'sbn-arrived' },
+    ready:    { icon: '✈️', label: '商品已到齊', desc: '您的商品全數抵台！我們正在整理包裹，即將安排出貨。', cls: 'sbn-ready' },
     shipped:  { icon: '📦', label: '已出貨',   desc: '包裹已經寄出，再麻煩留意簡訊通知～',       cls: 'sbn-shipped' },
     pending:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     cancel:   { icon: '✕',  label: '訂單已取消', desc: '此訂單已取消，如有疑問請聯絡我們',       cls: 'sbn-cancel' },
@@ -512,10 +521,16 @@
 
     const cart = o.confirmedCart || o.cart || [];
     const cf   = o.cartFulfillment || [];
-    const allDone = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && (cf[i].bought || cf[i].arrived));
-    if (allDone) return 'arrived';
 
-    // 後台手動設定採購中，或有任何商品已採購/到貨
+    // 全部已到貨 → 商品已到齊
+    const allArrived = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && cf[i].arrived);
+    if (allArrived) return 'ready';
+
+    // 全部已採購（含到貨）→ 採購完成
+    const allBought = cart.length > 0 && cf.length >= cart.length && cart.every((_, i) => cf[i] && (cf[i].bought || cf[i].arrived));
+    if (allBought) return 'arrived';
+
+    // 後台手動設定採購中，或任一商品已採購/到貨 → 採購中
     if (o.fulfillmentStatus === '採購中') return 'buying';
     const anyBought = cf.some(function(item){ return item.bought || item.arrived; });
     if (anyBought) return 'buying';
@@ -524,7 +539,8 @@
 
   function getItemStatus(cfItem, orderShipped, orderBuying) {
     if (orderShipped) return { cls: 'ist-shipped', label: '📦 已出貨' };
-    if (cfItem && (cfItem.bought || cfItem.arrived)) return { cls: 'ist-arrived', label: '✅ 採購完成' };
+    if (cfItem && cfItem.arrived) return { cls: 'ist-arriving', label: '🛬 商品抵台～待出貨' };
+    if (cfItem && cfItem.bought)  return { cls: 'ist-arrived',  label: '✅ 採購完成' };
     if (orderBuying) return { cls: 'ist-buying', label: '🛍️ 採購中' };
     return { cls: 'ist-waiting', label: '🕐 待確認' };
   }
