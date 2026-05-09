@@ -1250,7 +1250,7 @@
 
       /* 表單元件 */
       .qs-section {
-        margin-bottom: 20px;
+        margin-bottom: 12px;
       }
 
       .qs-label {
@@ -1515,7 +1515,7 @@
 
         /* 6. 區塊間距縮小 */
         .qs-section {
-          margin-bottom: 12px !important;
+          margin-bottom: 8px !important;
           /* 每個區塊距離拉近 */
         }
 
@@ -3203,7 +3203,7 @@
       function _updateGiftInfo(vObj) {
         const giftBox = document.getElementById('qs-gift-info');
         const d = _getVariantDisplay(vObj);
-        giftBox.textContent = d.gift ? '🎁 ' + d.gift : '';
+        giftBox.textContent = d.gift ? '🎁 ' + d.gift : '無';
       }
 
       function _selectVariantOption(vIndex) {
