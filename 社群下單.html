@@ -3225,7 +3225,7 @@
             const finalDeposit = Math.min(Math.round(finalTotal * 0.1 / 100) * 100, 500);
             message += `(預付定金10%: NT$ ${finalDeposit})\n`;
           }
-          message += `平台: ${selectedShipping}`;
+          message += `平台: ${selectedShipping}\n\n📋 查看訂單：https://beckyuu.github.io/korean-shop/order-query.html?id=${orderId}`;
 
           // ⑥ 跳轉 LINE
           const lineUrl  = `https://line.me/R/oaMessage/@139gqqwy/?${encodeURIComponent(message)}`;
