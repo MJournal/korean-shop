@@ -517,7 +517,7 @@
     // 網站下單、尚未後台確認
     if (o.status === '待確認') return 'ordered';
     if (o.fulfillmentStatus === '已出貨')   return 'shipped';
-    if (o.fulfillmentStatus === '全數到貨') return 'arrived';
+    if (o.fulfillmentStatus === '全數到貨') return 'ready';
 
     const cart = o.confirmedCart || o.cart || [];
     const cf   = o.cartFulfillment || [];
