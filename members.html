@@ -2874,8 +2874,8 @@
         let checkoutPriceStr = product.vipPriceStr || product.originalPriceStr || "0";
         let selectedGift = "";
 
-        const wrapperEl = document.getElementById("qs-variant-wrapper");
-        if (wrapperEl.style.display !== "none" && _currentVariants.length > 0) {
+        const variantSectionEl = document.getElementById("qs-variant-section");
+        if (variantSectionEl.style.display !== "none" && _currentVariants.length > 0) {
           const selectedV = _currentVariants[_currentVariantIndex];
           selectedSpecName = _parseSpecName(selectedV.name).main; // 移除 【】，送出乾淨名稱
           selectedGift = selectedV.gift || "";
@@ -2886,7 +2886,7 @@
 
         let priceNum = parseInt(checkoutPriceStr.replace(/[^0-9]/g, ""));
 
-        const hasVariantSelector = wrapperEl.style.display !== "none" && _currentVariants.length > 0;
+        const hasVariantSelector = variantSectionEl.style.display !== "none" && _currentVariants.length > 0;
         const cartItem = {
           name: product.name,
           spec: selectedSpecName,
