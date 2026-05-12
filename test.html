@@ -2058,32 +2058,6 @@
         .img-hover-overlay { display: none; }
       }
 
-      /* === 📐 雜誌感 L 形角落框 === */
-      .img-wrapper::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        z-index: 4;
-        --c: rgba(212, 163, 115, 0.45);
-        --arm: 16px;
-        --thick: 1.5px;
-        --gap: 10px;
-        background:
-          linear-gradient(var(--c), var(--c)) top var(--gap) left var(--gap) / var(--arm) var(--thick) no-repeat,
-          linear-gradient(var(--c), var(--c)) top var(--gap) left var(--gap) / var(--thick) var(--arm) no-repeat,
-          linear-gradient(var(--c), var(--c)) top var(--gap) right var(--gap) / var(--arm) var(--thick) no-repeat,
-          linear-gradient(var(--c), var(--c)) top var(--gap) right var(--gap) / var(--thick) var(--arm) no-repeat,
-          linear-gradient(var(--c), var(--c)) bottom var(--gap) left var(--gap) / var(--arm) var(--thick) no-repeat,
-          linear-gradient(var(--c), var(--c)) bottom var(--gap) left var(--gap) / var(--thick) var(--arm) no-repeat,
-          linear-gradient(var(--c), var(--c)) bottom var(--gap) right var(--gap) / var(--arm) var(--thick) no-repeat,
-          linear-gradient(var(--c), var(--c)) bottom var(--gap) right var(--gap) / var(--thick) var(--arm) no-repeat;
-        opacity: 0.6;
-        transition: opacity 0.35s ease;
-      }
-      .product-card:hover .img-wrapper::after {
-        opacity: 1;
-      }
 
       /* === ✦ 分類選單裝飾符 === */
       .cat-deco {
