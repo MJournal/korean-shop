@@ -91,31 +91,7 @@
       body {
         font-family: "Cormorant Garamond", "Noto Sans TC", sans-serif;
 
-        /* === 選項一：流動光暈 === */
         background-color: #fdfbf7;
-        /* 溫暖的米白底 */
-
-        /* 這裡用了三個顏色的漸層光球，交疊出豐富感 */
-        background-image:
-          radial-gradient(
-            at 40% 20%,
-            rgba(212, 163, 115, 0.15) 0px,
-            transparent 50%
-          ),
-          radial-gradient(
-            at 80% 0%,
-            rgba(181, 131, 141, 0.1) 0px,
-            transparent 50%
-          ),
-          radial-gradient(
-            at 0% 50%,
-            rgba(229, 152, 155, 0.1) 0px,
-            transparent 50%
-          );
-
-        background-attachment: fixed;
-        /* 這行很重要！讓背景固定住，滑動時有層次感 */
-        background-size: 100% 100%;
 
         color: var(--text-main);
         line-height: 1.7;
@@ -225,11 +201,11 @@
         /* 下方留白也縮小 */
 
         /* 關鍵修改：背景變得非常透 (0.3)，讓它融入背景色 */
-        background: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.55);
 
-        /* 拿掉邊框，改成更柔和的圓角 */
         border: none;
-        border-radius: 15px;
+        border-left: 3px solid rgba(212, 163, 115, 0.55);
+        border-radius: 0 12px 12px 0;
 
         /* 內距大幅縮小，讓框框變得很扁 */
         padding: 20px 30px;
@@ -303,9 +279,9 @@
           margin: 0 auto 40px !important;
           /* 上下左右自動置中 */
 
-          /* 確保背景色跟圓角還在 */
-          background: rgba(255, 255, 255, 0.4);
-          border-radius: 15px;
+          background: rgba(255, 255, 255, 0.55);
+          border-left: 3px solid rgba(212, 163, 115, 0.55);
+          border-radius: 0 12px 12px 0;
         }
       }
 
@@ -2006,155 +1982,96 @@
         }
       }
 
-      /* === 🎞️ 雜誌封面 Hero Banner === */
-      .hero-banner {
-        position: relative;
-        width: 100%;
-        overflow: hidden;
-        margin-bottom: 10px;
-
-        background:
-          radial-gradient(ellipse at 20% 50%, rgba(212, 163, 115, 0.18) 0%, transparent 60%),
-          radial-gradient(ellipse at 80% 30%, rgba(181, 131, 141, 0.14) 0%, transparent 55%),
-          radial-gradient(ellipse at 55% 90%, rgba(229, 200, 180, 0.12) 0%, transparent 50%),
-          linear-gradient(160deg, #fdf6ee 0%, #faf3f0 50%, #f7f0ee 100%);
-
-        border-top: 1px solid rgba(212, 163, 115, 0.15);
-        border-bottom: 1px solid rgba(212, 163, 115, 0.15);
-      }
-
-      .hero-inner {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 60px 40px 55px;
-        text-align: center;
-        position: relative;
-        z-index: 1;
-      }
-
-      /* 上方裝飾小字 */
-      .hero-eyebrow {
-        font-family: "Cormorant Garamond", serif;
-        font-style: italic;
-        font-size: 0.9rem;
-        letter-spacing: 4px;
-        color: var(--accent);
-        opacity: 0.85;
-        margin-bottom: 20px;
-        display: block;
-      }
-
-      /* 主 Slogan */
-      .hero-slogan {
-        font-family: "Cormorant Garamond", serif;
-        font-style: italic;
-        font-weight: 600;
-        font-size: 2.6rem;
-        line-height: 1.35;
-        color: var(--text-main);
-        letter-spacing: 1px;
-        margin-bottom: 22px;
-      }
-
-      /* 裝飾分隔線 */
-      .hero-divider {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        margin-bottom: 18px;
-      }
-
-      .hero-divider::before,
-      .hero-divider::after {
-        content: "";
-        display: block;
-        width: 50px;
-        height: 1px;
-        background: linear-gradient(to right, transparent, var(--accent));
-        opacity: 0.5;
-      }
-
-      .hero-divider::after {
-        background: linear-gradient(to left, transparent, var(--accent));
-      }
-
-      .hero-divider-gem {
-        color: var(--accent);
-        font-size: 0.7rem;
-        opacity: 0.6;
-        letter-spacing: 6px;
-      }
-
-      /* 副標籤列 */
-      .hero-tags {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .hero-tag {
-        font-family: "Noto Sans TC", sans-serif;
-        font-size: 0.75rem;
-        letter-spacing: 2px;
-        color: var(--text-sub);
-        padding: 4px 14px;
-        border: 1px solid rgba(212, 163, 115, 0.35);
-        border-radius: 50px;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(4px);
-        white-space: nowrap;
-      }
-
-      /* 左右裝飾星星 */
-      .hero-deco-left,
-      .hero-deco-right {
-        position: absolute;
-        font-size: 1.2rem;
-        color: var(--accent);
-        opacity: 0.25;
+      /* === 🌟 動態背景光暈 === */
+      .bg-aura {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -1;
         pointer-events: none;
+        overflow: hidden;
+      }
+      .aura-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+      }
+      .aura-1 {
+        width: 65vw; height: 65vw;
+        background: radial-gradient(circle, rgba(212, 163, 115, 0.2) 0%, transparent 70%);
+        top: -10%; left: 15%;
+        animation: aura-drift-1 28s ease-in-out infinite alternate;
+      }
+      .aura-2 {
+        width: 55vw; height: 55vw;
+        background: radial-gradient(circle, rgba(181, 131, 141, 0.16) 0%, transparent 70%);
+        top: 40%; right: -10%;
+        animation: aura-drift-2 35s ease-in-out infinite alternate;
+      }
+      .aura-3 {
+        width: 50vw; height: 50vw;
+        background: radial-gradient(circle, rgba(229, 152, 155, 0.13) 0%, transparent 70%);
+        bottom: -10%; left: -5%;
+        animation: aura-drift-3 22s ease-in-out infinite alternate;
+      }
+      @keyframes aura-drift-1 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(8vw, 10vh) scale(1.12); }
+      }
+      @keyframes aura-drift-2 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(-7vw, -8vh) scale(0.92); }
+      }
+      @keyframes aura-drift-3 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(6vw, -7vh) scale(1.08); }
       }
 
-      .hero-deco-left {
-        top: 30px;
-        left: 5%;
-        animation: twinkle 4s 0.5s infinite;
+      /* === 🖱️ 商品圖片 Hover Overlay === */
+      .img-hover-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(30, 25, 20, 0.28);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        z-index: 2;
+      }
+      .img-hover-overlay span {
+        color: #fff;
+        font-family: "Noto Sans TC", sans-serif;
+        font-size: 0.78rem;
+        letter-spacing: 3px;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        padding: 7px 20px;
+        border-radius: 50px;
+      }
+      .product-card:hover .img-hover-overlay {
+        opacity: 1;
+      }
+      @media (hover: none) {
+        .img-hover-overlay { display: none; }
       }
 
-      .hero-deco-right {
-        bottom: 25px;
-        right: 6%;
-        animation: twinkle 4s 1.5s infinite;
-        font-size: 0.85rem;
-      }
-
-      /* 手機版縮小 */
-      @media (max-width: 768px) {
-        .hero-inner {
-          padding: 40px 24px 36px;
-        }
-
-        .hero-slogan {
-          font-size: 1.8rem;
-        }
-
-        .hero-eyebrow {
-          font-size: 0.8rem;
-          letter-spacing: 3px;
-        }
-
-        .hero-tag {
-          font-size: 0.7rem;
-          padding: 3px 10px;
-        }
+      /* === ✦ 分類選單裝飾符 === */
+      .cat-deco {
+        color: var(--accent);
+        font-size: 0.6rem;
+        margin-right: 4px;
+        vertical-align: middle;
+        opacity: 0.75;
       }
     </style>
   </head>
 
   <body>
+    <div class="bg-aura" aria-hidden="true">
+      <div class="aura-blob aura-1"></div>
+      <div class="aura-blob aura-2"></div>
+      <div class="aura-blob aura-3"></div>
+    </div>
     <header>
       <h1>Mina's Journal</h1>
 
@@ -2177,26 +2094,6 @@
         ✦
       </div>
     </header>
-
-    <!-- 🎞️ 雜誌封面 Hero Banner -->
-    <section class="hero-banner">
-      <div class="hero-deco-left">✦</div>
-      <div class="hero-deco-right">✦</div>
-      <div class="hero-inner">
-        <span class="hero-eyebrow">— curated by Mina —</span>
-        <div class="hero-slogan">
-          每一筆妝，都是給自己的禮物
-        </div>
-        <div class="hero-divider">
-          <span class="hero-divider-gem">✦ ✦ ✦</span>
-        </div>
-        <div class="hero-tags">
-          <span class="hero-tag">KR 美妝保養</span>
-          <span class="hero-tag">韓國各大官網代購</span>
-          <span class="hero-tag">私房選品團購</span>
-        </div>
-      </div>
-    </section>
 
     <div class="memo-board" id="memo-board" style="display:none;">
       <span class="memo-title">Notice</span>
@@ -2553,7 +2450,9 @@
         Object.keys(categoryMap).forEach((key) => {
           const btn = document.createElement("div");
           btn.className = `category-btn ${currentCategory === key ? "active" : ""}`;
-          btn.innerText = categoryMap[key];
+          btn.innerHTML = key === 'all'
+            ? `<span class="cat-deco">✦</span>${categoryMap[key]}`
+            : categoryMap[key];
           btn.onclick = () => switchCategory(key);
           container.appendChild(btn);
         });
@@ -2819,6 +2718,7 @@
             <div class="img-wrapper" style="cursor: ${cursorStyle}; background: #fff;" ${clickEvent}>
               ${product.deadline ? `<div class="deadline-overlay">⏰ ${formatDeadline(product.deadline)}</div>` : ''}
               <img src="${product.imgUrl}" alt="${product.name}" loading="lazy" style="${imgOpacity}">
+              ${(!isAllOutOfStock && !isEnded) ? '<div class="img-hover-overlay"><span>查看詳情</span></div>' : ''}
             </div>
             <div class="info">
               <h3 class="name" style="${isAllOutOfStock ? 'color: #999;' : ''}">${badgeHtml}${product.name}</h3>
