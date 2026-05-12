@@ -2061,7 +2061,15 @@
         font-size: 0.6rem;
         margin-right: 4px;
         vertical-align: middle;
-        opacity: 0.75;
+        display: inline-block;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .category-btn.active .cat-deco {
+        opacity: 1;
+        transform: scale(1);
+        animation: twinkle 1.6s ease-in-out infinite;
       }
     </style>
   </head>
@@ -2450,9 +2458,7 @@
         Object.keys(categoryMap).forEach((key) => {
           const btn = document.createElement("div");
           btn.className = `category-btn ${currentCategory === key ? "active" : ""}`;
-          btn.innerHTML = key === 'all'
-            ? `<span class="cat-deco">✦</span>${categoryMap[key]}`
-            : categoryMap[key];
+          btn.innerHTML = `<span class="cat-deco">✦</span>${categoryMap[key]}`;
           btn.onclick = () => switchCategory(key);
           container.appendChild(btn);
         });
