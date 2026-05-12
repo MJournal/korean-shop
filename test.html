@@ -297,16 +297,23 @@
       }
 
       .product-card {
-        background: transparent;
+        background: rgba(255, 255, 255, 0.75);
         position: relative;
         transition: all 0.4s ease;
-        /* 改回 Flexbox，這是最穩定的排版 */
         display: flex;
         flex-direction: column;
         height: 100%;
-        /* 確保卡片拉長 */
         padding-bottom: 10px;
-        /* 底部留點空間 */
+        border-radius: 12px;
+        border: 1px solid rgba(212, 163, 115, 0.2);
+        overflow: hidden;
+        /* 讓圖片圓角與卡片一致，不裁切圖片內容只裁切邊角 */
+      }
+
+      .product-card:hover {
+        border-color: rgba(212, 163, 115, 0.5);
+        box-shadow: 0 12px 32px rgba(212, 163, 115, 0.13);
+        transform: translateY(-3px);
       }
 
       /* 圖片區域 */
@@ -316,14 +323,10 @@
         background: #fff;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-        /* 極淡陰影 */
-        transition: box-shadow 0.3s ease;
+        /* 陰影移至外層卡片處理，這裡保持乾淨 */
+        transition: none;
       }
 
-      .product-card:hover .img-wrapper {
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-      }
 
       .img-wrapper img {
         width: 100%;
@@ -2053,6 +2056,33 @@
       }
       @media (hover: none) {
         .img-hover-overlay { display: none; }
+      }
+
+      /* === 📐 雜誌感 L 形角落框 === */
+      .img-wrapper::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 4;
+        --c: rgba(212, 163, 115, 0.45);
+        --arm: 16px;
+        --thick: 1.5px;
+        --gap: 10px;
+        background:
+          linear-gradient(var(--c), var(--c)) top var(--gap) left var(--gap) / var(--arm) var(--thick) no-repeat,
+          linear-gradient(var(--c), var(--c)) top var(--gap) left var(--gap) / var(--thick) var(--arm) no-repeat,
+          linear-gradient(var(--c), var(--c)) top var(--gap) right var(--gap) / var(--arm) var(--thick) no-repeat,
+          linear-gradient(var(--c), var(--c)) top var(--gap) right var(--gap) / var(--thick) var(--arm) no-repeat,
+          linear-gradient(var(--c), var(--c)) bottom var(--gap) left var(--gap) / var(--arm) var(--thick) no-repeat,
+          linear-gradient(var(--c), var(--c)) bottom var(--gap) left var(--gap) / var(--thick) var(--arm) no-repeat,
+          linear-gradient(var(--c), var(--c)) bottom var(--gap) right var(--gap) / var(--arm) var(--thick) no-repeat,
+          linear-gradient(var(--c), var(--c)) bottom var(--gap) right var(--gap) / var(--thick) var(--arm) no-repeat;
+        opacity: 0.6;
+        transition: opacity 0.35s ease;
+      }
+      .product-card:hover .img-wrapper::after {
+        opacity: 1;
       }
 
       /* === ✦ 分類選單裝飾符 === */
