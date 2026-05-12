@@ -63,20 +63,20 @@
       }
 
       :root {
-        /* === 色票系統：年輕活潑玫瑰珊瑚 === */
-        --bg-color: #fff8f8;
-        --text-main: #2c2c2c;
-        --text-sub: #666666;
-        --accent: #e8748a;
-        /* 玫瑰珊瑚 */
-        --accent-light: #fce8ed;
-        /* 淡玫瑰 */
-        --price-color: #e05a7a;
-        /* 深玫紅 */
+        /* === 色票系統：奶茶莫蘭迪 === */
+        --bg-color: #fdf8f3;
+        --text-main: #3a2e28;
+        --text-sub: #7a6a60;
+        --accent: #c8845a;
+        /* 暖橘棕 */
+        --accent-light: #f5e6d8;
+        /* 淡杏奶 */
+        --price-color: #a8624a;
+        /* 深磚棕 */
         --white: #ffffff;
-        --color-sale: #e03c5a;
+        --color-sale: #c05040;
         --footer-bg: #1a1a1a;
-        --badge-sale: #e8748a;
+        --badge-sale: #c8845a;
       }
 
       * {
@@ -92,21 +92,21 @@
         background-color: #fdfbf7;
         /* 溫暖的米白底 */
 
-        /* 背景光暈：玫瑰珊瑚調 */
+        /* 背景光暈：奶茶莫蘭迪調 */
         background-image:
           radial-gradient(
             at 40% 20%,
-            rgba(232, 116, 138, 0.12) 0px,
+            rgba(200, 132, 90, 0.12) 0px,
             transparent 50%
           ),
           radial-gradient(
             at 80% 0%,
-            rgba(224, 90, 122, 0.08) 0px,
+            rgba(168, 98, 74, 0.08) 0px,
             transparent 50%
           ),
           radial-gradient(
             at 0% 50%,
-            rgba(252, 232, 237, 0.3) 0px,
+            rgba(245, 230, 216, 0.3) 0px,
             transparent 50%
           );
 
@@ -333,12 +333,12 @@
         position: relative;
         overflow: hidden;
         border-radius: 18px;
-        box-shadow: 0 5px 15px rgba(232, 116, 138, 0.08);
+        box-shadow: 0 5px 15px rgba(200, 132, 90, 0.08);
         transition: box-shadow 0.3s ease, transform 0.3s ease;
       }
 
       .product-card:hover .img-wrapper {
-        box-shadow: 0 16px 32px rgba(232, 116, 138, 0.18);
+        box-shadow: 0 16px 32px rgba(200, 132, 90, 0.18);
         transform: translateY(-5px);
       }
 
@@ -491,7 +491,7 @@
 
         padding: 4px 15px;
         border-radius: 50px;
-        box-shadow: 0 2px 5px rgba(232, 116, 138, 0.25);
+        box-shadow: 0 2px 5px rgba(200, 132, 90, 0.25);
         white-space: nowrap;
       }
 
@@ -710,7 +710,7 @@
         background-color: #fff;
         color: var(--accent);
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(232, 116, 138, 0.35);
+        box-shadow: 0 6px 16px rgba(200, 132, 90, 0.35);
       }
 
       button.btn-add:active {
@@ -1389,7 +1389,7 @@
       .qs-add-btn:hover {
         background: var(--price-color);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(232, 116, 138, 0.3);
+        box-shadow: 0 5px 15px rgba(200, 132, 90, 0.3);
       }
 
       /* 手機版調整 */
@@ -1621,7 +1621,7 @@
       /* 當客人點擊準備輸入時的發光特效 */
       .search-container:focus-within {
         border-color: var(--accent);
-        box-shadow: 0 5px 15px rgba(232, 116, 138, 0.12);
+        box-shadow: 0 5px 15px rgba(200, 132, 90, 0.12);
         transform: translateY(-1px);
       }
 
@@ -2030,7 +2030,7 @@
           position: absolute;
           top: 60px;
           right: 15%;
-          color: #e8748a;
+          color: #c8845a;
           opacity: 0.6;
           animation: twinkle 3s infinite;
         "
@@ -2347,7 +2347,7 @@
         ul.innerHTML = notices.map(item => {
           if (item.link) {
             return `<li><a href="${item.link}" target="_blank"
-                       style="text-decoration:underline;color:#e05a7a">${item.text}</a></li>`;
+                       style="text-decoration:underline;color:#a8624a">${item.text}</a></li>`;
           }
           return `<li>${item.text}</li>`;
         }).join("");
@@ -2780,8 +2780,8 @@
           addBtn.disabled = true;
         } else {
           addBtn.innerText = "加入購物車";
-          addBtn.style.background = "#e8748a";
-          addBtn.style.borderColor = "#e8748a";
+          addBtn.style.background = "#c8845a";
+          addBtn.style.borderColor = "#c8845a";
           addBtn.style.cursor = "pointer";
           addBtn.disabled = false;
         }
@@ -2884,7 +2884,7 @@
 
         setTimeout(() => {
           btn.innerText = originalText;
-          btn.style.background = "#e8748a";
+          btn.style.background = "#c8845a";
           forceCloseQuickShop();
         }, 800);
       }
@@ -2933,11 +2933,11 @@
                 <div style="display:grid; grid-template-columns: 1fr 90px; gap:10px; padding:15px 0; border-bottom:1px solid #f5f5f5; align-items:center;">
                     <div style="font-family: 'Noto Sans TC', sans-serif; overflow:hidden;">
                         <div style="font-size: 1rem; font-weight: 500; color: #2c2c2c; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
-                        <div style="font-size:0.85rem; color:#888;">${item.spec} <span style="font-size:0.8rem; color:#ccc; margin:0 5px;">x</span> ${item.qty}${item.gift ? `<span style="color:#e8748a; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
+                        <div style="font-size:0.85rem; color:#888;">${item.spec} <span style="font-size:0.8rem; color:#ccc; margin:0 5px;">x</span> ${item.qty}${item.gift ? `<span style="color:#c8845a; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
                     </div>
                     <div style="text-align:right; font-family: 'Noto Sans TC', sans-serif;">
                         <div style="font-weight:600; font-size:1rem; color:#2c2c2c;">NT$ ${item.price * item.qty}</div>
-                        <div style="color:#e05a7a; cursor:pointer; font-size:0.8rem; margin-top:6px; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
+                        <div style="color:#a8624a; cursor:pointer; font-size:0.8rem; margin-top:6px; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
                     </div>
                 </div>`;
         });
@@ -2952,7 +2952,7 @@
           depositHtml = `
                 <div style="margin-top: 8px; text-align: right; font-family: 'Noto Sans TC', sans-serif;">
                     <span style="font-size: 0.85rem; color: #999; background: #f9f9f9; padding: 4px 8px; border-radius: 4px; margin-right: 8px;">需預付定金 (10%)</span>
-                    <span style="font-size: 1.1rem; color: #e05a7a; font-weight: 500;">NT$ ${finalDeposit}</span>
+                    <span style="font-size: 1.1rem; color: #a8624a; font-weight: 500;">NT$ ${finalDeposit}</span>
                 </div>
             `;
         }
