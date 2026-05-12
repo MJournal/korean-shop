@@ -6,7 +6,6 @@
     <link rel="apple-touch-icon" href="favicon.png?v=2">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
     <title>│Mina．妝日子│</title>
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -64,23 +63,20 @@
       }
 
       :root {
-        /* === 色票系統：韓系低飽和度 === */
-        --bg-color: #f9f8f6;
-        /* 米灰白背景 */
+        /* === 色票系統：年輕活潑玫瑰珊瑚 === */
+        --bg-color: #fff8f8;
         --text-main: #2c2c2c;
-        /* 深灰黑 (比純黑更柔和) */
         --text-sub: #666666;
-        /* 次要文字 */
-        --accent: #d4a373;
-        /* 質感金棕色 (取代原本的粉紅，更成熟) */
-        --accent-light: #faeadd;
-        /* 淺杏色 (用於背景點綴) */
-        --price-color: #bfa092;
-        /* 莫蘭迪磚紅 */
+        --accent: #e8748a;
+        /* 玫瑰珊瑚 */
+        --accent-light: #fce8ed;
+        /* 淡玫瑰 */
+        --price-color: #e05a7a;
+        /* 深玫紅 */
         --white: #ffffff;
-        --color-sale: #d65a5a;
+        --color-sale: #e03c5a;
         --footer-bg: #1a1a1a;
-        --badge-sale: #c97c7c;
+        --badge-sale: #e8748a;
       }
 
       * {
@@ -90,27 +86,27 @@
       }
 
       body {
-        font-family: "Cormorant Garamond", "Noto Sans TC", sans-serif;
+        font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
 
         /* === 選項一：流動光暈 === */
         background-color: #fdfbf7;
         /* 溫暖的米白底 */
 
-        /* 這裡用了三個顏色的漸層光球，交疊出豐富感 */
+        /* 背景光暈：玫瑰珊瑚調 */
         background-image:
           radial-gradient(
             at 40% 20%,
-            rgba(212, 163, 115, 0.15) 0px,
+            rgba(232, 116, 138, 0.12) 0px,
             transparent 50%
           ),
           radial-gradient(
             at 80% 0%,
-            rgba(181, 131, 141, 0.1) 0px,
+            rgba(224, 90, 122, 0.08) 0px,
             transparent 50%
           ),
           radial-gradient(
             at 0% 50%,
-            rgba(229, 152, 155, 0.1) 0px,
+            rgba(252, 232, 237, 0.3) 0px,
             transparent 50%
           );
 
@@ -133,29 +129,24 @@
       }
 
       h1 {
-        /* 必須是 Cormorant Garamond 才會像你圖片那樣 */
-        font-family: "Cormorant Garamond", serif;
-
-        font-weight: 600;
-        font-size: 3.8rem;
-
-        /* 關鍵：要加上斜體，才會有手寫的高級感 */
-        font-style: italic;
-
-        color: var(--text-main);
+        font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
+        font-weight: 700;
+        font-size: 3.2rem;
+        font-style: normal;
+        color: var(--accent);
         margin-bottom: 5px;
         line-height: 1.2;
+        letter-spacing: 2px;
       }
 
       /* 店名樣式 */
       .brand-name {
-        font-family: "Noto Sans TC", sans-serif;
+        font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
         font-size: 1.1rem;
-        letter-spacing: 6px;
-        /* 字距拉開，高級感關鍵 */
-        color: var(--text-main);
+        letter-spacing: 5px;
+        color: var(--text-sub);
         margin: 15px 0;
-        font-weight: 400;
+        font-weight: 500;
       }
 
       /* === 業務說明：精緻備註風格 (修正版) === */
@@ -341,13 +332,14 @@
         background: #fff;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-        /* 極淡陰影 */
-        transition: box-shadow 0.3s ease;
+        border-radius: 18px;
+        box-shadow: 0 5px 15px rgba(232, 116, 138, 0.08);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
       }
 
       .product-card:hover .img-wrapper {
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 16px 32px rgba(232, 116, 138, 0.18);
+        transform: translateY(-5px);
       }
 
       .img-wrapper img {
@@ -368,11 +360,11 @@
         display: inline-flex;
         align-items: center;
         vertical-align: middle;
-        padding: 2px 6px;
+        padding: 3px 10px;
         font-size: 0.65rem;
         font-weight: 700;
         letter-spacing: 1.5px;
-        border-radius: 3px;
+        border-radius: 20px;
         color: #fff;
         position: relative;
         overflow: hidden;
@@ -499,7 +491,7 @@
 
         padding: 4px 15px;
         border-radius: 50px;
-        box-shadow: 0 2px 5px rgba(212, 163, 115, 0.2);
+        box-shadow: 0 2px 5px rgba(232, 116, 138, 0.25);
         white-space: nowrap;
       }
 
@@ -717,6 +709,20 @@
       button.btn-add:hover {
         background-color: #fff;
         color: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(232, 116, 138, 0.35);
+      }
+
+      button.btn-add:active {
+        transform: scale(0.94);
+        box-shadow: none;
+      }
+
+      @keyframes btn-pop {
+        0%   { transform: scale(1); }
+        40%  { transform: scale(1.08); }
+        70%  { transform: scale(0.96); }
+        100% { transform: scale(1); }
       }
 
       /* === 最終極簡版 Footer (緊湊型) === */
@@ -1251,7 +1257,7 @@
 
       /* 表單元件 */
       .qs-section {
-        margin-bottom: 20px;
+        margin-bottom: 12px;
       }
 
       .qs-label {
@@ -1262,155 +1268,79 @@
         font-weight: 500;
       }
 
-      /* === 🎛️ 自訂規格下拉選單 (完整顯示版，無省略號) === */
-
-      /* 外層容器 */
-      .custom-variant-wrapper {
-        position: relative;
-        width: 100%;
+      /* === 🏷️ 規格標籤選擇 === */
+      .variant-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 2px;
       }
 
-      /* 已選項目顯示欄 (點擊開/關) */
-      .custom-variant-display {
-        width: 100%;
-        min-height: 40px;
-        padding: 8px 36px 8px 12px;
-        border: 1px solid var(--accent);
-        background-color: #fff;
-        border-radius: 8px;
-        font-family: "Noto Sans TC", sans-serif;
-        font-size: 0.88rem;
-        color: #555;
+      .variant-pill {
+        min-width: 88px;
+        padding: 9px 20px;
+        border: 1.5px solid #e0d0c0;
+        border-radius: 20px;
+        font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
+        font-size: 0.92rem;
+        font-weight: 300;
+        color: #777;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        position: relative;
-        white-space: normal;        /* 允許換行 */
-        word-break: break-word;
-        line-height: 1.5;
-        transition: border-color 0.2s, box-shadow 0.2s;
+        background: #fff;
+        transition: all 0.15s;
+        line-height: 1.4;
+        text-align: center;
+        white-space: nowrap;
         user-select: none;
         -webkit-user-select: none;
       }
 
-      .custom-variant-display:hover {
-        border-color: var(--price-color);
-        box-shadow: 0 2px 8px rgba(212, 163, 115, 0.15);
-      }
-
-      .custom-variant-display.open {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-
-      /* 箭頭圖示 */
-      .custom-variant-arrow {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 14px;
-        height: 14px;
-        flex-shrink: 0;
-        pointer-events: none;
+      .variant-pill:hover:not(.pill-disabled) {
+        border-color: var(--accent);
         color: var(--accent);
-        transition: transform 0.2s ease;
+        background: var(--accent-light);
       }
 
-      .custom-variant-display.open .custom-variant-arrow {
-        transform: translateY(-50%) rotate(180deg);
-      }
-
-      /* 下拉清單容器 */
-      .custom-variant-options {
-        display: none;
-        background: #fff;
-        border: 1px solid var(--accent);
-        border-top: none;
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        max-height: 45vh;
-        overflow-y: scroll;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      /* 滑桿樣式：金棕色細條，讓客人看得見可以往下滑 */
-      .custom-variant-options::-webkit-scrollbar {
-        width: 4px;
-      }
-
-      .custom-variant-options::-webkit-scrollbar-track {
-        background: #f5ede3;
-        border-radius: 2px;
-      }
-
-      .custom-variant-options::-webkit-scrollbar-thumb {
-        background: var(--accent);
-        border-radius: 2px;
-        min-height: 24px;
-      }
-
-      .custom-variant-options.open {
-        display: block;
-      }
-
-      /* 每一個選項 */
-      .custom-variant-option {
-        padding: 9px 12px;
-        cursor: pointer;
-        font-family: "Noto Sans TC", sans-serif;
-        font-size: 0.88rem;
-        color: #555;
-        white-space: normal;        /* 允許換行，絕不截斷 */
-        word-break: break-word;
-        line-height: 1.6;
-        border-bottom: 1px solid #f5f5f5;
-        transition: background 0.15s;
-      }
-
-      .custom-variant-option:last-child {
-        border-bottom: none;
-      }
-
-      .custom-variant-option:hover:not(.opt-disabled) {
-        background-color: var(--accent-light);
-      }
-
-      .custom-variant-option.opt-disabled {
-        color: #ccc;
-        cursor: not-allowed;
-        background: #fafafa;
-      }
-
-      .custom-variant-option.opt-selected {
-        background-color: var(--accent-light);
+      .variant-pill.pill-selected {
+        border-color: var(--accent);
+        background: var(--accent-light);
         color: var(--accent);
         font-weight: 500;
       }
 
-      /* 贈品第二行：小字 + 金棕色 */
-      .opt-gift-line {
-        display: block;
-        font-size: 0.78rem;
-        color: var(--accent);
-        margin-top: 3px;
-        line-height: 1.4;
-        font-family: "Noto Sans TC", sans-serif;
+      .variant-pill.pill-disabled {
+        border-color: #e0e0e0;
+        color: #bbb;
+        cursor: not-allowed;
+        background: #fafafa;
+        text-decoration: line-through;
       }
 
-      /* 手機版：字體微縮，確保不超出螢幕 */
-      @media (max-width: 768px) {
-        .custom-variant-display {
-          font-size: 0.82rem;
-          min-height: 40px;
-          padding: 8px 32px 8px 10px;
-        }
+      /* 贈品小字 */
+      .opt-gift-line {
+        display: block;
+        font-size: 0.72rem;
+        color: var(--accent);
+        margin-top: 2px;
+        line-height: 1.3;
+        font-family: "Noto Sans TC", sans-serif;
+        white-space: normal;
+      }
 
-        .custom-variant-option {
-          font-size: 0.82rem;
-          padding: 12px 10px;
-          line-height: 1.6;
+      /* 贈品欄位 */
+      .qs-variant-gift-row {
+        font-family: "Noto Sans TC", sans-serif;
+        font-size: 0.85rem;
+        color: #c47a3a;
+        line-height: 1.5;
+        min-height: 1.2em;
+      }
+
+      @media (max-width: 768px) {
+        .variant-pill {
+          font-size: 0.88rem;
+          min-width: 80px;
+          padding: 8px 16px;
         }
       }
 
@@ -1459,7 +1389,7 @@
       .qs-add-btn:hover {
         background: var(--price-color);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(212, 163, 115, 0.3);
+        box-shadow: 0 5px 15px rgba(232, 116, 138, 0.3);
       }
 
       /* 手機版調整 */
@@ -1691,7 +1621,7 @@
       /* 當客人點擊準備輸入時的發光特效 */
       .search-container:focus-within {
         border-color: var(--accent);
-        box-shadow: 0 5px 15px rgba(212, 163, 115, 0.15);
+        box-shadow: 0 5px 15px rgba(232, 116, 138, 0.12);
         transform: translateY(-1px);
       }
 
@@ -2100,7 +2030,7 @@
           position: absolute;
           top: 60px;
           right: 15%;
-          color: #d4a373;
+          color: #e8748a;
           opacity: 0.6;
           animation: twinkle 3s infinite;
         "
@@ -2225,27 +2155,22 @@
 
             <div id="qs-price-box">NT$ 0</div>
 
-            <div class="qs-row-group">
-              <div class="qs-section qs-col-grow">
-                <label class="qs-label">規格 / 款式</label>
-                <div class="custom-variant-wrapper" id="qs-variant-wrapper">
-                  <div class="custom-variant-display" id="qs-variant-display" onclick="toggleCustomVariantSelect()">
-                    <span id="qs-variant-selected-text">請選擇規格</span>
-                    <svg class="custom-variant-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </div>
-                  <div class="custom-variant-options" id="qs-variant-options"></div>
-                </div>
-              </div>
+            <div class="qs-section" id="qs-variant-section">
+              <label class="qs-label">規格 / 款式</label>
+              <div class="variant-pills" id="qs-variant-options"></div>
+            </div>
 
-              <div class="qs-section qs-col-fixed">
-                <label class="qs-label">數量</label>
-                <div class="qs-qty-wrapper">
-                  <button onclick="updateQsQty(-1)">−</button>
-                  <input type="number" id="qs-qty" value="1" min="1" readonly />
-                  <button onclick="updateQsQty(1)">+</button>
-                </div>
+            <div class="qs-section" id="qs-gift-section">
+              <label class="qs-label">贈品</label>
+              <div id="qs-gift-info" class="qs-variant-gift-row"></div>
+            </div>
+
+            <div class="qs-section" style="width: fit-content;">
+              <label class="qs-label">數量</label>
+              <div class="qs-qty-wrapper">
+                <button onclick="updateQsQty(-1)">−</button>
+                <input type="number" id="qs-qty" value="1" min="1" readonly />
+                <button onclick="updateQsQty(1)">+</button>
               </div>
             </div>
 
@@ -2370,20 +2295,6 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // === LINE LIFF 初始化（靜默，不強制登入）===
-      let _lineUserId = null;
-      let _lineName   = null;
-      (async () => {
-        try {
-          await liff.init({ liffId: '2010012544-xPI15gVH' });
-          if (liff.isLoggedIn()) {
-            const profile = await liff.getProfile();
-            _lineUserId = profile.userId;
-            _lineName   = profile.displayName;
-          }
-        } catch(_) {}
-      })();
-
       // === 🔒 手機版背景鎖定大神器 ===
       let savedScrollPosition = 0;
       let isOrderEnded  = false;
@@ -2436,7 +2347,7 @@
         ul.innerHTML = notices.map(item => {
           if (item.link) {
             return `<li><a href="${item.link}" target="_blank"
-                       style="text-decoration:underline;color:#bfa092">${item.text}</a></li>`;
+                       style="text-decoration:underline;color:#e05a7a">${item.text}</a></li>`;
           }
           return `<li>${item.text}</li>`;
         }).join("");
@@ -2811,38 +2722,35 @@
           giftCard.style.display = "none";
         }
 
-        // 🌟 規格選單與價格聯動魔法 (自訂下拉選單版)
+        // 🌟 規格標籤選擇與價格聯動
         const optionsContainer = document.getElementById('qs-variant-options');
-        const wrapperEl = document.getElementById('qs-variant-wrapper');
-        const selectedTextEl = document.getElementById('qs-variant-selected-text');
+        const optionsSection = optionsContainer.parentElement;
         optionsContainer.innerHTML = '';
         _currentVariants = [];
         let allOutOfStock = true;
 
         if (product.variants.length > 0 && product.variants[0].name !== "") {
           _currentVariants = product.variants;
+          optionsSection.style.display = '';
 
           product.variants.forEach((vObj, vIndex) => {
-            const optEl = document.createElement('div');
-            optEl.className = 'custom-variant-option';
-            const displayPrice = vObj.promo ? vObj.promo : vObj.price;
+            const pill = document.createElement('div');
+            pill.className = 'variant-pill';
 
             if (vObj.name.includes('(缺)')) {
-              optEl.classList.add('opt-disabled');
+              pill.classList.add('pill-disabled');
               const d = _getVariantDisplay({ ...vObj, name: vObj.name.replace('(缺)', '').trim() });
-              optEl.innerHTML = `<span>${d.displayName}</span>${d.gift ? `<span class="opt-gift-line">🎁 ${d.gift}</span>` : ''}<span style="opacity:0.5;"> (Sold Out)</span>`;
+              pill.innerHTML = `<span>${d.displayName}</span>`;
             } else {
               const d = _getVariantDisplay(vObj);
-              optEl.innerHTML = `<span>${d.displayName}</span>${d.gift ? `<span class="opt-gift-line">🎁 ${d.gift}</span>` : ''}`;
-              optEl.onclick = (function(idx) {
+              pill.innerHTML = `<span>${d.displayName}</span>`;
+              pill.onclick = (function(idx) {
                 return function() { _selectVariantOption(idx); };
               })(vIndex);
               allOutOfStock = false;
             }
-            optionsContainer.appendChild(optEl);
+            optionsContainer.appendChild(pill);
           });
-
-          wrapperEl.style.display = 'block';
 
           // 預設選中第一個有貨的規格
           let firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
@@ -2850,23 +2758,15 @@
           _currentVariantIndex = firstAvailableIdx;
 
           const firstV = product.variants[firstAvailableIdx];
-          const firstDisplayPrice = firstV.promo ? firstV.promo : firstV.price;
-          const firstD = _getVariantDisplay(firstV.name.includes('(缺)')
-            ? { ...firstV, name: firstV.name.replace('(缺)', '').trim() }
-            : firstV);
-          const firstGiftHtml = firstD.gift ? `<span class="opt-gift-line">🎁 ${firstD.gift}</span>` : '';
-          selectedTextEl.innerHTML = firstV.name.includes('(缺)')
-            ? `<span>${firstD.displayName} (Sold Out)</span>${firstGiftHtml}`
-            : `<span>${firstD.displayName}</span>${firstGiftHtml}`;
-
-          const optEls = optionsContainer.querySelectorAll('.custom-variant-option');
-          if (optEls[firstAvailableIdx]) optEls[firstAvailableIdx].classList.add('opt-selected');
+          const pills = optionsContainer.querySelectorAll('.variant-pill');
+          if (pills[firstAvailableIdx]) pills[firstAvailableIdx].classList.add('pill-selected');
 
           updateModalPrice(firstV);
+          _updateGiftInfo(firstV);
 
         } else {
-          // 單一規格沒填的話，隱藏選單
-          wrapperEl.style.display = 'none';
+          // 單一規格沒填的話，隱藏標籤區
+          optionsSection.style.display = 'none';
           allOutOfStock = false;
           updateModalPrice({ price: product.originalPriceStr, promo: product.vipPriceStr });
         }
@@ -2880,8 +2780,8 @@
           addBtn.disabled = true;
         } else {
           addBtn.innerText = "加入購物車";
-          addBtn.style.background = "#d4a373";
-          addBtn.style.borderColor = "#d4a373";
+          addBtn.style.background = "#e8748a";
+          addBtn.style.borderColor = "#e8748a";
           addBtn.style.cursor = "pointer";
           addBtn.disabled = false;
         }
@@ -2902,7 +2802,6 @@
       }
 
       function forceCloseQuickShop() {
-        closeCustomVariantSelect();
         const modal = document.getElementById("quickShopModal");
         modal.classList.remove("show");
         unfreezeBackground();
@@ -2950,8 +2849,8 @@
         let checkoutPriceStr = product.vipPriceStr || product.originalPriceStr || "0";
         let selectedGift = "";
 
-        const wrapperEl = document.getElementById("qs-variant-wrapper");
-        if (wrapperEl.style.display !== "none" && _currentVariants.length > 0) {
+        const variantSectionEl = document.getElementById("qs-variant-section");
+        if (variantSectionEl.style.display !== "none" && _currentVariants.length > 0) {
           const selectedV = _currentVariants[_currentVariantIndex];
           selectedSpecName = _parseSpecName(selectedV.name).main; // 移除 【】，送出乾淨名稱
           selectedGift = selectedV.gift || "";
@@ -2962,7 +2861,7 @@
 
         let priceNum = parseInt(checkoutPriceStr.replace(/[^0-9]/g, ""));
 
-        const hasVariantSelector = wrapperEl.style.display !== "none" && _currentVariants.length > 0;
+        const hasVariantSelector = variantSectionEl.style.display !== "none" && _currentVariants.length > 0;
         const cartItem = {
           name: product.name,
           spec: selectedSpecName,
@@ -2985,7 +2884,7 @@
 
         setTimeout(() => {
           btn.innerText = originalText;
-          btn.style.background = "#d4a373";
+          btn.style.background = "#e8748a";
           forceCloseQuickShop();
         }, 800);
       }
@@ -3034,11 +2933,11 @@
                 <div style="display:grid; grid-template-columns: 1fr 90px; gap:10px; padding:15px 0; border-bottom:1px solid #f5f5f5; align-items:center;">
                     <div style="font-family: 'Noto Sans TC', sans-serif; overflow:hidden;">
                         <div style="font-size: 1rem; font-weight: 500; color: #2c2c2c; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
-                        <div style="font-size:0.85rem; color:#888;">${item.spec} <span style="font-size:0.8rem; color:#ccc; margin:0 5px;">x</span> ${item.qty}${item.gift ? `<span style="color:#d4a373; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
+                        <div style="font-size:0.85rem; color:#888;">${item.spec} <span style="font-size:0.8rem; color:#ccc; margin:0 5px;">x</span> ${item.qty}${item.gift ? `<span style="color:#e8748a; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
                     </div>
                     <div style="text-align:right; font-family: 'Noto Sans TC', sans-serif;">
                         <div style="font-weight:600; font-size:1rem; color:#2c2c2c;">NT$ ${item.price * item.qty}</div>
-                        <div style="color:#bfa092; cursor:pointer; font-size:0.8rem; margin-top:6px; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
+                        <div style="color:#e05a7a; cursor:pointer; font-size:0.8rem; margin-top:6px; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
                     </div>
                 </div>`;
         });
@@ -3053,7 +2952,7 @@
           depositHtml = `
                 <div style="margin-top: 8px; text-align: right; font-family: 'Noto Sans TC', sans-serif;">
                     <span style="font-size: 0.85rem; color: #999; background: #f9f9f9; padding: 4px 8px; border-radius: 4px; margin-right: 8px;">需預付定金 (10%)</span>
-                    <span style="font-size: 1.1rem; color: #bfa092; font-weight: 500;">NT$ ${finalDeposit}</span>
+                    <span style="font-size: 1.1rem; color: #e05a7a; font-weight: 500;">NT$ ${finalDeposit}</span>
                 </div>
             `;
         }
@@ -3092,7 +2991,7 @@
         const now = new Date();
         const mm   = String(now.getMonth() + 1).padStart(2, '0');
         const dd   = String(now.getDate()).padStart(2, '0');
-        const pool = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const pool = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         const rand = Array.from({length: 4}, () => pool[Math.floor(Math.random() * pool.length)]).join('');
         return `${mm}${dd}-${rand}`;
       }
@@ -3180,35 +3079,33 @@
             promoCode: currentPromoCode || '',
             shipping:  selectedShipping,
             createdAt: serverTimestamp(),
-            lineUserId: _lineUserId || null,
-            lineName:   _lineName   || null,
           });
 
           // ⑤ 組 LINE 訊息（訂單編號在第一行）
           const now     = new Date();
           const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
-          let message   = `【訂單編號：${orderId}】\n您好，這是我的訂購清單 (${dateStr})：\n\n`;
+          let message = `【訂單編號：${orderId}】\n\n`;
 
           cart.forEach((item, index) => {
             const cleanName = item.name.replace(/<br\s*\/?>/gi, " ");
             const cleanSpec = item.spec ? item.spec.replace(/<br\s*\/?>/gi, " ") : "單一規格";
-            const num       = (index + 1).toString().padStart(2, "0");
+            const num = (index + 1).toString().padStart(2, "0");
             message += `[${num}] ${cleanName}\n`;
             message += `- 規格: ${cleanSpec}${item.gift ? ` (贈: ${item.gift})` : ''}\n`;
-            message += `- 數量: ${item.qty} ($${item.price})\n\n`;
+            message += `- 數量: ${item.qty} ($${item.price})\n`;
           });
 
-          message += `-------------\n`;
+          message += `\n`;
           if (currentDiscount > 0) {
-            message += `小計: NT$ ${total}\n折扣 [${currentPromoCode}]: -$${currentDiscount}\n總金額: NT$ ${finalTotal}\n\n`;
+            message += `小計: NT$ ${total}\n折扣 [${currentPromoCode}]: -$${currentDiscount}\n總金額: NT$ ${finalTotal}\n`;
           } else {
-            message += `總金額: NT$ ${total}\n\n`;
+            message += `總金額: NT$ ${total}\n`;
           }
           if (finalTotal >= 1500) {
             const finalDeposit = Math.min(Math.round(finalTotal * 0.1 / 100) * 100, 500);
-            message += `(預付定金10%: NT$ ${finalDeposit})\n\n`;
+            message += `(預付定金10%: NT$ ${finalDeposit})\n`;
           }
-          message += `平台: ${selectedShipping}`;
+          message += `平台: ${selectedShipping}\n\n📋 查看訂單\nhttps://beckyuu.github.io/korean-shop/order-query.html?id=${orderId}`;
 
           // ⑥ 跳轉 LINE
           const lineUrl  = `https://line.me/R/oaMessage/@139gqqwy/?${encodeURIComponent(message)}`;
@@ -3265,37 +3162,9 @@
         };
       }
 
-      // === 🎛️ 自訂規格下拉選單的全域狀態與控制函式 ===
+      // === 🎛️ 規格選擇的全域狀態與控制函式 ===
       let _currentVariantIndex = 0;
       let _currentVariants = [];
-
-      function toggleCustomVariantSelect() {
-        const display = document.getElementById('qs-variant-display');
-        const options = document.getElementById('qs-variant-options');
-        const isOpen = options.classList.contains('open');
-        if (isOpen) {
-          options.classList.remove('open');
-          display.classList.remove('open');
-        } else {
-          // 計算 trigger 下方到 modal 底部的剩餘空間，動態調整 max-height
-          const modalContent = document.querySelector('.quick-shop-content');
-          if (modalContent && display) {
-            const modalRect  = modalContent.getBoundingClientRect();
-            const triggerRect = display.getBoundingClientRect();
-            const spaceBelow = modalRect.bottom - triggerRect.bottom - 12;
-            options.style.maxHeight = Math.min(Math.max(spaceBelow, 120), 260) + 'px';
-          }
-          options.classList.add('open');
-          display.classList.add('open');
-        }
-      }
-
-      function closeCustomVariantSelect() {
-        const display = document.getElementById('qs-variant-display');
-        const options = document.getElementById('qs-variant-options');
-        if (display) display.classList.remove('open');
-        if (options) options.classList.remove('open');
-      }
 
       function _updateStockHint() {
         const qtyEl  = document.getElementById('qs-qty');
@@ -3304,21 +3173,23 @@
         if (qtyEl && parseInt(qtyEl.value) > maxQty) qtyEl.value = maxQty;
       }
 
+      function _updateGiftInfo(vObj) {
+        const giftBox = document.getElementById('qs-gift-info');
+        const d = _getVariantDisplay(vObj);
+        if (d.gift) {
+          const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
+          giftBox.innerHTML = items.map(g => `🎁 ${g}`).join('<br>');
+        } else {
+          giftBox.textContent = '無';
+        }
+      }
+
       function _selectVariantOption(vIndex) {
         _currentVariantIndex = vIndex;
         const vObj = _currentVariants[vIndex];
-        const selectedTextEl = document.getElementById('qs-variant-selected-text');
 
-        const selD = _getVariantDisplay(vObj.name.includes('(缺)')
-          ? { ...vObj, name: vObj.name.replace('(缺)', '').trim() }
-          : vObj);
-        const selGiftHtml = selD.gift ? `<span class="opt-gift-line">🎁 ${selD.gift}</span>` : '';
-        selectedTextEl.innerHTML = vObj.name.includes('(缺)')
-          ? `<span>${selD.displayName} (Sold Out)</span>${selGiftHtml}`
-          : `<span>${selD.displayName}</span>${selGiftHtml}`;
-
-        document.querySelectorAll('#qs-variant-options .custom-variant-option').forEach((el, idx) => {
-          el.classList.toggle('opt-selected', idx === vIndex);
+        document.querySelectorAll('#qs-variant-options .variant-pill').forEach((el, idx) => {
+          el.classList.toggle('pill-selected', idx === vIndex);
         });
 
         // 切換規格時數量歸 1，並更新庫存提示
@@ -3326,7 +3197,7 @@
         if (qtyEl) qtyEl.value = 1;
         updateModalPrice(vObj);
         _updateStockHint();
-        closeCustomVariantSelect();
+        _updateGiftInfo(vObj);
       }
 
       function updateModalPrice(vObj) {
@@ -3344,13 +3215,6 @@
       }
 
       // 點擊選單以外的地方時自動關閉
-      document.addEventListener('click', function(e) {
-        const wrapper = document.getElementById('qs-variant-wrapper');
-        if (wrapper && !wrapper.contains(e.target)) {
-          closeCustomVariantSelect();
-        }
-      });
-
       loadCart();
       fetchProducts();
 
@@ -3365,8 +3229,6 @@
         handleSmartSearch,
         closeQuickShop,
         forceCloseQuickShop,
-        toggleCustomVariantSelect,
-        closeCustomVariantSelect,
         updateQsQty,
         addToCartFromModal,
         toggleCart,
