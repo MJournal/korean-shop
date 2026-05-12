@@ -1299,13 +1299,28 @@
         white-space: normal;
       }
 
-      /* 贈品欄位 */
+      /* 贈品欄位容器 */
       .qs-variant-gift-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-height: 1.2em;
+      }
+
+      /* 贈品膠囊標籤 */
+      .gift-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        border: 1.5px solid rgba(212, 163, 115, 0.5);
+        border-radius: 20px;
+        background: var(--accent-light);
         font-family: "Noto Sans TC", sans-serif;
         font-size: 0.85rem;
-        color: #c47a3a;
-        line-height: 1.5;
-        min-height: 1.2em;
+        color: var(--accent);
+        white-space: nowrap;
+        line-height: 1.4;
       }
 
       @media (max-width: 768px) {
@@ -3243,13 +3258,16 @@
       }
 
       function _updateGiftInfo(vObj) {
-        const giftBox = document.getElementById('qs-gift-info');
+        const giftBox     = document.getElementById('qs-gift-info');
+        const giftSection = document.getElementById('qs-gift-section');
         const d = _getVariantDisplay(vObj);
         if (d.gift) {
           const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
-          giftBox.innerHTML = items.map(g => `🎁 ${g}`).join('<br>');
+          giftBox.innerHTML = items.map(g => `<span class="gift-pill">🎁 ${g}</span>`).join('');
+          giftSection.style.display = '';
         } else {
-          giftBox.textContent = '無';
+          giftBox.innerHTML = '';
+          giftSection.style.display = 'none';
         }
       }
 
