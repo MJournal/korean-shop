@@ -1276,11 +1276,11 @@
         border-radius: 20px;
         font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
         font-size: 0.92rem;
-        font-weight: 300;
+        font-weight: 500;
         color: #777;
         cursor: pointer;
         background: #fff;
-        transition: all 0.15s;
+        transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
         line-height: 1.4;
         text-align: center;
         white-space: nowrap;
@@ -1295,9 +1295,10 @@
       }
 
       .variant-pill.pill-selected {
-        border-color: var(--accent);
-        background: var(--accent-light);
-        color: var(--accent);
+        border-color: #5c3d2e;
+        box-shadow: 0 0 0 0.5px #5c3d2e;
+        background: #fff;
+        color: #5c3d2e;
         font-weight: 500;
       }
 
@@ -1330,11 +1331,27 @@
 
       /* 贈品欄位 */
       .qs-variant-gift-row {
-        font-family: "Noto Sans TC", sans-serif;
-        font-size: 0.85rem;
-        color: #c47a3a;
-        line-height: 1.5;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
         min-height: 1.2em;
+      }
+
+      .gift-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        border: 1.5px solid #5c3d2e;
+        box-shadow: 0 0 0 0.5px #5c3d2e;
+        border-radius: 20px;
+        background: #fff;
+        font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #5c3d2e;
+        white-space: nowrap;
+        line-height: 1.4;
       }
 
       /* 數量加減 */
@@ -1684,36 +1701,36 @@
         /* 為了畫底線做準備 */
       }
 
-      /* 隱形的底線 */
+      /* 底線：預設就顯示，淡色 */
       .category-btn::after {
         content: "";
         position: absolute;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 0;
-        /* 預設沒有寬度 */
+        width: 60%;
         height: 1px;
-        /* 極細的線 */
         background-color: var(--accent);
-        transition: width 0.3s ease;
-        /* 變寬的動畫 */
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
       }
 
       /* 👆 滑鼠懸停狀態 */
       .category-btn:hover {
         color: var(--text-sub);
       }
+      .category-btn:hover::after {
+        opacity: 0.6;
+      }
 
-      /* 🟡 選中狀態：字變深，底線長出來 */
+      /* 🟡 選中狀態：字變深，底線加深 */
       .category-btn.active {
         color: var(--text-main);
         font-weight: 500;
       }
 
       .category-btn.active::after {
-        width: 60%;
-        /* 底線長出來，只佔字體的 60% 最優雅 */
+        opacity: 1;
       }
 
       /* 手機版調整：靠左對齊 */
@@ -2285,7 +2302,7 @@
 
 <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-      import { getFirestore, collection, getDocs, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
       const firebaseConfig = {
         apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
@@ -2505,71 +2522,79 @@
           Object.keys(categoryMap).forEach(k => { if (k !== 'all') delete categoryMap[k]; });
           catList.forEach(name => { categoryMap[name] = name; });
 
-          // 讀取所有「上架」商品
+          // 全域設定即時監聽（結單狀態、公告變動時自動更新）
+          onSnapshot(doc(db, 'settings', 'global'), (snap) => {
+            isOrderEnded  = snap.exists() ? (snap.data().isOrderEnded  === true) : false;
+            isNoticeShown = snap.exists() ? (snap.data().isNoticeShown === true) : false;
+            const notices = snap.exists() ? (snap.data().notices || []) : [];
+            renderNoticeboard(notices);
+            if (allProductsData.length > 0) renderProducts(allProductsData);
+          });
+
+          // 商品即時監聽（後台任何變動都會自動同步到客人畫面）
           const q = query(collection(db, 'products'), where('status', '==', '上架'));
-          const snapshot = await getDocs(q);
+          onSnapshot(q, (snapshot) => {
+            loading.style.display = "none";
+            allProductsData = [];
 
-          loading.style.display = "none";
-          allProductsData = [];
+            snapshot.forEach((docSnap) => {
+              const p = docSnap.data();
 
-          snapshot.forEach((docSnap) => {
-            const p = docSnap.data();
+              // 只顯示有勾選「社群」管道的商品
+              const ch = p.channel || ['web', 'community'];
+              if (!ch.includes('community')) return;
 
-            // 只顯示有勾選「社群」管道的商品
-            const ch = p.channel || ['web', 'community'];
-            if (!ch.includes('community')) return;
+              const variants = (p.variants || []).map(v => ({
+                name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
+                price: String(v.price || 0),
+                promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
+                communityPrice: (v.communityPrice != null && v.communityPrice !== "") ? String(v.communityPrice) : "",
+                gift:  v.gift || "",
+                stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
+              }));
 
-            // 將 Firebase 數字型價格轉換為字串，並標記缺貨規格
-            const variants = (p.variants || []).map(v => ({
-              name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
-              price: String(v.price || 0),
-              promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
-              communityPrice: (v.communityPrice != null && v.communityPrice !== "") ? String(v.communityPrice) : "",
-              gift:  v.gift || "",
-              stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
-            }));
+              const images = (p.images || []).filter(url => url && url.trim() !== '');
+              const firstVariant = variants[0] || { price: "0", promo: "", communityPrice: "" };
 
-            const images = (p.images || []).filter(url => url && url.trim() !== '');
-            const firstVariant = variants[0] || { price: "0", promo: "", communityPrice: "" };
+              const product = {
+                id: allProductsData.length,
+                firestoreId: docSnap.id,
+                name: p.name || "Unnamed",
+                variants,
+                originalPriceStr: firstVariant.price,
+                vipPriceStr:      firstVariant.communityPrice || firstVariant.promo || "",
+                imgUrl:    images[0] || "",
+                gallery:   images,
+                tag:       (p.tag || "").toUpperCase(),
+                deadline:  p.deadline || "",
+                type:      p.type || "預購",
+                giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
+                category:  p.category || "其他",
+              };
 
-            const product = {
-              id: allProductsData.length,
-              firestoreId: docSnap.id,
-              name: p.name || "Unnamed",
-              variants,
-              originalPriceStr: firstVariant.price,
-              vipPriceStr:      firstVariant.communityPrice || firstVariant.promo || "",
-              imgUrl:    images[0] || "",
-              gallery:   images,
-              tag:       (p.tag || "").toUpperCase(),
-              deadline:  p.deadline || "",
-              type:      p.type || "預購",
-              giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
-              category:  p.category || "其他",
-            };
+              allProductsData.push(product);
+            });
 
-            allProductsData.push(product);
+            allProductsData.sort((a, b) => {
+              const getPriority = (tag) => {
+                if (tag.includes("NEW") || tag.includes("特價")) return 1;
+                if (tag.includes("HOT")) return 2;
+                if (tag.includes("SALE")) return 3;
+                return 4;
+              };
+              const priorityA = getPriority(a.tag);
+              const priorityB = getPriority(b.tag);
+              if (priorityA !== priorityB) return priorityA - priorityB;
+              return a.name.localeCompare(b.name, "zh-TW");
+            });
+
+            renderCategoryButtons();
+            renderProducts(allProductsData);
+          }, (error) => {
+            console.error(error);
+            loading.style.display = "none";
+            container.innerHTML = '<p style="text-align:center; padding:20px;">載入失敗，請重新整理頁面。</p>';
           });
-
-          // 排序邏輯
-          allProductsData.sort((a, b) => {
-            const getPriority = (tag) => {
-              if (tag.includes("NEW") || tag.includes("特價")) return 1;
-              if (tag.includes("HOT")) return 2;
-              if (tag.includes("SALE")) return 3;
-              return 4;
-            };
-            const priorityA = getPriority(a.tag);
-            const priorityB = getPriority(b.tag);
-            if (priorityA !== priorityB) return priorityA - priorityB;
-            return a.name.localeCompare(b.name, "zh-TW");
-          });
-
-          renderCategoryButtons();
-          renderProducts(allProductsData);
-
-          // 每 60 秒重新渲染一次，讓截止時間到的商品自動顯示「已結單」
-          setInterval(() => switchCategory(currentCategory), 60000);
 
           // 若管理員開啟結單公告，顯示進站公告
           if (isNoticeShown) {
@@ -3201,13 +3226,16 @@
       }
 
       function _updateGiftInfo(vObj) {
-        const giftBox = document.getElementById('qs-gift-info');
+        const giftBox     = document.getElementById('qs-gift-info');
+        const giftSection = document.getElementById('qs-gift-section');
         const d = _getVariantDisplay(vObj);
         if (d.gift) {
           const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
-          giftBox.innerHTML = items.map(g => `🎁 ${g}`).join('<br>');
+          giftBox.innerHTML = items.map(g => `<span class="gift-pill">🎁 ${g}</span>`).join('');
+          giftSection.style.display = '';
         } else {
-          giftBox.textContent = '無';
+          giftBox.innerHTML = '';
+          giftSection.style.display = 'none';
         }
       }
 
