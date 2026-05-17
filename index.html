@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Fredoka:wght@400;500;600&family=Noto+Sans+TC:wght@300;400;500&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Fredoka:wght@400;500;600&family=M+PLUS+Rounded+1c:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400;500&family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap"
       rel="stylesheet"
     />
 
@@ -91,31 +91,7 @@
       body {
         font-family: "Cormorant Garamond", "Noto Sans TC", sans-serif;
 
-        /* === 選項一：流動光暈 === */
         background-color: #fdfbf7;
-        /* 溫暖的米白底 */
-
-        /* 這裡用了三個顏色的漸層光球，交疊出豐富感 */
-        background-image:
-          radial-gradient(
-            at 40% 20%,
-            rgba(212, 163, 115, 0.15) 0px,
-            transparent 50%
-          ),
-          radial-gradient(
-            at 80% 0%,
-            rgba(181, 131, 141, 0.1) 0px,
-            transparent 50%
-          ),
-          radial-gradient(
-            at 0% 50%,
-            rgba(229, 152, 155, 0.1) 0px,
-            transparent 50%
-          );
-
-        background-attachment: fixed;
-        /* 這行很重要！讓背景固定住，滑動時有層次感 */
-        background-size: 100% 100%;
 
         color: var(--text-main);
         line-height: 1.7;
@@ -225,11 +201,11 @@
         /* 下方留白也縮小 */
 
         /* 關鍵修改：背景變得非常透 (0.3)，讓它融入背景色 */
-        background: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.55);
 
-        /* 拿掉邊框，改成更柔和的圓角 */
         border: none;
-        border-radius: 15px;
+        border-left: 3px solid rgba(212, 163, 115, 0.55);
+        border-radius: 0 12px 12px 0;
 
         /* 內距大幅縮小，讓框框變得很扁 */
         padding: 20px 30px;
@@ -303,9 +279,9 @@
           margin: 0 auto 40px !important;
           /* 上下左右自動置中 */
 
-          /* 確保背景色跟圓角還在 */
-          background: rgba(255, 255, 255, 0.4);
-          border-radius: 15px;
+          background: rgba(255, 255, 255, 0.55);
+          border-left: 3px solid rgba(212, 163, 115, 0.55);
+          border-radius: 0 12px 12px 0;
         }
       }
 
@@ -321,16 +297,23 @@
       }
 
       .product-card {
-        background: transparent;
+        background: rgba(255, 255, 255, 0.75);
         position: relative;
         transition: all 0.4s ease;
-        /* 改回 Flexbox，這是最穩定的排版 */
         display: flex;
         flex-direction: column;
         height: 100%;
-        /* 確保卡片拉長 */
         padding-bottom: 10px;
-        /* 底部留點空間 */
+        border-radius: 12px;
+        border: 1px solid rgba(212, 163, 115, 0.2);
+        overflow: hidden;
+        /* 讓圖片圓角與卡片一致，不裁切圖片內容只裁切邊角 */
+      }
+
+      .product-card:hover {
+        border-color: rgba(212, 163, 115, 0.5);
+        box-shadow: 0 12px 32px rgba(212, 163, 115, 0.13);
+        transform: translateY(-3px);
       }
 
       /* 圖片區域 */
@@ -340,14 +323,10 @@
         background: #fff;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
-        /* 極淡陰影 */
-        transition: box-shadow 0.3s ease;
+        /* 陰影移至外層卡片處理，這裡保持乾淨 */
+        transition: none;
       }
 
-      .product-card:hover .img-wrapper {
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-      }
 
       .img-wrapper img {
         width: 100%;
@@ -1276,11 +1255,11 @@
         border-radius: 20px;
         font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
         font-size: 0.92rem;
-        font-weight: 300;
+        font-weight: 500;
         color: #777;
         cursor: pointer;
         background: #fff;
-        transition: all 0.15s;
+        transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
         line-height: 1.4;
         text-align: center;
         white-space: nowrap;
@@ -1291,13 +1270,21 @@
       .variant-pill:hover:not(.pill-disabled) {
         border-color: var(--accent);
         color: var(--accent);
-        background: var(--accent-light);
       }
 
-      .variant-pill.pill-selected {
-        border-color: var(--accent);
-        background: var(--accent-light);
-        color: var(--accent);
+      .variant-pill:active:not(.pill-disabled) {
+        border-color: #5c3d2e;
+        box-shadow: 0 0 0 0.5px #5c3d2e;
+        background: #f5ede8;
+        color: #5c3d2e;
+      }
+
+      .variant-pill.pill-selected,
+      .variant-pill.pill-selected:hover {
+        border-color: #5c3d2e;
+        box-shadow: 0 0 0 0.5px #5c3d2e;
+        background: #f5ede8;
+        color: #5c3d2e;
         font-weight: 500;
       }
 
@@ -1320,13 +1307,30 @@
         white-space: normal;
       }
 
-      /* 贈品欄位 */
+      /* 贈品欄位容器 */
       .qs-variant-gift-row {
-        font-family: "Noto Sans TC", sans-serif;
-        font-size: 0.85rem;
-        color: #c47a3a;
-        line-height: 1.5;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
         min-height: 1.2em;
+      }
+
+      /* 贈品膠囊標籤 */
+      .gift-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 14px;
+        border: 1.5px solid #5c3d2e;
+        box-shadow: 0 0 0 0.5px #5c3d2e;
+        border-radius: 20px;
+        background: #f5ede8;
+        font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #5c3d2e;
+        white-space: nowrap;
+        line-height: 1.4;
       }
 
       @media (max-width: 768px) {
@@ -1685,36 +1689,36 @@
         /* 為了畫底線做準備 */
       }
 
-      /* 隱形的底線 */
+      /* 底線：預設就顯示，淡色 */
       .category-btn::after {
         content: "";
         position: absolute;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 0;
-        /* 預設沒有寬度 */
+        width: 60%;
         height: 1px;
-        /* 極細的線 */
         background-color: var(--accent);
-        transition: width 0.3s ease;
-        /* 變寬的動畫 */
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
       }
 
       /* 👆 滑鼠懸停狀態 */
       .category-btn:hover {
         color: var(--text-sub);
       }
+      .category-btn:hover::after {
+        opacity: 0.6;
+      }
 
-      /* 🟡 選中狀態：字變深，底線長出來 */
+      /* 🟡 選中狀態：字變深，底線加深 */
       .category-btn.active {
         color: var(--text-main);
         font-weight: 500;
       }
 
       .category-btn.active::after {
-        width: 60%;
-        /* 底線長出來，只佔字體的 60% 最優雅 */
+        opacity: 1;
       }
 
       /* 手機版調整：靠左對齊 */
@@ -2005,10 +2009,79 @@
           font-size: 1.1rem;
         }
       }
+
+      /* === 🌟 動態背景光暈 === */
+      .bg-aura {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .aura-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(90px);
+      }
+      .aura-1 {
+        width: 65vw; height: 65vw;
+        background: radial-gradient(circle, rgba(212, 163, 115, 0.2) 0%, transparent 70%);
+        top: -10%; left: 15%;
+        animation: aura-drift-1 28s ease-in-out infinite alternate;
+      }
+      .aura-2 {
+        width: 55vw; height: 55vw;
+        background: radial-gradient(circle, rgba(181, 131, 141, 0.16) 0%, transparent 70%);
+        top: 40%; right: -10%;
+        animation: aura-drift-2 35s ease-in-out infinite alternate;
+      }
+      .aura-3 {
+        width: 50vw; height: 50vw;
+        background: radial-gradient(circle, rgba(229, 152, 155, 0.13) 0%, transparent 70%);
+        bottom: -10%; left: -5%;
+        animation: aura-drift-3 22s ease-in-out infinite alternate;
+      }
+      @keyframes aura-drift-1 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(8vw, 10vh) scale(1.12); }
+      }
+      @keyframes aura-drift-2 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(-7vw, -8vh) scale(0.92); }
+      }
+      @keyframes aura-drift-3 {
+        from { transform: translate(0, 0) scale(1); }
+        to   { transform: translate(6vw, -7vh) scale(1.08); }
+      }
+
+
+
+      /* === ✦ 分類選單裝飾符 === */
+      .cat-deco {
+        color: var(--accent);
+        font-size: 0.6rem;
+        margin-right: 4px;
+        vertical-align: middle;
+        display: inline-block;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+      .category-btn.active .cat-deco {
+        opacity: 1;
+        transform: scale(1);
+        animation: twinkle 1.6s ease-in-out infinite;
+      }
     </style>
   </head>
 
   <body>
+    <div class="bg-aura" aria-hidden="true">
+      <div class="aura-blob aura-1"></div>
+      <div class="aura-blob aura-2"></div>
+      <div class="aura-blob aura-3"></div>
+    </div>
     <header>
       <h1>Mina's Journal</h1>
 
@@ -2207,7 +2280,7 @@
         <div class="cart-platform-section">
           <p class="cart-platform-title">選擇下單平台：</p>
           <label class="cart-platform-label">
-            <input type="radio" name="shipping" value="賣貨便" class="cart-radio" />
+            <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
             7-11 賣貨便
           </label>
           <label class="cart-platform-label">
@@ -2275,7 +2348,7 @@
 
 <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-      import { getFirestore, collection, getDocs, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
       const firebaseConfig = {
         apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
@@ -2387,7 +2460,7 @@
         Object.keys(categoryMap).forEach((key) => {
           const btn = document.createElement("div");
           btn.className = `category-btn ${currentCategory === key ? "active" : ""}`;
-          btn.innerText = categoryMap[key];
+          btn.innerHTML = `<span class="cat-deco">✦</span>${categoryMap[key]}`;
           btn.onclick = () => switchCategory(key);
           container.appendChild(btn);
         });
@@ -2478,66 +2551,74 @@
           Object.keys(categoryMap).forEach(k => { if (k !== 'all') delete categoryMap[k]; });
           catList.forEach(name => { categoryMap[name] = name; });
 
-          // 讀取所有「上架」商品
+          // 全域設定即時監聽（結單狀態、公告變動時自動更新）
+          onSnapshot(doc(db, 'settings', 'global'), (snap) => {
+            isOrderEnded  = snap.exists() ? (snap.data().isOrderEnded  === true) : false;
+            isNoticeShown = snap.exists() ? (snap.data().isNoticeShown === true) : false;
+            const notices = snap.exists() ? (snap.data().notices || []) : [];
+            renderNoticeboard(notices);
+            if (allProductsData.length > 0) renderProducts(allProductsData);
+          });
+
+          // 商品即時監聽（後台任何變動都會自動同步到客人畫面）
           const q = query(collection(db, 'products'), where('status', '==', '上架'));
-          const snapshot = await getDocs(q);
+          onSnapshot(q, (snapshot) => {
+            loading.style.display = "none";
+            allProductsData = [];
 
-          loading.style.display = "none";
-          allProductsData = [];
+            snapshot.forEach((docSnap) => {
+              const p = docSnap.data();
 
-          snapshot.forEach((docSnap) => {
-            const p = docSnap.data();
+              const variants = (p.variants || []).map(v => ({
+                name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
+                price: String(v.price || 0),
+                promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
+                gift:  v.gift || "",
+                stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
+              }));
 
-            // 將 Firebase 數字型價格轉換為字串，並標記缺貨規格
-            const variants = (p.variants || []).map(v => ({
-              name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
-              price: String(v.price || 0),
-              promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
-              gift:  v.gift || "",
-              stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
-            }));
+              const images = (p.images || []).filter(url => url && url.trim() !== '');
+              const firstVariant = variants[0] || { price: "0", promo: "" };
 
-            const images = (p.images || []).filter(url => url && url.trim() !== '');
-            const firstVariant = variants[0] || { price: "0", promo: "" };
+              const product = {
+                id: allProductsData.length,
+                firestoreId: docSnap.id,
+                name: p.name || "Unnamed",
+                variants,
+                originalPriceStr: firstVariant.price,
+                vipPriceStr:      firstVariant.promo || "",
+                imgUrl:    images[0] || "",
+                gallery:   images,
+                tag:       (p.tag || "").toUpperCase(),
+                deadline:  p.deadline || "",
+                type:      p.type || "預購",
+                giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
+                category:  p.category || "其他",
+              };
 
-            const product = {
-              id: allProductsData.length,
-              firestoreId: docSnap.id,
-              name: p.name || "Unnamed",
-              variants,
-              originalPriceStr: firstVariant.price,
-              vipPriceStr:      firstVariant.promo || "",
-              imgUrl:    images[0] || "",
-              gallery:   images,
-              tag:       (p.tag || "").toUpperCase(),
-              deadline:  p.deadline || "",
-              type:      p.type || "預購",
-              giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
-              category:  p.category || "其他",
-            };
+              allProductsData.push(product);
+            });
 
-            allProductsData.push(product);
+            allProductsData.sort((a, b) => {
+              const getPriority = (tag) => {
+                if (tag.includes("NEW") || tag.includes("特價")) return 1;
+                if (tag.includes("HOT")) return 2;
+                if (tag.includes("SALE")) return 3;
+                return 4;
+              };
+              const priorityA = getPriority(a.tag);
+              const priorityB = getPriority(b.tag);
+              if (priorityA !== priorityB) return priorityA - priorityB;
+              return a.name.localeCompare(b.name, "zh-TW");
+            });
+
+            renderCategoryButtons();
+            renderProducts(allProductsData);
+          }, (error) => {
+            console.error(error);
+            loading.style.display = "none";
+            container.innerHTML = '<p style="text-align:center; padding:20px;">載入失敗，請重新整理頁面。</p>';
           });
-
-          // 排序邏輯
-          allProductsData.sort((a, b) => {
-            const getPriority = (tag) => {
-              if (tag.includes("NEW") || tag.includes("特價")) return 1;
-              if (tag.includes("HOT")) return 2;
-              if (tag.includes("SALE")) return 3;
-              return 4;
-            };
-            const priorityA = getPriority(a.tag);
-            const priorityB = getPriority(b.tag);
-            if (priorityA !== priorityB) return priorityA - priorityB;
-            return a.name.localeCompare(b.name, "zh-TW");
-          });
-
-          renderCategoryButtons();
-          renderProducts(allProductsData);
-
-          // 每 60 秒重新渲染一次，讓截止時間到的商品自動顯示「已結單」
-          setInterval(() => switchCategory(currentCategory), 60000);
 
           // 若管理員開啟結單公告，顯示進站公告
           if (isNoticeShown) {
@@ -3167,13 +3248,16 @@
       }
 
       function _updateGiftInfo(vObj) {
-        const giftBox = document.getElementById('qs-gift-info');
+        const giftBox     = document.getElementById('qs-gift-info');
+        const giftSection = document.getElementById('qs-gift-section');
         const d = _getVariantDisplay(vObj);
         if (d.gift) {
           const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
-          giftBox.innerHTML = items.map(g => `🎁 ${g}`).join('<br>');
+          giftBox.innerHTML = items.map(g => `<span class="gift-pill">🎁 ${g}</span>`).join('');
+          giftSection.style.display = '';
         } else {
-          giftBox.textContent = '無';
+          giftBox.innerHTML = '';
+          giftSection.style.display = 'none';
         }
       }
 
