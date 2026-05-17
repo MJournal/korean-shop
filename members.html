@@ -1293,6 +1293,13 @@
         color: var(--accent);
       }
 
+      .variant-pill:active:not(.pill-disabled) {
+        border-color: #5c3d2e;
+        box-shadow: 0 0 0 0.5px #5c3d2e;
+        background: #f5ede8;
+        color: #5c3d2e;
+      }
+
       .variant-pill.pill-selected {
         border-color: #5c3d2e;
         box-shadow: 0 0 0 0.5px #5c3d2e;
@@ -1344,7 +1351,7 @@
         border: 1.5px solid #5c3d2e;
         box-shadow: 0 0 0 0.5px #5c3d2e;
         border-radius: 20px;
-        background: #fff;
+        background: #f5ede8;
         font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
         font-size: 0.85rem;
         font-weight: 500;
