@@ -1314,13 +1314,13 @@
         align-items: center;
         gap: 5px;
         padding: 6px 14px;
-        border: 1.5px solid rgba(212, 163, 115, 0.5);
+        border: 1.5px solid #e0d0c0;
         border-radius: 20px;
-        background: var(--accent-light);
+        background: #fff;
         font-family: "Zen Maru Gothic", "Noto Sans TC", sans-serif;
         font-size: 0.85rem;
         font-weight: 500;
-        color: var(--accent);
+        color: #777;
         white-space: nowrap;
         line-height: 1.4;
       }
@@ -1681,36 +1681,36 @@
         /* 為了畫底線做準備 */
       }
 
-      /* 隱形的底線 */
+      /* 底線：預設就顯示，淡色 */
       .category-btn::after {
         content: "";
         position: absolute;
         bottom: 0;
         left: 50%;
         transform: translateX(-50%);
-        width: 0;
-        /* 預設沒有寬度 */
+        width: 60%;
         height: 1px;
-        /* 極細的線 */
         background-color: var(--accent);
-        transition: width 0.3s ease;
-        /* 變寬的動畫 */
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
       }
 
       /* 👆 滑鼠懸停狀態 */
       .category-btn:hover {
         color: var(--text-sub);
       }
+      .category-btn:hover::after {
+        opacity: 0.6;
+      }
 
-      /* 🟡 選中狀態：字變深，底線長出來 */
+      /* 🟡 選中狀態：字變深，底線加深 */
       .category-btn.active {
         color: var(--text-main);
         font-weight: 500;
       }
 
       .category-btn.active::after {
-        width: 60%;
-        /* 底線長出來，只佔字體的 60% 最優雅 */
+        opacity: 1;
       }
 
       /* 手機版調整：靠左對齊 */
