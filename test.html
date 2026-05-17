@@ -2341,7 +2341,7 @@
 
 <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-      import { getFirestore, collection, getDocs, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
       const firebaseConfig = {
         apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
@@ -2544,66 +2544,74 @@
           Object.keys(categoryMap).forEach(k => { if (k !== 'all') delete categoryMap[k]; });
           catList.forEach(name => { categoryMap[name] = name; });
 
-          // 讀取所有「上架」商品
+          // 全域設定即時監聽（結單狀態、公告變動時自動更新）
+          onSnapshot(doc(db, 'settings', 'global'), (snap) => {
+            isOrderEnded  = snap.exists() ? (snap.data().isOrderEnded  === true) : false;
+            isNoticeShown = snap.exists() ? (snap.data().isNoticeShown === true) : false;
+            const notices = snap.exists() ? (snap.data().notices || []) : [];
+            renderNoticeboard(notices);
+            if (allProductsData.length > 0) renderProducts(allProductsData);
+          });
+
+          // 商品即時監聽（後台任何變動都會自動同步到客人畫面）
           const q = query(collection(db, 'products'), where('status', '==', '上架'));
-          const snapshot = await getDocs(q);
+          onSnapshot(q, (snapshot) => {
+            loading.style.display = "none";
+            allProductsData = [];
 
-          loading.style.display = "none";
-          allProductsData = [];
+            snapshot.forEach((docSnap) => {
+              const p = docSnap.data();
 
-          snapshot.forEach((docSnap) => {
-            const p = docSnap.data();
+              const variants = (p.variants || []).map(v => ({
+                name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
+                price: String(v.price || 0),
+                promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
+                gift:  v.gift || "",
+                stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
+              }));
 
-            // 將 Firebase 數字型價格轉換為字串，並標記缺貨規格
-            const variants = (p.variants || []).map(v => ({
-              name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
-              price: String(v.price || 0),
-              promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
-              gift:  v.gift || "",
-              stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
-            }));
+              const images = (p.images || []).filter(url => url && url.trim() !== '');
+              const firstVariant = variants[0] || { price: "0", promo: "" };
 
-            const images = (p.images || []).filter(url => url && url.trim() !== '');
-            const firstVariant = variants[0] || { price: "0", promo: "" };
+              const product = {
+                id: allProductsData.length,
+                firestoreId: docSnap.id,
+                name: p.name || "Unnamed",
+                variants,
+                originalPriceStr: firstVariant.price,
+                vipPriceStr:      firstVariant.promo || "",
+                imgUrl:    images[0] || "",
+                gallery:   images,
+                tag:       (p.tag || "").toUpperCase(),
+                deadline:  p.deadline || "",
+                type:      p.type || "預購",
+                giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
+                category:  p.category || "其他",
+              };
 
-            const product = {
-              id: allProductsData.length,
-              firestoreId: docSnap.id,
-              name: p.name || "Unnamed",
-              variants,
-              originalPriceStr: firstVariant.price,
-              vipPriceStr:      firstVariant.promo || "",
-              imgUrl:    images[0] || "",
-              gallery:   images,
-              tag:       (p.tag || "").toUpperCase(),
-              deadline:  p.deadline || "",
-              type:      p.type || "預購",
-              giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
-              category:  p.category || "其他",
-            };
+              allProductsData.push(product);
+            });
 
-            allProductsData.push(product);
+            allProductsData.sort((a, b) => {
+              const getPriority = (tag) => {
+                if (tag.includes("NEW") || tag.includes("特價")) return 1;
+                if (tag.includes("HOT")) return 2;
+                if (tag.includes("SALE")) return 3;
+                return 4;
+              };
+              const priorityA = getPriority(a.tag);
+              const priorityB = getPriority(b.tag);
+              if (priorityA !== priorityB) return priorityA - priorityB;
+              return a.name.localeCompare(b.name, "zh-TW");
+            });
+
+            renderCategoryButtons();
+            renderProducts(allProductsData);
+          }, (error) => {
+            console.error(error);
+            loading.style.display = "none";
+            container.innerHTML = '<p style="text-align:center; padding:20px;">載入失敗，請重新整理頁面。</p>';
           });
-
-          // 排序邏輯
-          allProductsData.sort((a, b) => {
-            const getPriority = (tag) => {
-              if (tag.includes("NEW") || tag.includes("特價")) return 1;
-              if (tag.includes("HOT")) return 2;
-              if (tag.includes("SALE")) return 3;
-              return 4;
-            };
-            const priorityA = getPriority(a.tag);
-            const priorityB = getPriority(b.tag);
-            if (priorityA !== priorityB) return priorityA - priorityB;
-            return a.name.localeCompare(b.name, "zh-TW");
-          });
-
-          renderCategoryButtons();
-          renderProducts(allProductsData);
-
-          // 每 60 秒重新渲染一次，讓截止時間到的商品自動顯示「已結單」
-          setInterval(() => switchCategory(currentCategory), 60000);
 
           // 若管理員開啟結單公告，顯示進站公告
           if (isNoticeShown) {
