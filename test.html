@@ -877,6 +877,7 @@
         display: flex;
         flex: 1;
         min-height: 0;
+        overflow: hidden;
       }
 
       .cart-left {
@@ -885,6 +886,11 @@
         padding: 20px 24px;
         border-right: 1px solid #f0f0f0;
       }
+
+      /* 電腦版細捲軸 */
+      .cart-left::-webkit-scrollbar { width: 4px; }
+      .cart-left::-webkit-scrollbar-track { background: transparent; }
+      .cart-left::-webkit-scrollbar-thumb { background: #ddd0c4; border-radius: 2px; }
 
       .cart-right {
         width: 300px;
