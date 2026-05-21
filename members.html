@@ -2031,11 +2031,25 @@
     </style>
   </head>
 
-  <!-- 連結失效畫面 -->
-  <div id="invalid-screen" style="display:none;position:fixed;inset:0;background:#fdfbf7;z-index:99999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
-    <div style="font-size:3rem;margin-bottom:20px;">🔒</div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-style:italic;margin-bottom:12px;">連結已失效</h2>
-    <p style="font-size:0.9rem;color:#999;line-height:1.9;">此連結已過期或不正確。<br>請向社群管理員索取本期最新連結。</p>
+  <!-- 社群驗證畫面（預設顯示） -->
+  <div id="invalid-screen" style="display:flex;position:fixed;inset:0;background:#fdfbf7;z-index:99999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
+    <!-- 載入中 -->
+    <div id="comm-loading">
+      <div style="width:28px;height:28px;border:2px solid #ede5db;border-top-color:#c8a882;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+      <p id="comm-loading-text" style="font-size:0.82rem;color:#b8a898;letter-spacing:1px;">驗證中…</p>
+    </div>
+    <!-- 密碼輸入 -->
+    <div id="comm-pw-form" style="display:none;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;font-style:italic;color:#2a2520;letter-spacing:2px;margin-bottom:4px;">Mina 妝日子</div>
+      <div style="font-size:0.68rem;letter-spacing:5px;color:#c8a882;text-transform:uppercase;margin-bottom:28px;">Members Only</div>
+      <div style="background:#fff;border-radius:16px;padding:32px 28px;width:min(340px,88vw);box-shadow:0 4px 32px rgba(160,120,80,0.12);">
+        <div style="font-size:0.82rem;color:#9a8878;margin-bottom:18px;line-height:1.9;">請輸入本月社群密碼<br><span style="font-size:0.74rem;color:#c8b8a8;">輸入後自動記住，不需每次重新輸入</span></div>
+        <input type="password" id="comm-pw-input" placeholder="本月密碼"
+          style="width:100%;padding:11px 14px;border:1px solid #ddd3c8;border-radius:8px;font-size:0.9rem;font-family:inherit;text-align:center;letter-spacing:3px;outline:none;margin-bottom:8px;background:#fdfbf7;box-sizing:border-box;">
+        <div id="comm-pw-error" style="color:#c97c7c;font-size:0.78rem;margin-bottom:10px;display:none;">密碼錯誤，請再試一次</div>
+        <button onclick="submitCommPw()" style="width:100%;padding:12px;background:#b07352;color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-family:inherit;cursor:pointer;letter-spacing:1px;">進入社群專區</button>
+      </div>
+    </div>
   </div>
 
   <body>
@@ -2322,35 +2336,49 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // === 🔒 社群連結驗證 ===
-      const _COMM_SECRET = 'Mn@MinaZhuang2024';
-      function _buildToken(y, m, h) {
-        return btoa(`${_COMM_SECRET}_${y}${String(m).padStart(2,'0')}${h}`).replace(/[+/=]/g, '').slice(0, 12);
-      }
-      function getExpectedToken() {
-        const now = new Date();
-        return _buildToken(now.getFullYear(), now.getMonth() + 1, now.getDate() <= 14 ? 'A' : 'B');
-      }
-      function getPreviousToken() {
-        const now = new Date();
-        let y = now.getFullYear(), m = now.getMonth() + 1, h;
-        if (now.getDate() <= 14) {
-          // 當期是上半月 → 上一期是上個月下半月
-          h = 'B'; m -= 1;
-          if (m === 0) { m = 12; y -= 1; }
-        } else {
-          // 當期是下半月 → 上一期是本月上半月
-          h = 'A';
+      // === 🔒 社群密碼驗證 ===
+      let _currentCommPw = '';
+
+      async function initCommunityAuth() {
+        try {
+          const snap = await getDoc(doc(db, 'settings', 'global'));
+          _currentCommPw = snap.exists() ? (snap.data().communityGatePassword || '') : '';
+
+          if (!_currentCommPw) {
+            // 後台尚未設定密碼 → 直接開放（測試用）
+            document.getElementById('invalid-screen').style.display = 'none';
+            fetchProducts();
+            return;
+          }
+
+          const saved = localStorage.getItem('minaCommPw');
+          if (saved === _currentCommPw) {
+            // 密碼符合 → 直接進入
+            document.getElementById('invalid-screen').style.display = 'none';
+            fetchProducts();
+          } else {
+            // 顯示密碼輸入視窗
+            document.getElementById('comm-loading').style.display = 'none';
+            document.getElementById('comm-pw-form').style.display  = 'block';
+            setTimeout(() => document.getElementById('comm-pw-input').focus(), 100);
+          }
+        } catch(e) {
+          document.getElementById('comm-loading-text').textContent = '載入失敗，請重新整理頁面';
         }
-        return _buildToken(y, m, h);
       }
-      const _urlToken = new URLSearchParams(window.location.search).get('s') || '';
-      if (_urlToken !== getExpectedToken() && _urlToken !== getPreviousToken()) {
-        const inv = document.getElementById('invalid-screen');
-        inv.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        throw new Error('invalid community token');
-      }
+
+      window.submitCommPw = function() {
+        const val = document.getElementById('comm-pw-input').value.trim();
+        if (val === _currentCommPw) {
+          localStorage.setItem('minaCommPw', val);
+          document.getElementById('invalid-screen').style.display = 'none';
+          fetchProducts();
+        } else {
+          document.getElementById('comm-pw-error').style.display = 'block';
+          document.getElementById('comm-pw-input').value = '';
+          document.getElementById('comm-pw-input').focus();
+        }
+      };
 
       // === 🔒 手機版背景鎖定大神器 ===
       let savedScrollPosition = 0;
@@ -3302,7 +3330,10 @@
 
 
       loadCart();
-      fetchProducts();
+      initCommunityAuth();
+      document.getElementById('comm-pw-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') submitCommPw();
+      });
 
       function closeEndedNotice() {
         const overlay = document.getElementById("ended-notice-overlay");
