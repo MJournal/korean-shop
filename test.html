@@ -887,9 +887,9 @@
       }
 
       .cart-right {
-        width: 270px;
+        width: 300px;
         flex-shrink: 0;
-        padding: 20px 22px;
+        padding: 18px 20px;
         display: flex;
         flex-direction: column;
         overflow-y: auto;
@@ -1844,14 +1844,14 @@
 
       .cart-platform-section {
         margin-bottom: 12px;
-        border-top: 1px solid #eee;
-        padding-top: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 12px;
       }
 
       .cart-platform-title {
         margin-bottom: 8px;
         font-weight: 500;
-        font-size: 0.92rem;
+        font-size: 0.85rem;
         color: var(--text-main);
         font-family: "Noto Sans TC", sans-serif;
       }
@@ -1859,9 +1859,9 @@
       .cart-platform-label {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 6px;
         cursor: pointer;
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         color: #333;
         font-family: "Noto Sans TC", sans-serif;
       }
@@ -2300,7 +2300,7 @@
               <div style="display:flex;gap:6px;align-items:center;">
                 <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
                 <input type="text" id="promo-code-input" placeholder="折扣碼"
-                  style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:0.8rem;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fdfbf7;"
+                  style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:16px;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fdfbf7;"
                   onkeydown="if(event.key==='Enter') applyPromoCode()">
                 <button onclick="applyPromoCode()"
                   style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
@@ -3127,12 +3127,7 @@
           let rawDeposit = finalTotal * 0.1;
           let finalDeposit = Math.min(Math.round(rawDeposit / 100) * 100, 500);
 
-          depositHtml = `
-                <div style="margin-top: 8px; text-align: right; font-family: 'Noto Sans TC', sans-serif;">
-                    <span style="font-size: 0.85rem; color: #999; background: #f9f9f9; padding: 4px 8px; border-radius: 4px; margin-right: 8px;">需預付定金 (10%)</span>
-                    <span style="font-size: 1.1rem; color: #bfa092; font-weight: 500;">NT$ ${finalDeposit}</span>
-                </div>
-            `;
+          depositHtml = `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:'Noto Sans TC',sans-serif;"><span style="font-size:0.75rem;color:#aaa;">預付定金 (10%)</span><span style="font-size:0.95rem;color:#bfa092;font-weight:600;">NT$ ${finalDeposit}</span></div>`;
         }
 
         container.innerHTML = html;
@@ -3142,16 +3137,19 @@
           let breakdownHtml = '';
           if (_discountBreakdown.length > 0) {
             _discountBreakdown.forEach(d => {
-              breakdownHtml += `<span style="font-size:0.72rem;color:#b07352;margin-right:8px;">${d.label} -$${d.amount}</span>`;
+              breakdownHtml += `<div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#b07352;margin-bottom:2px;"><span>${d.label}</span><span>-NT$${d.amount}</span></div>`;
             });
           }
           totalEl.innerHTML = `
-            <div style="font-size:0.75rem;color:#bbb;text-decoration:line-through;margin-bottom:1px;font-weight:normal;">小計 NT$ ${total}</div>
-            <div style="margin-bottom:2px;">${breakdownHtml}</div>
-            <div style="color:#d65a5a;font-weight:600;">總金額: NT$ ${finalTotal}</div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#bbb;text-decoration:line-through;margin-bottom:4px;font-weight:normal;"><span>小計</span><span>NT$ ${total}</span></div>
+            ${breakdownHtml}
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;border-top:1px solid #eee;padding-top:6px;">
+              <span style="font-size:0.85rem;color:#555;">總金額</span>
+              <span style="color:#d65a5a;font-weight:700;font-size:1.15rem;">NT$ ${finalTotal}</span>
+            </div>
           `;
         } else {
-          totalEl.innerText = `總金額: NT$ ${total}`;
+          totalEl.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:0.85rem;color:#555;">總金額</span><span style="font-weight:700;font-size:1.15rem;">NT$ ${total}</span></div>`;
         }
 
         const oldDeposit = document.getElementById("deposit-display");
