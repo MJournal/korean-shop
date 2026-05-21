@@ -1849,15 +1849,15 @@
       }
 
       .cart-platform-section {
-        margin-bottom: 25px;
+        margin-bottom: 12px;
         border-top: 1px solid #eee;
-        padding-top: 20px;
+        padding-top: 12px;
       }
 
       .cart-platform-title {
-        margin-bottom: 15px;
-        font-weight: bold;
-        font-size: 1.1rem;
+        margin-bottom: 8px;
+        font-weight: 500;
+        font-size: 0.92rem;
         color: var(--text-main);
         font-family: "Noto Sans TC", sans-serif;
       }
@@ -2279,14 +2279,16 @@
 
         <div class="cart-platform-section">
           <p class="cart-platform-title">選擇下單平台：</p>
-          <label class="cart-platform-label">
-            <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
-            7-11 賣貨便
-          </label>
-          <label class="cart-platform-label">
-            <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
-            iOPEN Mall
-          </label>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;">
+            <label class="cart-platform-label" style="margin-bottom:0;">
+              <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
+              7-11 賣貨便
+            </label>
+            <label class="cart-platform-label" style="margin-bottom:0;">
+              <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
+              iOPEN Mall
+            </label>
+          </div>
         </div>
 
         <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
@@ -3012,7 +3014,14 @@
           deadline:     product.deadline || '',
         };
 
-        cart.push(cartItem);
+        const existing = cart.find(i =>
+          i.productId === cartItem.productId && i.spec === cartItem.spec
+        );
+        if (existing) {
+          existing.qty += qty;
+        } else {
+          cart.push(cartItem);
+        }
         saveCart();
 
         const btn = document.getElementById("qs-add-btn");
@@ -3050,9 +3059,32 @@
         }
       }
 
+      function _recalcDiscount() {
+        if (!currentPromoCode || !_dcSettings) return;
+        let subtotal = 0;
+        cart.forEach(i => subtotal += i.price * i.qty);
+        const rules = _dcSettings.rules || [];
+        const breakdown = [];
+        let after = subtotal;
+        const r1 = rules[0];
+        if (r1 && r1.deductAmount && subtotal >= r1.minSpend) {
+          breakdown.push({ label: r1.label, amount: r1.deductAmount });
+          after -= r1.deductAmount;
+        }
+        const r2 = rules[1];
+        if (r2 && r2.rate && after >= r2.minSpend) {
+          const d2 = Math.round(after * (1 - r2.rate));
+          breakdown.push({ label: r2.label, amount: d2 });
+        }
+        _discountBreakdown = breakdown;
+        currentDiscount    = breakdown.reduce((s, d) => s + d.amount, 0);
+      }
+
       function renderCartItems() {
         const container = document.getElementById("cartItems");
         const totalEl = document.getElementById("cartTotal");
+
+        _recalcDiscount();
 
         if (cart.length === 0) {
           container.innerHTML = "<p style=\"text-align:center; color:#999; margin-top:40px; font-family:'Noto Sans TC', sans-serif;\">購物車目前是空的</p>";
