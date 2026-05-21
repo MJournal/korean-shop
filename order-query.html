@@ -465,9 +465,6 @@
   import {
     getFirestore, collection, query, where, getDocs, limit
   } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-  import { getAuth, signInAnonymously
-  } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
   const firebaseConfig = {
     apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
     authDomain: "minashop-c089a.firebaseapp.com",
@@ -479,8 +476,6 @@
 
   const app  = initializeApp(firebaseConfig);
   const db   = getFirestore(app);
-  const auth = getAuth(app);
-  signInAnonymously(auth).catch(() => {});
   let allProducts = null;
 
   async function getProducts() {
