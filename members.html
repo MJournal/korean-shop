@@ -2032,7 +2032,7 @@
   </head>
 
   <!-- 社群驗證畫面（預設顯示） -->
-  <div id="invalid-screen" style="display:flex;position:fixed;inset:0;background:#fdfbf7;z-index:99999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
+  <div id="invalid-screen" style="display:flex;position:fixed;inset:0;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(253,251,247,0.55);z-index:99999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;">
     <!-- 載入中 -->
     <div id="comm-loading">
       <div style="width:28px;height:28px;border:2px solid #ede5db;border-top-color:#c8a882;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
@@ -2043,10 +2043,10 @@
       <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;font-style:italic;color:#2a2520;letter-spacing:2px;margin-bottom:4px;">Mina 妝日子</div>
       <div style="font-size:0.68rem;letter-spacing:5px;color:#c8a882;text-transform:uppercase;margin-bottom:28px;">Members Only</div>
       <div style="background:#fff;border-radius:16px;padding:32px 28px;width:min(340px,88vw);box-shadow:0 4px 32px rgba(160,120,80,0.12);">
-        <div style="font-size:0.82rem;color:#9a8878;margin-bottom:18px;line-height:1.9;">請輸入本月社群密碼<br><span style="font-size:0.74rem;color:#c8b8a8;">輸入後自動記住，不需每次重新輸入</span></div>
+        <div style="font-size:0.82rem;color:#9a8878;margin-bottom:18px;">請輸入本月社群密碼</div>
         <input type="password" id="comm-pw-input" placeholder="本月密碼"
           style="width:100%;padding:11px 14px;border:1px solid #ddd3c8;border-radius:8px;font-size:0.9rem;font-family:inherit;text-align:center;letter-spacing:3px;outline:none;margin-bottom:8px;background:#fdfbf7;box-sizing:border-box;">
-        <div id="comm-pw-error" style="color:#c97c7c;font-size:0.78rem;margin-bottom:10px;display:none;">密碼錯誤，請再試一次</div>
+        <div id="comm-pw-error" style="color:#c97c7c;font-size:0.75rem;margin-bottom:10px;display:none;line-height:1.7;">密碼錯誤，請至社群置頂公告<br>查看本月密碼</div>
         <button onclick="submitCommPw()" style="width:100%;padding:12px;background:#b07352;color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-family:inherit;cursor:pointer;letter-spacing:1px;">進入社群專區</button>
       </div>
     </div>
