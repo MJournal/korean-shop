@@ -2743,17 +2743,13 @@
           container.appendChild(card);
         });
 
-        // 商品深層連結：自動捲動到指定商品
+        // 商品深層連結：自動開啟指定商品的詳細視窗
         const _targetFid = new URLSearchParams(window.location.search).get('id');
         if (_targetFid) {
-          const targetCard = container.querySelector(`[data-fid="${_targetFid}"]`);
-          if (targetCard) {
-            setTimeout(() => {
-              targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              targetCard.style.transition = 'box-shadow 0.4s';
-              targetCard.style.boxShadow  = '0 0 0 3px #c8a882';
-              setTimeout(() => { targetCard.style.boxShadow = ''; }, 2500);
-            }, 400);
+          const targetProduct = allProductsData.find(p => p.firestoreId === _targetFid);
+          if (targetProduct) {
+            const targetIdx = allProductsData.indexOf(targetProduct);
+            setTimeout(() => { openQuickShop(targetIdx); }, 500);
           }
         }
       }
