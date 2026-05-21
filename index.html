@@ -3106,6 +3106,37 @@
         return `${mm}${dd}-${rand}`;
       }
 
+      // 結帳前驗證：商品是否還在架上、價格是否有變
+      async function _verifyCartItems(cartItems) {
+        const unavailable = [];
+        const priceChanges = [];
+        const ids = [...new Set(cartItems.filter(it => it.productId).map(it => it.productId))];
+        const snaps = {};
+        for (const id of ids) {
+          try { snaps[id] = await getDoc(doc(db, 'products', id)); } catch(e) {}
+        }
+        for (const item of cartItems) {
+          if (!item.productId) continue;
+          const snap = snaps[item.productId];
+          if (!snap || !snap.exists()) {
+            unavailable.push(`・${item.name.replace(/<br>/gi,' ')}（商品已不存在）`); continue;
+          }
+          const p = snap.data();
+          if (p.status !== '上架') {
+            unavailable.push(`・${item.name.replace(/<br>/gi,' ')}（已下架或售完）`); continue;
+          }
+          if (p.deadline && new Date() > new Date(p.deadline)) {
+            unavailable.push(`・${item.name.replace(/<br>/gi,' ')}（已截止下單）`); continue;
+          }
+          const v = (p.variants || [])[item.variantIndex];
+          if (v) {
+            const cur = parseInt((v.promo || v.price || '0').replace(/[^0-9]/g, ''));
+            if (cur !== item.price) priceChanges.push({ item, oldPrice: item.price, newPrice: cur });
+          }
+        }
+        return { unavailable, priceChanges };
+      }
+
       // 以 Firebase Transaction 扣庫存；有不足時拋出錯誤
       async function _deductStock(cartItems) {
         const groups = {};
@@ -3167,10 +3198,31 @@
         if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = '處理中，請稍候…'; }
 
         try {
-          // ① 產生訂單編號
+          // ① 驗證商品狀態與價格
+          const { unavailable, priceChanges } = await _verifyCartItems(cart);
+
+          if (unavailable.length > 0) {
+            alert(`以下商品目前無法下單，請移除後再試：\n\n${unavailable.join('\n')}`);
+            if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = '傳送至 LINE官方帳號'; }
+            return;
+          }
+          if (priceChanges.length > 0) {
+            const lines = priceChanges.map(c =>
+              `・${c.item.name.replace(/<br>/gi,' ')}${c.item.spec !== '單一規格' ? '（'+c.item.spec+'）' : ''}：NT$${c.oldPrice} → NT$${c.newPrice}`
+            ).join('\n');
+            const ok = confirm(`商品價格已更新，請確認後再送出：\n\n${lines}\n\n以新價格繼續下單？`);
+            if (!ok) {
+              if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = '傳送至 LINE官方帳號'; }
+              return;
+            }
+            priceChanges.forEach(c => { c.item.price = c.newPrice; });
+            saveCart();
+          }
+
+          // ② 產生訂單編號
           const orderId = _generateOrderId();
 
-          // ② 扣庫存（Transaction，庫存不足直接中止）
+          // ③ 扣庫存（Transaction，庫存不足直接中止）
           await _deductStock(cart);
 
           // ③ 計算金額
