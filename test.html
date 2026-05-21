@@ -841,52 +841,73 @@
       .cart-modal {
         display: none;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         z-index: 2000;
-        justify-content: flex-end;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
       }
 
-      .cart-modal.show {
-        display: flex;
+      .cart-modal.show { display: flex; }
+
+      @keyframes cartPopUp {
+        from { transform: scale(0.96); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
       }
 
       .cart-content {
         background: #fff;
         width: 100%;
-        max-width: 420px;
-        height: 100%;
-        padding: 40px;
+        max-width: 860px;
+        max-height: 88vh;
+        border-radius: 16px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
         display: flex;
         flex-direction: column;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-        animation: slideLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+        animation: cartPopUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      @keyframes slideLeft {
-        from {
-          transform: translateX(100%);
-        }
+      /* 左右兩欄 */
+      .cart-columns {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+      }
 
-        to {
-          transform: translateX(0);
-        }
+      .cart-left {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+        border-right: 1px solid #f0f0f0;
+      }
+
+      .cart-right {
+        width: 270px;
+        flex-shrink: 0;
+        padding: 20px 22px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        background: #fdfcfa;
       }
 
       .btn-checkout {
         width: 100%;
-        padding: 18px;
+        padding: 14px;
         background: #06c755;
         color: white;
         border: none;
+        border-radius: 8px;
         font-weight: 500;
         cursor: pointer;
-        margin-top: 20px;
+        margin-top: auto;
+        padding-top: 14px;
         letter-spacing: 1px;
-        /* 這裡的中文字距可以微調 */
         font-family: "Noto Sans TC", sans-serif;
       }
 
@@ -1767,63 +1788,34 @@
         }
       }
 
-      /* === 📱 手機版購物車空間極限優化 (讓商品列表變很長！) === */
-      @media (max-width: 768px) {
-        /* 1. 把整個白框的內距縮到最小，爭取最大空間 */
+      /* === 📱 手機版購物車：上下堆疊 === */
+      @media (max-width: 640px) {
+        .cart-modal {
+          padding: 0;
+          align-items: flex-end;
+        }
         .cart-content {
-          padding: 15px !important;
-          /* 原本 40px -> 改 15px，瞬間多出很多空間 */
+          max-height: 92vh;
+          border-radius: 16px 16px 0 0;
+          max-width: 100%;
         }
-
-        /* 2. 標題「購物清單」往上收 */
-        .cart-content > div:first-child {
-          margin-bottom: 10px !important;
+        .cart-columns {
+          flex-direction: column;
         }
-
-        /* 3. 壓縮「選擇下單平台」區塊 (這是接在商品列表下面的那塊) */
-        #cartItems + div {
-          padding-top: 10px !important;
-          /* 分隔線上方留白減少 */
-          margin-bottom: 10px !important;
-          /* 跟折扣碼的距離減少 */
+        .cart-left {
+          border-right: none;
+          border-bottom: 1px solid #f0f0f0;
+          max-height: 45vh;
+          padding: 14px 16px;
         }
-
-        /* 讓裡面的選項緊湊一點 */
-        #cartItems + div p {
-          margin-bottom: 5px !important;
+        .cart-right {
+          width: 100%;
+          padding: 14px 16px;
+          max-height: 47vh;
         }
-
-        #cartItems + div label {
-          margin-bottom: 2px !important;
-        }
-
-        /* 4. 壓縮「折扣碼」區塊 */
-        #promo-box {
-          margin-bottom: 8px !important;
-        }
-
-        /* 讓輸入框稍微矮一點，不用那麼肥 */
-        #promo-code-input,
-        #promo-box button {
-          height: 38px !important;
-        }
-
-        /* 5. 壓縮「總金額」與「按鈕」 */
-        #cartTotal {
-          margin-bottom: 5px !important;
-        }
-
-        /* 提醒小字 (訂單成立那行) */
-        .cart-content > p {
-          margin: 5px 0 !important;
-        }
-
-        /* 綠色結帳按鈕 */
         .btn-checkout {
-          margin-top: 5px !important;
-          /* 離上面近一點 */
-          padding: 12px !important;
-          /* 按鈕變矮一點 */
+          margin-top: 10px;
+          padding: 12px;
         }
       }
 
@@ -1832,7 +1824,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #f0f0f0;
+        flex-shrink: 0;
       }
 
       .cart-title {
@@ -2271,50 +2265,62 @@
 
     <div id="cartModal" class="cart-modal" onclick="closeCart(event)" role="dialog" aria-modal="true" aria-label="購物車">
       <div class="cart-content">
+
+        <!-- 標題列 -->
         <div class="cart-header">
           <h3 class="cart-title">購物清單</h3>
           <span class="cart-close-btn" onclick="toggleCart()">×</span>
         </div>
 
-        <div class="cart-body" id="cartItems"></div>
+        <!-- 主體：左右兩欄 -->
+        <div class="cart-columns">
 
-        <div class="cart-platform-section">
-          <p class="cart-platform-title">選擇下單平台：</p>
-          <div style="display:flex;gap:20px;flex-wrap:wrap;">
-            <label class="cart-platform-label" style="margin-bottom:0;">
-              <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
-              7-11 賣貨便
-            </label>
-            <label class="cart-platform-label" style="margin-bottom:0;">
-              <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
-              iOPEN Mall
-            </label>
-          </div>
-        </div>
+          <!-- 左欄：商品列表 -->
+          <div class="cart-left" id="cartItems"></div>
 
-        <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
-        <div id="promo-box" style="display:none;margin-top:8px;padding:7px 10px;background:#fdfbf7;border-radius:6px;border:1px solid #e6d0c0;">
-          <div style="display:flex;gap:6px;align-items:center;">
-            <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
-            <input type="text" id="promo-code-input" placeholder="折扣碼"
-              style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:0.8rem;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fff;"
-              onkeydown="if(event.key==='Enter') applyPromoCode()">
-            <button onclick="applyPromoCode()"
-              style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
-          </div>
-          <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
-        </div>
+          <!-- 右欄：結帳面板 -->
+          <div class="cart-right">
 
-        <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
+            <div class="cart-platform-section">
+              <p class="cart-platform-title">選擇下單平台：</p>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <label class="cart-platform-label" style="margin-bottom:0;">
+                  <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
+                  7-11 賣貨便
+                </label>
+                <label class="cart-platform-label" style="margin-bottom:0;">
+                  <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
+                  iOPEN Mall
+                </label>
+              </div>
+            </div>
 
-        <p class="cart-notice">
-          ※ 首次交易皆需預付定金；非首次交易滿 NT$1,500 預收 10% 定金。
-        </p>
+            <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
+            <div id="promo-box" style="display:none;margin-top:10px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid #e6d0c0;">
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
+                <input type="text" id="promo-code-input" placeholder="折扣碼"
+                  style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:0.8rem;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fdfbf7;"
+                  onkeydown="if(event.key==='Enter') applyPromoCode()">
+                <button onclick="applyPromoCode()"
+                  style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
+              </div>
+              <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
+            </div>
 
-        <button class="btn-checkout" onclick="checkoutViaLine()">
-          傳送至 LINE官方帳號
-        </button>
-      </div>
+            <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
+
+            <p class="cart-notice">
+              ※ 首次交易皆需預付定金；非首次交易滿 NT$1,500 預收 10% 定金。
+            </p>
+
+            <button class="btn-checkout" onclick="checkoutViaLine()">
+              傳送至 LINE官方帳號
+            </button>
+
+          </div><!-- /cart-right -->
+        </div><!-- /cart-columns -->
+      </div><!-- /cart-content -->
     </div>
 
     <div id="zoomOverlay" class="zoom-overlay" onclick="closeZoom()" role="dialog" aria-modal="true" aria-label="圖片放大">
