@@ -2662,6 +2662,8 @@
         }
       }
 
+      let _deepLinkHandled = false;
+
       function renderProducts(products) {
         const container = document.getElementById("product-list");
         container.innerHTML = "";
@@ -2771,13 +2773,16 @@
           container.appendChild(card);
         });
 
-        // 商品深層連結：自動開啟指定商品的詳細視窗
-        const _targetFid = new URLSearchParams(window.location.search).get('id');
-        if (_targetFid) {
-          const targetProduct = allProductsData.find(p => p.firestoreId === _targetFid);
-          if (targetProduct) {
-            const targetIdx = allProductsData.indexOf(targetProduct);
-            setTimeout(() => { openQuickShop(targetIdx); }, 500);
+        // 商品深層連結：只在第一次渲染時開啟，切換分類不會重複觸發
+        if (!_deepLinkHandled) {
+          const _targetFid = new URLSearchParams(window.location.search).get('id');
+          if (_targetFid) {
+            const targetProduct = allProductsData.find(p => p.firestoreId === _targetFid);
+            if (targetProduct) {
+              _deepLinkHandled = true;
+              const targetIdx = allProductsData.indexOf(targetProduct);
+              setTimeout(() => { openQuickShop(targetIdx); }, 500);
+            }
           }
         }
       }
