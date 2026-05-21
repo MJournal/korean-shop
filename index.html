@@ -2361,39 +2361,6 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
-      // === 社群入口 ===
-      const _COMM_SECRET = 'Mn@MinaZhuang2024';
-      let _communityGatePw = '';
-      function _getCommunityToken() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const h = now.getDate() <= 14 ? 'A' : 'B';
-        return btoa(`${_COMM_SECRET}_${y}${m}${h}`).replace(/[+/=]/g, '').slice(0, 12);
-      }
-      function initCommunityGate(globalData) {
-        if (!globalData.communityGateEnabled || !globalData.communityGatePassword) return;
-        _communityGatePw = globalData.communityGatePassword;
-        const overlay = document.getElementById('comm-gate-overlay');
-        overlay.style.display = 'flex';
-        document.getElementById('comm-gate-input').addEventListener('keydown', e => {
-          if (e.key === 'Enter') confirmCommunityGate();
-        });
-      }
-      window.confirmCommunityGate = function() {
-        const val = document.getElementById('comm-gate-input').value.trim();
-        if (val === _communityGatePw) {
-          window.location.href = `https://mjournal.github.io/korean-shop/members.html?s=${_getCommunityToken()}`;
-        } else {
-          document.getElementById('comm-gate-error').style.display = 'block';
-          document.getElementById('comm-gate-input').value = '';
-          document.getElementById('comm-gate-input').focus();
-        }
-      };
-      window.skipCommunityGate = function() {
-        document.getElementById('comm-gate-overlay').style.display = 'none';
-      };
-
       // === 🔒 手機版背景鎖定大神器 ===
       let savedScrollPosition = 0;
       let isOrderEnded  = false;
@@ -2575,9 +2542,6 @@
           ]);
           isOrderEnded  = globalSnap.exists() ? (globalSnap.data().isOrderEnded  === true) : false;
           isNoticeShown = globalSnap.exists() ? (globalSnap.data().isNoticeShown === true) : false;
-
-          // 社群入口檢查
-          if (globalSnap.exists()) initCommunityGate(globalSnap.data());
 
           // 載入 Notice 公告欄
           const notices = globalSnap.exists() ? (globalSnap.data().notices || []) : [];
@@ -3409,21 +3373,6 @@
       });
     </script>
 
-    <!-- 社群入口 Modal -->
-    <div id="comm-gate-overlay" style="display:none;position:fixed;inset:0;z-index:9999;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(253,251,247,0.55);align-items:center;justify-content:center;">
-      <div style="background:#fff;border-radius:16px;padding:36px 32px;width:min(360px,88vw);box-shadow:0 8px 48px rgba(160,120,80,0.18);text-align:center;">
-        <div style="font-size:0.68rem;letter-spacing:5px;color:#c8a882;text-transform:uppercase;margin-bottom:10px;">Members Only</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;font-style:italic;color:#2a2520;letter-spacing:2px;margin-bottom:4px;">Mina 妝日子</div>
-        <div style="font-size:0.75rem;color:#b8a898;letter-spacing:1px;margin-bottom:20px;">社群成員專屬</div>
-        <div style="width:40px;height:1px;background:#e8ddd4;margin:0 auto 20px;"></div>
-        <div style="font-size:0.82rem;color:#9a8878;margin-bottom:20px;line-height:1.8;">請輸入本月社群密碼進入會員專區<br>或直接略過瀏覽一般商品</div>
-        <input type="password" id="comm-gate-input" placeholder="本月密碼"
-          style="width:100%;padding:11px 14px;border:1px solid #ddd3c8;border-radius:8px;font-size:0.9rem;font-family:inherit;text-align:center;letter-spacing:3px;outline:none;margin-bottom:8px;background:#fdfbf7;">
-        <div id="comm-gate-error" style="color:#c97c7c;font-size:0.78rem;margin-bottom:10px;display:none;">密碼錯誤，請再試一次</div>
-        <button onclick="confirmCommunityGate()" style="width:100%;padding:12px;background:#b07352;color:#fff;border:none;border-radius:8px;font-size:0.88rem;font-family:inherit;cursor:pointer;margin-bottom:10px;letter-spacing:1px;">進入社群專區</button>
-        <button onclick="skipCommunityGate()" style="width:100%;padding:10px;background:none;border:1px solid #e8ddd4;border-radius:8px;font-size:0.82rem;font-family:inherit;color:#b8a898;cursor:pointer;">略過，瀏覽一般商品</button>
-      </div>
-    </div>
 
     <!-- 進站結單公告 Modal -->
     <div id="ended-notice-overlay" onclick="if(event.target===this) closeEndedNotice()">
