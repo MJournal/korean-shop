@@ -1884,15 +1884,16 @@
 
       .cart-total {
         font-family: "Noto Sans TC", sans-serif;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 600;
         text-align: right;
+        margin-top: 8px;
       }
 
       .cart-notice {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         color: var(--price-color);
-        margin: 15px 0 5px;
+        margin: 8px 0 4px;
         text-align: center;
         font-family: "Noto Sans TC", sans-serif;
         line-height: 1.5;
@@ -2292,16 +2293,16 @@
         </div>
 
         <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
-        <div id="promo-box" style="display:none;margin-top:16px;padding:14px;background:#fdfbf7;border-radius:8px;border:1px solid #e6d0c0;">
-          <div id="promo-label" style="font-size:0.8rem;color:#b07352;font-weight:500;margin-bottom:8px;line-height:1.6;"></div>
-          <div style="display:flex;gap:8px;">
-            <input type="text" id="promo-code-input" placeholder="輸入折扣碼"
-              style="flex:1;padding:8px 12px;border:1px solid #ddd3c8;border-radius:6px;font-size:0.88rem;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fff;"
+        <div id="promo-box" style="display:none;margin-top:8px;padding:7px 10px;background:#fdfbf7;border-radius:6px;border:1px solid #e6d0c0;">
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
+            <input type="text" id="promo-code-input" placeholder="折扣碼"
+              style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:0.8rem;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fff;"
               onkeydown="if(event.key==='Enter') applyPromoCode()">
             <button onclick="applyPromoCode()"
-              style="padding:8px 14px;background:#b07352;color:#fff;border:none;border-radius:6px;font-size:0.82rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
+              style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
           </div>
-          <div id="promo-message" style="font-size:0.78rem;margin-top:6px;min-height:1.2em;"></div>
+          <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
         </div>
 
         <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
@@ -3135,13 +3136,13 @@
           let breakdownHtml = '';
           if (_discountBreakdown.length > 0) {
             _discountBreakdown.forEach(d => {
-              breakdownHtml += `<div style="font-size:0.82rem;color:#b07352;margin-bottom:2px;">${d.label}：-NT$${d.amount}</div>`;
+              breakdownHtml += `<span style="font-size:0.72rem;color:#b07352;margin-right:8px;">${d.label} -$${d.amount}</span>`;
             });
           }
           totalEl.innerHTML = `
-            <div style="font-size:0.9rem;color:#999;text-decoration:line-through;margin-bottom:2px;font-weight:normal;">小計: NT$ ${total}</div>
-            ${breakdownHtml}
-            <div style="color:#d65a5a;font-weight:600;">結帳總金額: NT$ ${finalTotal}</div>
+            <div style="font-size:0.75rem;color:#bbb;text-decoration:line-through;margin-bottom:1px;font-weight:normal;">小計 NT$ ${total}</div>
+            <div style="margin-bottom:2px;">${breakdownHtml}</div>
+            <div style="color:#d65a5a;font-weight:600;">總金額: NT$ ${finalTotal}</div>
           `;
         } else {
           totalEl.innerText = `總金額: NT$ ${total}`;
