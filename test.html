@@ -2280,13 +2280,26 @@
         <div class="cart-platform-section">
           <p class="cart-platform-title">選擇下單平台：</p>
           <label class="cart-platform-label">
-            <input type="radio" name="shipping" value="賣貨便" class="cart-radio" />
+            <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
             7-11 賣貨便
           </label>
           <label class="cart-platform-label">
             <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
             iOPEN Mall
           </label>
+        </div>
+
+        <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
+        <div id="promo-box" style="display:none;margin-top:16px;padding:14px;background:#fdfbf7;border-radius:8px;border:1px solid #e6d0c0;">
+          <div id="promo-label" style="font-size:0.8rem;color:#b07352;font-weight:500;margin-bottom:8px;line-height:1.6;"></div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="promo-code-input" placeholder="輸入折扣碼"
+              style="flex:1;padding:8px 12px;border:1px solid #ddd3c8;border-radius:6px;font-size:0.88rem;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fff;"
+              onkeydown="if(event.key==='Enter') applyPromoCode()">
+            <button onclick="applyPromoCode()"
+              style="padding:8px 14px;background:#b07352;color:#fff;border:none;border-radius:6px;font-size:0.82rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
+          </div>
+          <div id="promo-message" style="font-size:0.78rem;margin-top:6px;min-height:1.2em;"></div>
         </div>
 
         <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
@@ -2348,7 +2361,7 @@
 
 <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
       const firebaseConfig = {
         apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
@@ -2361,10 +2374,16 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      // === 社群來源偵測 ===
+      if (new URLSearchParams(location.search).get('ref') === 'comm') {
+        sessionStorage.setItem('_minaRef', 'comm');
+      }
+
       // === 🔒 手機版背景鎖定大神器 ===
       let savedScrollPosition = 0;
       let isOrderEnded  = false;
       let isNoticeShown = false;
+      let _dcSettings   = null;  // 折扣碼設定（從 Firebase 載入）
 
       function freezeBackground() {
         savedScrollPosition = window.scrollY;
@@ -2385,8 +2404,9 @@
 
       let allProductsData = [];
       let cart = [];
-      let currentPromoCode = "";
-      let currentDiscount = 0;
+      let currentPromoCode    = "";
+      let currentDiscount     = 0;
+      let _discountBreakdown  = [];  // [{label, amount}, ...]
 
       // === ⏰ 截止時間工具函式 ===
       function formatDeadline(str) {
@@ -2481,32 +2501,73 @@
       }
 
       // === 🎁 折扣碼功能 ===
+      function _updatePromoBoxVisibility() {
+        const box = document.getElementById('promo-box');
+        if (!box) return;
+        const isFromComm    = sessionStorage.getItem('_minaRef') === 'comm';
+        const hasActiveCode = _dcSettings && _dcSettings.active && _dcSettings.code;
+        if (isFromComm && hasActiveCode) {
+          box.style.display = 'block';
+          const labelEl = document.getElementById('promo-label');
+          if (labelEl) labelEl.textContent = `社群限定 · ${_dcSettings.label || ''}`;
+        } else {
+          box.style.display = 'none';
+        }
+      }
+
       function applyPromoCode() {
         const input = document.getElementById("promo-code-input").value.trim().toUpperCase();
         const msgEl = document.getElementById("promo-message");
+        msgEl.style.color = '#c97c7c';
+
+        if (!input) { msgEl.textContent = "請輸入折扣碼"; return; }
+        if (!_dcSettings || !_dcSettings.active) { msgEl.textContent = "目前沒有可用的折扣活動"; return; }
+        if (input !== _dcSettings.code) { msgEl.textContent = "折扣碼不正確，請確認後再試"; return; }
+        if ((_dcSettings.useCount || 0) >= (_dcSettings.maxUses || 999)) {
+          msgEl.textContent = "此折扣碼已達使用上限"; return;
+        }
 
         let subtotal = 0;
-        cart.forEach((item) => (subtotal += item.price * item.qty));
+        cart.forEach(item => subtotal += item.price * item.qty);
 
-        if (input === "") { msgEl.innerText = "請輸入折扣碼"; return; }
-        if (input !== "HELLO50") { msgEl.innerText = "無效的折扣碼"; return; }
+        const rules = _dcSettings.rules || [];
+        const breakdown = [];
+        let afterDiscount = subtotal;
 
-        const now = new Date();
-        const startTime = new Date("2026-02-24T00:00:00");
-        const endTime = new Date("2026-03-06T23:59:59");
+        const r1 = rules[0];
+        if (r1 && r1.deductAmount && subtotal >= r1.minSpend) {
+          breakdown.push({ label: r1.label || `滿${r1.minSpend}折${r1.deductAmount}`, amount: r1.deductAmount });
+          afterDiscount -= r1.deductAmount;
+        }
 
-        if (now < startTime) { msgEl.innerText = "活動將於 2/28 開始喔！"; return; }
-        if (now > endTime) { msgEl.innerText = "此折扣碼活動已結束囉！"; return; }
-        if (subtotal < 500) { msgEl.innerText = `需滿 NT$500 才可使用 (目前差 NT$${500 - subtotal})`; return; }
+        const r2 = rules[1];
+        if (r2 && r2.rate && afterDiscount >= r2.minSpend) {
+          const disc2 = Math.round(afterDiscount * (1 - r2.rate));
+          breakdown.push({ label: r2.label || `滿${r2.minSpend}打${Math.round(r2.rate*100)}折`, amount: disc2 });
+        }
 
-        currentPromoCode = input;
-        currentDiscount = 50;
+        if (breakdown.length === 0) {
+          const minNeeded = r1 ? r1.minSpend : 0;
+          if (minNeeded > subtotal) {
+            msgEl.textContent = `需消費滿 NT$${minNeeded} 才可使用（還差 NT$${minNeeded - subtotal}）`;
+          } else {
+            msgEl.textContent = "未達折扣條件";
+          }
+          return;
+        }
+
+        _discountBreakdown = breakdown;
+        currentPromoCode   = _dcSettings.code;
+        currentDiscount    = breakdown.reduce((s, d) => s + d.amount, 0);
+        msgEl.style.color  = '#2a7c5f';
+        msgEl.textContent  = `✓ 折扣已套用`;
         renderCartItems();
       }
 
       function removePromoCode() {
-        currentPromoCode = "";
-        currentDiscount = 0;
+        currentPromoCode   = "";
+        currentDiscount    = 0;
+        _discountBreakdown = [];
         renderCartItems();
       }
 
@@ -2542,6 +2603,7 @@
           ]);
           isOrderEnded  = globalSnap.exists() ? (globalSnap.data().isOrderEnded  === true) : false;
           isNoticeShown = globalSnap.exists() ? (globalSnap.data().isNoticeShown === true) : false;
+          _dcSettings   = globalSnap.exists() ? (globalSnap.data().discountCode  || null) : null;
 
           // 載入 Notice 公告欄
           const notices = globalSnap.exists() ? (globalSnap.data().notices || []) : [];
@@ -2555,8 +2617,10 @@
           onSnapshot(doc(db, 'settings', 'global'), (snap) => {
             isOrderEnded  = snap.exists() ? (snap.data().isOrderEnded  === true) : false;
             isNoticeShown = snap.exists() ? (snap.data().isNoticeShown === true) : false;
+            _dcSettings   = snap.exists() ? (snap.data().discountCode  || null) : null;
             const notices = snap.exists() ? (snap.data().notices || []) : [];
             renderNoticeboard(notices);
+            _updatePromoBoxVisibility();
             if (allProductsData.length > 0) renderProducts(allProductsData);
           });
 
@@ -2993,8 +3057,9 @@
         if (cart.length === 0) {
           container.innerHTML = "<p style=\"text-align:center; color:#999; margin-top:40px; font-family:'Noto Sans TC', sans-serif;\">購物車目前是空的</p>";
           totalEl.innerText = "總金額: NT$ 0";
-          currentPromoCode = "";
-          currentDiscount = 0;
+          currentPromoCode   = "";
+          currentDiscount    = 0;
+          _discountBreakdown = [];
           return;
         }
 
@@ -3035,10 +3100,17 @@
         totalEl.style.fontFamily = "'Noto Sans TC', sans-serif";
 
         if (currentDiscount > 0) {
+          let breakdownHtml = '';
+          if (_discountBreakdown.length > 0) {
+            _discountBreakdown.forEach(d => {
+              breakdownHtml += `<div style="font-size:0.82rem;color:#b07352;margin-bottom:2px;">${d.label}：-NT$${d.amount}</div>`;
+            });
+          }
           totalEl.innerHTML = `
-          <div style="font-size: 0.9rem; color: #999; text-decoration: line-through; margin-bottom: 4px; font-weight: normal;">小計: NT$ ${total}</div>
-          <div style="color: #d65a5a; font-weight: 600;">結帳總金額: NT$ ${finalTotal}</div>
-        `;
+            <div style="font-size:0.9rem;color:#999;text-decoration:line-through;margin-bottom:2px;font-weight:normal;">小計: NT$ ${total}</div>
+            ${breakdownHtml}
+            <div style="color:#d65a5a;font-weight:600;">結帳總金額: NT$ ${finalTotal}</div>
+          `;
         } else {
           totalEl.innerText = `總金額: NT$ ${total}`;
         }
@@ -3068,6 +3140,37 @@
         const pool = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
         const rand = Array.from({length: 4}, () => pool[Math.floor(Math.random() * pool.length)]).join('');
         return `${mm}${dd}-${rand}`;
+      }
+
+      // 結帳前驗證：商品是否還在架上、價格是否有變
+      async function _verifyCartItems(cartItems) {
+        const unavailable = [];
+        const priceChanges = [];
+        const ids = [...new Set(cartItems.filter(it => it.productId).map(it => it.productId))];
+        const snaps = {};
+        for (const id of ids) {
+          try { snaps[id] = await getDoc(doc(db, 'products', id)); } catch(e) {}
+        }
+        for (const item of cartItems) {
+          if (!item.productId) continue;
+          const snap = snaps[item.productId];
+          if (!snap || !snap.exists()) {
+            unavailable.push(`・${item.name.replace(/<br>/gi,' ')}（商品已不存在）`); continue;
+          }
+          const p = snap.data();
+          if (p.status !== '上架') {
+            unavailable.push(`・${item.name.replace(/<br>/gi,' ')}（已下架或售完）`); continue;
+          }
+          if (p.deadline && new Date() > new Date(p.deadline)) {
+            unavailable.push(`・${item.name.replace(/<br>/gi,' ')}（已截止下單）`); continue;
+          }
+          const v = (p.variants || [])[item.variantIndex];
+          if (v) {
+            const cur = parseInt((v.promo || v.price || '0').replace(/[^0-9]/g, ''));
+            if (cur !== item.price) priceChanges.push({ item, oldPrice: item.price, newPrice: cur });
+          }
+        }
+        return { unavailable, priceChanges };
       }
 
       // 以 Firebase Transaction 扣庫存；有不足時拋出錯誤
@@ -3131,10 +3234,31 @@
         if (checkoutBtn) { checkoutBtn.disabled = true; checkoutBtn.textContent = '處理中，請稍候…'; }
 
         try {
-          // ① 產生訂單編號
+          // ① 驗證商品狀態與價格
+          const { unavailable, priceChanges } = await _verifyCartItems(cart);
+
+          if (unavailable.length > 0) {
+            alert(`以下商品目前無法下單，請移除後再試：\n\n${unavailable.join('\n')}`);
+            if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = '傳送至 LINE官方帳號'; }
+            return;
+          }
+          if (priceChanges.length > 0) {
+            const lines = priceChanges.map(c =>
+              `・${c.item.name.replace(/<br>/gi,' ')}${c.item.spec !== '單一規格' ? '（'+c.item.spec+'）' : ''}：NT$${c.oldPrice} → NT$${c.newPrice}`
+            ).join('\n');
+            const ok = confirm(`商品價格已更新，請確認後再送出：\n\n${lines}\n\n以新價格繼續下單？`);
+            if (!ok) {
+              if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = '傳送至 LINE官方帳號'; }
+              return;
+            }
+            priceChanges.forEach(c => { c.item.price = c.newPrice; });
+            saveCart();
+          }
+
+          // ② 產生訂單編號
           const orderId = _generateOrderId();
 
-          // ② 扣庫存（Transaction，庫存不足直接中止）
+          // ③ 扣庫存（Transaction，庫存不足直接中止）
           await _deductStock(cart);
 
           // ③ 計算金額
@@ -3143,7 +3267,17 @@
           let finalTotal = total - currentDiscount;
           if (finalTotal < 0) finalTotal = 0;
 
-          // ④ 寫入 orders 集合
+          // ④ 遞增折扣碼使用次數
+          const isFromComm = sessionStorage.getItem('_minaRef') === 'comm';
+          if (currentPromoCode && _dcSettings) {
+            try {
+              await updateDoc(doc(db, 'settings', 'global'), {
+                'discountCode.useCount': increment(1)
+              });
+            } catch(e) { console.error('useCount increment failed', e); }
+          }
+
+          // ⑤ 寫入 orders 集合
           await addDoc(collection(db, 'orders'), {
             orderId,
             status:    '待確認',
@@ -3152,10 +3286,11 @@
             discount:  currentDiscount,
             promoCode: currentPromoCode || '',
             shipping:  selectedShipping,
+            source:    isFromComm ? 'community' : 'web',
             createdAt: serverTimestamp(),
           });
 
-          // ⑤ 組 LINE 訊息（訂單編號在第一行）
+          // ⑥ 組 LINE 訊息（訂單編號在第一行）
           const now     = new Date();
           const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
           let message = `【訂單編號：${orderId}】\n\n`;
@@ -3171,7 +3306,15 @@
 
           message += `\n`;
           if (currentDiscount > 0) {
-            message += `小計: NT$ ${total}\n折扣 [${currentPromoCode}]: -$${currentDiscount}\n總金額: NT$ ${finalTotal}\n`;
+            message += `小計: NT$ ${total}\n`;
+            if (_discountBreakdown.length > 0) {
+              _discountBreakdown.forEach(d => {
+                message += `折扣 [${currentPromoCode}] ${d.label}: -NT$${d.amount}\n`;
+              });
+            } else {
+              message += `折扣 [${currentPromoCode}]: -NT$${currentDiscount}\n`;
+            }
+            message += `總金額: NT$ ${finalTotal}\n`;
           } else {
             message += `總金額: NT$ ${total}\n`;
           }
@@ -3179,7 +3322,8 @@
             const finalDeposit = Math.min(Math.round(finalTotal * 0.1 / 100) * 100, 500);
             message += `(預付定金10%: NT$ ${finalDeposit})\n`;
           }
-          message += `平台: ${selectedShipping}\n\n📋 查看訂單\nhttps://beckyuu.github.io/korean-shop/order-query.html?id=${orderId}`;
+          if (isFromComm) message += `來源: 社群\n`;
+          message += `平台: ${selectedShipping}\n\n📋 查看訂單\nhttps://mjournal.github.io/korean-shop/order-query.html?id=${orderId}`;
 
           // ⑥ 跳轉 LINE
           const lineUrl  = `https://line.me/R/oaMessage/@139gqqwy/?${encodeURIComponent(message)}`;
@@ -3317,9 +3461,11 @@
         closeQrModal,
         applyPromoCode,
         removePromoCode,
+        _updatePromoBoxVisibility,
         closeEndedNotice,
       });
     </script>
+
 
     <!-- 進站結單公告 Modal -->
     <div id="ended-notice-overlay" onclick="if(event.target===this) closeEndedNotice()">
