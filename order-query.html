@@ -387,6 +387,56 @@
       line-height: 1.6;
     }
 
+    /* ── Price Summary ── */
+    .price-summary {
+      margin: 4px 28px 20px;
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 5px 0;
+      font-size: 0.8rem;
+      color: #7a6858;
+    }
+    .price-row-label { letter-spacing: 0.5px; }
+    .price-row-value { font-variant-numeric: tabular-nums; }
+    .price-row.free-ship .price-row-value { color: #4caf50; font-weight: 500; }
+    .price-row.discount .price-row-value { color: #b07352; }
+    .price-divider-thin { border: none; border-top: 1px solid #ede5db; margin: 4px 0; }
+    .price-row-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 0 4px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #2a2520;
+    }
+    .price-row-balance {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 8px 0 2px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #b07352;
+      letter-spacing: 0.5px;
+    }
+    .deposit-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .deposit-paid   { background: #e8f5e9; color: #2e7d32; border: 1px solid #81c784; }
+    .deposit-unpaid { background: #fff3e0; color: #e65100; border: 1px solid #ffb74d; }
+
     /* ── Footer ── */
     .rcpt-footer {
       text-align: center;
@@ -453,6 +503,9 @@
 
     <!-- Note -->
     <div id="r-note"></div>
+
+    <!-- Price Summary -->
+    <div id="r-price-summary"></div>
 
   </div>
 
@@ -624,6 +677,75 @@
     // Note
     document.getElementById('r-note').innerHTML = o.note
       ? `<div class="rcpt-note">📝 ${esc(o.note)}</div>` : '';
+
+    // Price summary
+    const cart2       = o.confirmedCart || o.cart || [];
+    const cf2         = o.cartFulfillment || [];
+    const goodsTotal  = cart2.reduce((s, item, i) => {
+      if (cf2[i] && cf2[i].oos) return s;
+      return s + (Number(item.price)||0) * (Number(item.qty)||1);
+    }, 0);
+    const discount    = Number(o.discount)    || 0;
+    const shippingFee = Number(o.shippingFee) ?? null;   // null = 未記錄（舊訂單）
+    const orderTotal  = Number(o.confirmedTotal ?? o.total) || 0;
+    const deposit     = Number(o.confirmedDeposit ?? o.deposit) || 0;
+    const depositPaid = !!o.depositPaid;
+    const balance     = Math.max(0, orderTotal - deposit);
+
+    const fmtNT = n => `NT$ ${Number(n).toLocaleString()}`;
+
+    let summaryHtml = `
+      <div class="rcpt-section-label" style="margin-top:4px;">金額明細</div>
+      <hr class="rcpt-divider">
+      <div class="price-summary">
+        <div class="price-row">
+          <span class="price-row-label">商品小計</span>
+          <span class="price-row-value">${fmtNT(goodsTotal)}</span>
+        </div>`;
+
+    if (discount > 0) {
+      summaryHtml += `
+        <div class="price-row discount">
+          <span class="price-row-label">折扣</span>
+          <span class="price-row-value">-${fmtNT(discount)}</span>
+        </div>`;
+    }
+
+    if (shippingFee !== null) {
+      summaryHtml += `
+        <div class="price-row${shippingFee === 0 ? ' free-ship' : ''}">
+          <span class="price-row-label">運費</span>
+          <span class="price-row-value">${shippingFee === 0 ? '免運 ✓' : fmtNT(shippingFee)}</span>
+        </div>`;
+    }
+
+    summaryHtml += `
+        <hr class="price-divider-thin">
+        <div class="price-row-total">
+          <span>合計</span>
+          <span>${fmtNT(orderTotal)}</span>
+        </div>`;
+
+    if (deposit > 0) {
+      const statusCls   = depositPaid ? 'deposit-paid' : 'deposit-unpaid';
+      const statusLabel = depositPaid ? '✓ 已付' : '○ 未付';
+      summaryHtml += `
+        <div class="price-row">
+          <span class="price-row-label">
+            預付定金
+            <span class="deposit-status ${statusCls}">${statusLabel}</span>
+          </span>
+          <span class="price-row-value">-${fmtNT(deposit)}</span>
+        </div>
+        <hr class="price-divider-thin">
+        <div class="price-row-balance">
+          <span>尾款</span>
+          <span>${fmtNT(balance)}</span>
+        </div>`;
+    }
+
+    summaryHtml += `</div>`;
+    document.getElementById('r-price-summary').innerHTML = summaryHtml;
 
     document.getElementById('receipt-area').style.display = 'block';
   }
