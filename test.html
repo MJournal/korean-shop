@@ -1377,12 +1377,20 @@
       }
 
       .qs-qty-wrapper button {
-        width: 35px;
+        width: 44px;
+        min-height: 44px;
         background: #f5f5f5;
         border: none;
         cursor: pointer;
         font-size: 1.2rem;
         color: #555;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
 
       .qs-qty-wrapper input {
@@ -1603,12 +1611,20 @@
       }
 
       .qs-qty-wrapper button {
-        width: 35px;
+        width: 44px;
         height: 100%;
+        min-height: 44px;
         border: none;
         background: transparent;
         cursor: pointer;
         font-size: 1.2rem;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
 
       .qs-qty-wrapper input {
@@ -3117,14 +3133,19 @@
         cart.forEach((item, idx) => {
           total += item.price * item.qty;
           html += `
-                <div style="display:grid; grid-template-columns: 1fr 90px; gap:10px; padding:15px 0; border-bottom:1px solid #f5f5f5; align-items:center;">
+                <div style="display:grid; grid-template-columns: 1fr auto; gap:10px; padding:15px 0; border-bottom:1px solid #f5f5f5; align-items:start;">
                     <div style="font-family: 'Noto Sans TC', sans-serif; overflow:hidden;">
                         <div style="font-size: 1rem; font-weight: 500; color: #2c2c2c; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
-                        <div style="font-size:0.85rem; color:#888;">${item.spec} <span style="font-size:0.8rem; color:#ccc; margin:0 5px;">x</span> ${item.qty}${item.gift ? `<span style="color:#d4a373; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
+                        <div style="font-size:0.85rem; color:#888;">${item.spec}${item.gift ? `<span style="color:#d4a373; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
                     </div>
-                    <div style="text-align:right; font-family: 'Noto Sans TC', sans-serif;">
-                        <div style="font-weight:600; font-size:1rem; color:#2c2c2c;">NT$ ${item.price * item.qty}</div>
-                        <div style="color:#bfa092; cursor:pointer; font-size:0.8rem; margin-top:6px; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
+                    <div style="text-align:right; font-family: 'Noto Sans TC', sans-serif; min-width:90px;">
+                        <div style="font-weight:600; font-size:1rem; color:#2c2c2c; margin-bottom:8px;">NT$ ${item.price * item.qty}</div>
+                        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; margin-bottom:6px;">
+                            <button onclick="changeCartQty(${idx},-1)" style="width:30px;height:30px;border:1px solid #ddd;border-radius:50%;background:#f5f5f5;font-size:1.1rem;cursor:pointer;color:#555;line-height:1;touch-action:manipulation;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
+                            <span style="font-size:0.9rem;color:#333;min-width:20px;text-align:center;">${item.qty}</span>
+                            <button onclick="changeCartQty(${idx},1)" style="width:30px;height:30px;border:1px solid #ddd;border-radius:50%;background:#f5f5f5;font-size:1.1rem;cursor:pointer;color:#555;line-height:1;touch-action:manipulation;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>
+                        </div>
+                        <div style="color:#bfa092; cursor:pointer; font-size:0.8rem; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
                     </div>
                 </div>`;
         });
@@ -3184,6 +3205,15 @@
           div.innerHTML = depositHtml;
           totalEl.after(div);
         }
+      }
+
+      function changeCartQty(idx, change) {
+        if (!cart[idx]) return;
+        const newQty = cart[idx].qty + change;
+        if (newQty < 1) { removeFromCart(idx); return; }
+        cart[idx].qty = newQty;
+        saveCart();
+        renderCartItems();
       }
 
       function removeFromCart(idx) {
@@ -3521,6 +3551,7 @@
         closeZoom,
         openQuickShop,
         removeFromCart,
+        changeCartQty,
         closeQrModal,
         applyPromoCode,
         removePromoCode,
