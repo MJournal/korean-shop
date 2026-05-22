@@ -695,9 +695,9 @@
       return `<div class="rcpt-item">
         ${imgHtml}${placeholder}
         <div class="rcpt-item-content">
-          <div class="rcpt-item-name">${esc((it.name||'').replace(/<br>/gi,' '))}${addonHtml}</div>
+          <div class="rcpt-item-name">${esc((it.name||'').replace(/<br>/gi,' '))}</div>
           <div>${specHtml}${giftHtml}</div>
-          <div class="rcpt-item-price">NT$${Number(it.price||0).toLocaleString()} × ${qty}</div>
+          <div class="rcpt-item-price">NT$${Number(it.price||0).toLocaleString()} × ${qty}${addonHtml}</div>
           <span class="item-status ${st.cls}">${st.label}</span>
         </div>
       </div>${divider}`;
