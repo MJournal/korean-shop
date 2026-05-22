@@ -318,6 +318,17 @@
       border-radius: 10px;
       margin-bottom: 6px;
     }
+    .rcpt-item-addon {
+      display: inline-block;
+      background: #eef4fb;
+      color: #3a6090;
+      font-size: 0.62rem;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: 6px;
+      vertical-align: middle;
+      letter-spacing: 0.5px;
+    }
     .rcpt-item-gift {
       display: inline-block;
       background: #fdf0e8;
@@ -677,12 +688,14 @@
         ? `<span class="rcpt-item-spec">${esc(it.spec)}</span>` : '';
       const giftHtml = it.gift
         ? `<span class="rcpt-item-gift">贈：${esc(it.gift)}</span>` : '';
+      const addonHtml = it.isAddon
+        ? `<span class="rcpt-item-addon">加單</span>` : '';
       const divider  = i < sortedItems.length - 1 ? '<hr class="rcpt-divider-dash">' : '';
 
       return `<div class="rcpt-item">
         ${imgHtml}${placeholder}
         <div class="rcpt-item-content">
-          <div class="rcpt-item-name">${esc((it.name||'').replace(/<br>/gi,' '))}</div>
+          <div class="rcpt-item-name">${esc((it.name||'').replace(/<br>/gi,' '))}${addonHtml}</div>
           <div>${specHtml}${giftHtml}</div>
           <div class="rcpt-item-price">NT$${Number(it.price||0).toLocaleString()} × ${qty}</div>
           <span class="item-status ${st.cls}">${st.label}</span>
@@ -702,6 +715,7 @@
       return s + (Number(item.price)||0) * (Number(item.qty)||1);
     }, 0);
     const discount    = Number(o.discount)    || 0;
+    const promoCode   = (o.promoCode || '').trim();
     const shippingFee = Number(o.shippingFee) ?? null;   // null = 未記錄（舊訂單）
     const orderTotal  = Number(o.confirmedTotal ?? o.total) || 0;
     const deposit     = Number(o.confirmedDeposit ?? o.deposit) || 0;
@@ -720,9 +734,12 @@
         </div>`;
 
     if (discount > 0) {
+      const codeTag = promoCode
+        ? `<span style="font-size:0.7rem;opacity:0.6;margin-left:5px;letter-spacing:0.5px;">${esc(promoCode)}</span>`
+        : '';
       summaryHtml += `
         <div class="price-row discount">
-          <span class="price-row-label">折扣</span>
+          <span class="price-row-label">折扣${codeTag}</span>
           <span class="price-row-value">-${fmtNT(discount)}</span>
         </div>`;
     }
