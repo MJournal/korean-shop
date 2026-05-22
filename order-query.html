@@ -401,8 +401,7 @@
     }
     .price-row-label { letter-spacing: 0.5px; }
     .price-row-value { font-variant-numeric: tabular-nums; }
-    .price-row.free-ship .price-row-value { color: #4caf50; font-weight: 500; }
-    .price-row.discount .price-row-value { color: #b07352; }
+.price-row.discount .price-row-value { color: #b07352; }
     .price-divider-thin { border: none; border-top: 1px solid #ede5db; margin: 4px 0; }
     .price-row-total {
       display: flex;
@@ -428,14 +427,17 @@
       align-items: center;
       gap: 4px;
       padding: 2px 9px;
-      border-radius: 10px;
-      font-size: 0.68rem;
-      font-weight: 600;
+      border-radius: 3px;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
       margin-left: 8px;
       vertical-align: middle;
+      border: 1px solid transparent;
     }
-    .deposit-paid   { background: #e8f5e9; color: #2e7d32; border: 1px solid #81c784; }
-    .deposit-unpaid { background: #fff3e0; color: #e65100; border: 1px solid #ffb74d; }
+    .deposit-paid   { background: #edf6f0; color: #3a7055; border-color: #90c0a8; }
+    .deposit-unpaid { background: #fef8ec; color: #9a7020; border-color: #e0c878; }
 
     /* ── Footer ── */
     .rcpt-footer {
@@ -713,9 +715,9 @@
 
     if (shippingFee !== null) {
       summaryHtml += `
-        <div class="price-row${shippingFee === 0 ? ' free-ship' : ''}">
+        <div class="price-row">
           <span class="price-row-label">運費</span>
-          <span class="price-row-value">${shippingFee === 0 ? '免運 ✓' : fmtNT(shippingFee)}</span>
+          <span class="price-row-value">${fmtNT(shippingFee)}</span>
         </div>`;
     }
 
@@ -726,21 +728,23 @@
           <span>${fmtNT(orderTotal)}</span>
         </div>`;
 
-    if (deposit > 0) {
+    {
       const statusCls   = depositPaid ? 'deposit-paid' : 'deposit-unpaid';
-      const statusLabel = depositPaid ? '✓ 已付' : '○ 未付';
+      const statusLabel = depositPaid ? '✓ Paid' : '○ Pending';
+      const depositAmt  = deposit > 0 ? `-${fmtNT(deposit)}` : '待定';
+      const balanceAmt  = deposit > 0 ? fmtNT(balance) : '待定';
       summaryHtml += `
         <div class="price-row">
           <span class="price-row-label">
             預付定金
             <span class="deposit-status ${statusCls}">${statusLabel}</span>
           </span>
-          <span class="price-row-value">-${fmtNT(deposit)}</span>
+          <span class="price-row-value">${depositAmt}</span>
         </div>
         <hr class="price-divider-thin">
         <div class="price-row-balance">
           <span>尾款</span>
-          <span>${fmtNT(balance)}</span>
+          <span>${balanceAmt}</span>
         </div>`;
     }
 
