@@ -841,52 +841,79 @@
       .cart-modal {
         display: none;
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.3);
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         z-index: 2000;
-        justify-content: flex-end;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
       }
 
-      .cart-modal.show {
-        display: flex;
+      .cart-modal.show { display: flex; }
+
+      @keyframes cartPopUp {
+        from { transform: scale(0.96); opacity: 0; }
+        to   { transform: scale(1);    opacity: 1; }
       }
 
       .cart-content {
         background: #fff;
         width: 100%;
-        max-width: 420px;
-        height: 100%;
-        padding: 40px;
+        max-width: 860px;
+        height: 88vh;
+        border-radius: 16px;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18);
         display: flex;
         flex-direction: column;
-        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-        animation: slideLeft 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+        animation: cartPopUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      @keyframes slideLeft {
-        from {
-          transform: translateX(100%);
-        }
+      /* 左右兩欄 */
+      .cart-columns {
+        display: flex;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
 
-        to {
-          transform: translateX(0);
-        }
+      .cart-left {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+        border-right: 1px solid #f0f0f0;
+      }
+
+      /* 電腦版細捲軸 */
+      .cart-left::-webkit-scrollbar { width: 4px; }
+      .cart-left::-webkit-scrollbar-track { background: transparent; }
+      .cart-left::-webkit-scrollbar-thumb { background: #ddd0c4; border-radius: 2px; }
+
+      .cart-right {
+        width: 300px;
+        flex-shrink: 0;
+        padding: 18px 20px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        background: #fdfcfa;
       }
 
       .btn-checkout {
         width: 100%;
-        padding: 18px;
+        padding: 14px;
         background: #06c755;
         color: white;
         border: none;
+        border-radius: 8px;
         font-weight: 500;
         cursor: pointer;
-        margin-top: 20px;
+        margin-top: auto;
+        padding-top: 14px;
         letter-spacing: 1px;
-        /* 這裡的中文字距可以微調 */
         font-family: "Noto Sans TC", sans-serif;
       }
 
@@ -1350,12 +1377,20 @@
       }
 
       .qs-qty-wrapper button {
-        width: 35px;
+        width: 44px;
+        min-height: 44px;
         background: #f5f5f5;
         border: none;
         cursor: pointer;
         font-size: 1.2rem;
         color: #555;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
 
       .qs-qty-wrapper input {
@@ -1576,12 +1611,20 @@
       }
 
       .qs-qty-wrapper button {
-        width: 35px;
+        width: 44px;
         height: 100%;
+        min-height: 44px;
         border: none;
         background: transparent;
         cursor: pointer;
         font-size: 1.2rem;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
       }
 
       .qs-qty-wrapper input {
@@ -1767,63 +1810,34 @@
         }
       }
 
-      /* === 📱 手機版購物車空間極限優化 (讓商品列表變很長！) === */
-      @media (max-width: 768px) {
-        /* 1. 把整個白框的內距縮到最小，爭取最大空間 */
+      /* === 📱 手機版購物車：上下堆疊 === */
+      @media (max-width: 640px) {
+        .cart-modal {
+          padding: 0;
+          align-items: flex-end;
+        }
         .cart-content {
-          padding: 15px !important;
-          /* 原本 40px -> 改 15px，瞬間多出很多空間 */
+          height: 92vh;
+          border-radius: 16px 16px 0 0;
+          max-width: 100%;
         }
-
-        /* 2. 標題「購物清單」往上收 */
-        .cart-content > div:first-child {
-          margin-bottom: 10px !important;
+        .cart-columns {
+          flex-direction: column;
         }
-
-        /* 3. 壓縮「選擇下單平台」區塊 (這是接在商品列表下面的那塊) */
-        #cartItems + div {
-          padding-top: 10px !important;
-          /* 分隔線上方留白減少 */
-          margin-bottom: 10px !important;
-          /* 跟折扣碼的距離減少 */
+        .cart-left {
+          border-right: none;
+          border-bottom: 1px solid #f0f0f0;
+          max-height: 45vh;
+          padding: 14px 16px;
         }
-
-        /* 讓裡面的選項緊湊一點 */
-        #cartItems + div p {
-          margin-bottom: 5px !important;
+        .cart-right {
+          width: 100%;
+          padding: 14px 16px;
+          max-height: 47vh;
         }
-
-        #cartItems + div label {
-          margin-bottom: 2px !important;
-        }
-
-        /* 4. 壓縮「折扣碼」區塊 */
-        #promo-box {
-          margin-bottom: 8px !important;
-        }
-
-        /* 讓輸入框稍微矮一點，不用那麼肥 */
-        #promo-code-input,
-        #promo-box button {
-          height: 38px !important;
-        }
-
-        /* 5. 壓縮「總金額」與「按鈕」 */
-        #cartTotal {
-          margin-bottom: 5px !important;
-        }
-
-        /* 提醒小字 (訂單成立那行) */
-        .cart-content > p {
-          margin: 5px 0 !important;
-        }
-
-        /* 綠色結帳按鈕 */
         .btn-checkout {
-          margin-top: 5px !important;
-          /* 離上面近一點 */
-          padding: 12px !important;
-          /* 按鈕變矮一點 */
+          margin-top: 10px;
+          padding: 12px;
         }
       }
 
@@ -1832,7 +1846,9 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px;
+        padding: 18px 24px;
+        border-bottom: 1px solid #f0f0f0;
+        flex-shrink: 0;
       }
 
       .cart-title {
@@ -1849,15 +1865,15 @@
       }
 
       .cart-platform-section {
-        margin-bottom: 25px;
-        border-top: 1px solid #eee;
-        padding-top: 20px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid #f0f0f0;
+        padding-bottom: 12px;
       }
 
       .cart-platform-title {
-        margin-bottom: 15px;
-        font-weight: bold;
-        font-size: 1.1rem;
+        margin-bottom: 8px;
+        font-weight: 500;
+        font-size: 0.85rem;
         color: var(--text-main);
         font-family: "Noto Sans TC", sans-serif;
       }
@@ -1865,9 +1881,9 @@
       .cart-platform-label {
         display: flex;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 6px;
         cursor: pointer;
-        font-size: 1.1rem;
+        font-size: 0.9rem;
         color: #333;
         font-family: "Noto Sans TC", sans-serif;
       }
@@ -1884,15 +1900,16 @@
 
       .cart-total {
         font-family: "Noto Sans TC", sans-serif;
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         font-weight: 600;
         text-align: right;
+        margin-top: 8px;
       }
 
       .cart-notice {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
         color: var(--price-color);
-        margin: 15px 0 5px;
+        margin: 8px 0 4px;
         text-align: center;
         font-family: "Noto Sans TC", sans-serif;
         line-height: 1.5;
@@ -2270,35 +2287,62 @@
 
     <div id="cartModal" class="cart-modal" onclick="closeCart(event)" role="dialog" aria-modal="true" aria-label="購物車">
       <div class="cart-content">
+
+        <!-- 標題列 -->
         <div class="cart-header">
           <h3 class="cart-title">購物清單</h3>
           <span class="cart-close-btn" onclick="toggleCart()">×</span>
         </div>
 
-        <div class="cart-body" id="cartItems"></div>
+        <!-- 主體：左右兩欄 -->
+        <div class="cart-columns">
 
-        <div class="cart-platform-section">
-          <p class="cart-platform-title">選擇下單平台：</p>
-          <label class="cart-platform-label">
-            <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
-            7-11 賣貨便
-          </label>
-          <label class="cart-platform-label">
-            <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
-            iOPEN Mall
-          </label>
-        </div>
+          <!-- 左欄：商品列表 -->
+          <div class="cart-left" id="cartItems"></div>
 
-        <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
+          <!-- 右欄：結帳面板 -->
+          <div class="cart-right">
 
-        <p class="cart-notice">
-          ※ 首次交易皆需預付定金；非首次交易滿 NT$1,500 預收 10% 定金。
-        </p>
+            <div class="cart-platform-section">
+              <p class="cart-platform-title">選擇下單平台：</p>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <label class="cart-platform-label" style="margin-bottom:0;">
+                  <input type="radio" name="shipping" value="7-11 賣貨便" class="cart-radio" />
+                  7-11 賣貨便
+                </label>
+                <label class="cart-platform-label" style="margin-bottom:0;">
+                  <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
+                  iOPEN Mall
+                </label>
+              </div>
+            </div>
 
-        <button class="btn-checkout" onclick="checkoutViaLine()">
-          傳送至 LINE官方帳號
-        </button>
-      </div>
+            <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
+            <div id="promo-box" style="display:none;margin-top:10px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid #e6d0c0;">
+              <div style="display:flex;gap:6px;align-items:center;">
+                <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
+                <input type="text" id="promo-code-input" placeholder="折扣碼"
+                  style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:16px;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fdfbf7;"
+                  onkeydown="if(event.key==='Enter') applyPromoCode()">
+                <button onclick="applyPromoCode()"
+                  style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
+              </div>
+              <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
+            </div>
+
+            <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
+
+            <p class="cart-notice">
+              ※ 首次交易皆需預付定金；非首次交易滿 NT$1,500 預收 10% 定金。
+            </p>
+
+            <button class="btn-checkout" onclick="checkoutViaLine()">
+              傳送至 LINE官方帳號
+            </button>
+
+          </div><!-- /cart-right -->
+        </div><!-- /cart-columns -->
+      </div><!-- /cart-content -->
     </div>
 
     <div id="zoomOverlay" class="zoom-overlay" onclick="closeZoom()" role="dialog" aria-modal="true" aria-label="圖片放大">
@@ -2348,7 +2392,7 @@
 
 <script type="module">
       import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+      import { getFirestore, collection, doc, getDoc, query, where, orderBy, runTransaction, addDoc, serverTimestamp, onSnapshot, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
       const firebaseConfig = {
         apiKey: "AIzaSyAWWzDwfnPcPYXP7-yi10iQPq_wriZNUJg",
@@ -2361,10 +2405,19 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      const FREE_SHIPPING_THRESHOLD = 2500;
+      const SHIPPING_FEE = 38;
+
+      // === 社群來源偵測 ===
+      if (new URLSearchParams(location.search).get('ref') === 'comm') {
+        sessionStorage.setItem('_minaRef', 'comm');
+      }
+
       // === 🔒 手機版背景鎖定大神器 ===
       let savedScrollPosition = 0;
       let isOrderEnded  = false;
       let isNoticeShown = false;
+      let _dcSettings   = null;  // 折扣碼設定（從 Firebase 載入）
 
       function freezeBackground() {
         savedScrollPosition = window.scrollY;
@@ -2385,8 +2438,9 @@
 
       let allProductsData = [];
       let cart = [];
-      let currentPromoCode = "";
-      let currentDiscount = 0;
+      let currentPromoCode    = "";
+      let currentDiscount     = 0;
+      let _discountBreakdown  = [];  // [{label, amount}, ...]
 
       // === ⏰ 截止時間工具函式 ===
       function formatDeadline(str) {
@@ -2481,32 +2535,73 @@
       }
 
       // === 🎁 折扣碼功能 ===
+      function _updatePromoBoxVisibility() {
+        const box = document.getElementById('promo-box');
+        if (!box) return;
+        const isFromComm    = sessionStorage.getItem('_minaRef') === 'comm';
+        const hasActiveCode = _dcSettings && _dcSettings.active && _dcSettings.code;
+        if (isFromComm && hasActiveCode) {
+          box.style.display = 'block';
+          const labelEl = document.getElementById('promo-label');
+          if (labelEl) labelEl.textContent = `社群限定 · ${_dcSettings.label || ''}`;
+        } else {
+          box.style.display = 'none';
+        }
+      }
+
       function applyPromoCode() {
         const input = document.getElementById("promo-code-input").value.trim().toUpperCase();
         const msgEl = document.getElementById("promo-message");
+        msgEl.style.color = '#c97c7c';
+
+        if (!input) { msgEl.textContent = "請輸入折扣碼"; return; }
+        if (!_dcSettings || !_dcSettings.active) { msgEl.textContent = "目前沒有可用的折扣活動"; return; }
+        if (input !== _dcSettings.code) { msgEl.textContent = "折扣碼不正確，請確認後再試"; return; }
+        if ((_dcSettings.useCount || 0) >= (_dcSettings.maxUses || 999)) {
+          msgEl.textContent = "此折扣碼已達使用上限"; return;
+        }
 
         let subtotal = 0;
-        cart.forEach((item) => (subtotal += item.price * item.qty));
+        cart.forEach(item => subtotal += item.price * item.qty);
 
-        if (input === "") { msgEl.innerText = "請輸入折扣碼"; return; }
-        if (input !== "HELLO50") { msgEl.innerText = "無效的折扣碼"; return; }
+        const rules = _dcSettings.rules || [];
+        const breakdown = [];
+        let afterDiscount = subtotal;
 
-        const now = new Date();
-        const startTime = new Date("2026-02-24T00:00:00");
-        const endTime = new Date("2026-03-06T23:59:59");
+        const r1 = rules[0];
+        if (r1 && r1.deductAmount && subtotal >= r1.minSpend) {
+          breakdown.push({ label: r1.label || `滿${r1.minSpend}折${r1.deductAmount}`, amount: r1.deductAmount });
+          afterDiscount -= r1.deductAmount;
+        }
 
-        if (now < startTime) { msgEl.innerText = "活動將於 2/28 開始喔！"; return; }
-        if (now > endTime) { msgEl.innerText = "此折扣碼活動已結束囉！"; return; }
-        if (subtotal < 500) { msgEl.innerText = `需滿 NT$500 才可使用 (目前差 NT$${500 - subtotal})`; return; }
+        const r2 = rules[1];
+        if (r2 && r2.rate && afterDiscount >= r2.minSpend) {
+          const disc2 = Math.round(afterDiscount * (1 - r2.rate));
+          breakdown.push({ label: r2.label || `滿${r2.minSpend}打${Math.round(r2.rate*100)}折`, amount: disc2 });
+        }
 
-        currentPromoCode = input;
-        currentDiscount = 50;
+        if (breakdown.length === 0) {
+          const minNeeded = r1 ? r1.minSpend : 0;
+          if (minNeeded > subtotal) {
+            msgEl.textContent = `需消費滿 NT$${minNeeded} 才可使用（還差 NT$${minNeeded - subtotal}）`;
+          } else {
+            msgEl.textContent = "未達折扣條件";
+          }
+          return;
+        }
+
+        _discountBreakdown = breakdown;
+        currentPromoCode   = _dcSettings.code;
+        currentDiscount    = breakdown.reduce((s, d) => s + d.amount, 0);
+        msgEl.style.color  = '#2a7c5f';
+        msgEl.textContent  = `✓ 折扣已套用`;
         renderCartItems();
       }
 
       function removePromoCode() {
-        currentPromoCode = "";
-        currentDiscount = 0;
+        currentPromoCode   = "";
+        currentDiscount    = 0;
+        _discountBreakdown = [];
         renderCartItems();
       }
 
@@ -2542,6 +2637,7 @@
           ]);
           isOrderEnded  = globalSnap.exists() ? (globalSnap.data().isOrderEnded  === true) : false;
           isNoticeShown = globalSnap.exists() ? (globalSnap.data().isNoticeShown === true) : false;
+          _dcSettings   = globalSnap.exists() ? (globalSnap.data().discountCode  || null) : null;
 
           // 載入 Notice 公告欄
           const notices = globalSnap.exists() ? (globalSnap.data().notices || []) : [];
@@ -2555,8 +2651,10 @@
           onSnapshot(doc(db, 'settings', 'global'), (snap) => {
             isOrderEnded  = snap.exists() ? (snap.data().isOrderEnded  === true) : false;
             isNoticeShown = snap.exists() ? (snap.data().isNoticeShown === true) : false;
+            _dcSettings   = snap.exists() ? (snap.data().discountCode  || null) : null;
             const notices = snap.exists() ? (snap.data().notices || []) : [];
             renderNoticeboard(notices);
+            _updatePromoBoxVisibility();
             if (allProductsData.length > 0) renderProducts(allProductsData);
           });
 
@@ -2948,7 +3046,14 @@
           deadline:     product.deadline || '',
         };
 
-        cart.push(cartItem);
+        const existing = cart.find(i =>
+          i.productId === cartItem.productId && i.spec === cartItem.spec
+        );
+        if (existing) {
+          existing.qty += qty;
+        } else {
+          cart.push(cartItem);
+        }
         saveCart();
 
         const btn = document.getElementById("qs-add-btn");
@@ -2986,15 +3091,39 @@
         }
       }
 
+      function _recalcDiscount() {
+        if (!currentPromoCode || !_dcSettings) return;
+        let subtotal = 0;
+        cart.forEach(i => subtotal += i.price * i.qty);
+        const rules = _dcSettings.rules || [];
+        const breakdown = [];
+        let after = subtotal;
+        const r1 = rules[0];
+        if (r1 && r1.deductAmount && subtotal >= r1.minSpend) {
+          breakdown.push({ label: r1.label, amount: r1.deductAmount });
+          after -= r1.deductAmount;
+        }
+        const r2 = rules[1];
+        if (r2 && r2.rate && after >= r2.minSpend) {
+          const d2 = Math.round(after * (1 - r2.rate));
+          breakdown.push({ label: r2.label, amount: d2 });
+        }
+        _discountBreakdown = breakdown;
+        currentDiscount    = breakdown.reduce((s, d) => s + d.amount, 0);
+      }
+
       function renderCartItems() {
         const container = document.getElementById("cartItems");
         const totalEl = document.getElementById("cartTotal");
 
+        _recalcDiscount();
+
         if (cart.length === 0) {
           container.innerHTML = "<p style=\"text-align:center; color:#999; margin-top:40px; font-family:'Noto Sans TC', sans-serif;\">購物車目前是空的</p>";
           totalEl.innerText = "總金額: NT$ 0";
-          currentPromoCode = "";
-          currentDiscount = 0;
+          currentPromoCode   = "";
+          currentDiscount    = 0;
+          _discountBreakdown = [];
           return;
         }
 
@@ -3004,43 +3133,67 @@
         cart.forEach((item, idx) => {
           total += item.price * item.qty;
           html += `
-                <div style="display:grid; grid-template-columns: 1fr 90px; gap:10px; padding:15px 0; border-bottom:1px solid #f5f5f5; align-items:center;">
+                <div style="display:grid; grid-template-columns: 1fr auto; gap:10px; padding:15px 0; border-bottom:1px solid #f5f5f5; align-items:start;">
                     <div style="font-family: 'Noto Sans TC', sans-serif; overflow:hidden;">
                         <div style="font-size: 1rem; font-weight: 500; color: #2c2c2c; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</div>
-                        <div style="font-size:0.85rem; color:#888;">${item.spec} <span style="font-size:0.8rem; color:#ccc; margin:0 5px;">x</span> ${item.qty}${item.gift ? `<span style="color:#d4a373; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
+                        <div style="font-size:0.85rem; color:#888;">${item.spec}${item.gift ? `<span style="color:#d4a373; font-size:0.78rem; margin-left:6px;">🎁 ${item.gift}</span>` : ''}</div>
                     </div>
-                    <div style="text-align:right; font-family: 'Noto Sans TC', sans-serif;">
-                        <div style="font-weight:600; font-size:1rem; color:#2c2c2c;">NT$ ${item.price * item.qty}</div>
-                        <div style="color:#bfa092; cursor:pointer; font-size:0.8rem; margin-top:6px; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
+                    <div style="text-align:right; font-family: 'Noto Sans TC', sans-serif; min-width:90px;">
+                        <div style="font-weight:600; font-size:1rem; color:#2c2c2c; margin-bottom:8px;">NT$ ${item.price * item.qty}</div>
+                        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; margin-bottom:6px;">
+                            <button onclick="changeCartQty(${idx},-1)" style="width:30px;height:30px;border:1px solid #ddd;border-radius:50%;background:#f5f5f5;font-size:1.1rem;cursor:pointer;color:#555;line-height:1;touch-action:manipulation;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
+                            <span style="font-size:0.9rem;color:#333;min-width:20px;text-align:center;">${item.qty}</span>
+                            <button onclick="changeCartQty(${idx},1)" style="width:30px;height:30px;border:1px solid #ddd;border-radius:50%;background:#f5f5f5;font-size:1.1rem;cursor:pointer;color:#555;line-height:1;touch-action:manipulation;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;">+</button>
+                        </div>
+                        <div style="color:#bfa092; cursor:pointer; font-size:0.8rem; text-decoration:underline;" onclick="removeFromCart(${idx})">移除</div>
                     </div>
                 </div>`;
         });
 
-        let finalTotal = total - currentDiscount;
-        if (finalTotal < 0) finalTotal = 0;
+        let afterDiscount = total - currentDiscount;
+        if (afterDiscount < 0) afterDiscount = 0;
+        const shippingFee = afterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+        let finalTotal = afterDiscount + shippingFee;
 
         if (finalTotal >= 1500) {
           let rawDeposit = finalTotal * 0.1;
           let finalDeposit = Math.min(Math.round(rawDeposit / 100) * 100, 500);
 
-          depositHtml = `
-                <div style="margin-top: 8px; text-align: right; font-family: 'Noto Sans TC', sans-serif;">
-                    <span style="font-size: 0.85rem; color: #999; background: #f9f9f9; padding: 4px 8px; border-radius: 4px; margin-right: 8px;">需預付定金 (10%)</span>
-                    <span style="font-size: 1.1rem; color: #bfa092; font-weight: 500;">NT$ ${finalDeposit}</span>
-                </div>
-            `;
+          depositHtml = `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:'Noto Sans TC',sans-serif;"><span style="font-size:0.75rem;color:#aaa;">預付定金 (10%)</span><span style="font-size:0.95rem;color:#bfa092;font-weight:600;">NT$ ${finalDeposit}</span></div>`;
         }
 
         container.innerHTML = html;
         totalEl.style.fontFamily = "'Noto Sans TC', sans-serif";
 
+        const shippingRow = `<div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-top:4px;">
+          <span style="color:#888;">運費</span>
+          <span style="color:#555;font-weight:500;">NT$ ${shippingFee}</span>
+        </div>`;
+
         if (currentDiscount > 0) {
+          let breakdownHtml = '';
+          if (_discountBreakdown.length > 0) {
+            _discountBreakdown.forEach(d => {
+              breakdownHtml += `<div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#b07352;margin-bottom:2px;"><span>${d.label}</span><span>-NT$${d.amount}</span></div>`;
+            });
+          }
           totalEl.innerHTML = `
-          <div style="font-size: 0.9rem; color: #999; text-decoration: line-through; margin-bottom: 4px; font-weight: normal;">小計: NT$ ${total}</div>
-          <div style="color: #d65a5a; font-weight: 600;">結帳總金額: NT$ ${finalTotal}</div>
-        `;
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#bbb;text-decoration:line-through;margin-bottom:4px;font-weight:normal;"><span>小計</span><span>NT$ ${total}</span></div>
+            ${breakdownHtml}
+            ${shippingRow}
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;border-top:1px solid #eee;padding-top:6px;">
+              <span style="font-size:0.85rem;color:#555;">總金額</span>
+              <span style="color:#d65a5a;font-weight:700;font-size:1.15rem;">NT$ ${finalTotal}</span>
+            </div>
+          `;
         } else {
-          totalEl.innerText = `總金額: NT$ ${total}`;
+          totalEl.innerHTML = `
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#888;margin-bottom:4px;"><span>小計</span><span>NT$ ${total}</span></div>
+            ${shippingRow}
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;border-top:1px solid #eee;padding-top:6px;">
+              <span style="font-size:0.85rem;color:#555;">總金額</span>
+              <span style="font-weight:700;font-size:1.15rem;">NT$ ${finalTotal}</span>
+            </div>`;
         }
 
         const oldDeposit = document.getElementById("deposit-display");
@@ -3052,6 +3205,15 @@
           div.innerHTML = depositHtml;
           totalEl.after(div);
         }
+      }
+
+      function changeCartQty(idx, change) {
+        if (!cart[idx]) return;
+        const newQty = cart[idx].qty + change;
+        if (newQty < 1) { removeFromCart(idx); return; }
+        cart[idx].qty = newQty;
+        saveCart();
+        renderCartItems();
       }
 
       function removeFromCart(idx) {
@@ -3192,25 +3354,41 @@
           // ③ 計算金額
           let total = 0;
           cart.forEach(item => { total += item.price * item.qty; });
-          let finalTotal = total - currentDiscount;
+          let afterDiscount = total - currentDiscount;
+          if (afterDiscount < 0) afterDiscount = 0;
+          const shippingFee = afterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+          let finalTotal = afterDiscount + shippingFee;
           if (finalTotal < 0) finalTotal = 0;
 
-          // ④ 寫入 orders 集合
+          // ④ 遞增折扣碼使用次數
+          const isFromComm = sessionStorage.getItem('_minaRef') === 'comm';
+          if (currentPromoCode && _dcSettings) {
+            try {
+              await updateDoc(doc(db, 'settings', 'global'), {
+                'discountCode.useCount': increment(1)
+              });
+            } catch(e) { console.error('useCount increment failed', e); }
+          }
+
+          // ⑤ 寫入 orders 集合
           await addDoc(collection(db, 'orders'), {
             orderId,
-            status:    '待確認',
-            cart:      cart.map(item => ({ ...item })),
-            total:     finalTotal,
-            discount:  currentDiscount,
-            promoCode: currentPromoCode || '',
-            shipping:  selectedShipping,
-            createdAt: serverTimestamp(),
+            status:      '待確認',
+            cart:        cart.map(item => ({ ...item })),
+            total:       finalTotal,
+            discount:    currentDiscount,
+            shippingFee,
+            depositPaid: false,
+            promoCode:   currentPromoCode || '',
+            shipping:    selectedShipping,
+            source:      isFromComm ? 'community' : 'web',
+            createdAt:   serverTimestamp(),
           });
 
-          // ⑤ 組 LINE 訊息（訂單編號在第一行）
+          // ⑥ 組 LINE 訊息（訂單編號在第一行）
           const now     = new Date();
           const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
-          let message = `【訂單編號：${orderId}】\n\n`;
+          let message = `【🅼編號：${orderId}】\n\n`;
 
           cart.forEach((item, index) => {
             const cleanName = item.name.replace(/<br\s*\/?>/gi, " ");
@@ -3222,16 +3400,23 @@
           });
 
           message += `\n`;
+          message += `商品小計: NT$ ${total}\n`;
           if (currentDiscount > 0) {
-            message += `小計: NT$ ${total}\n折扣 [${currentPromoCode}]: -$${currentDiscount}\n總金額: NT$ ${finalTotal}\n`;
-          } else {
-            message += `總金額: NT$ ${total}\n`;
+            if (_discountBreakdown.length > 0) {
+              _discountBreakdown.forEach(d => {
+                message += `折扣 [${currentPromoCode}] ${d.label}: -NT$${d.amount}\n`;
+              });
+            } else {
+              message += `折扣 [${currentPromoCode}]: -NT$${currentDiscount}\n`;
+            }
           }
+          message += `運費: NT$ ${shippingFee}\n`;
+          message += `總金額: NT$ ${finalTotal}\n`;
           if (finalTotal >= 1500) {
             const finalDeposit = Math.min(Math.round(finalTotal * 0.1 / 100) * 100, 500);
             message += `(預付定金10%: NT$ ${finalDeposit})\n`;
           }
-          message += `平台: ${selectedShipping}\n\n📋 查看訂單\nhttps://mjournal.github.io/korean-shop/order-query.html?id=${orderId}`;
+          message += `平台: ${selectedShipping}\n\n查看訂單\nhttps://mjournal.github.io/korean-shop/order-query.html?id=${orderId}`;
 
           // ⑥ 跳轉 LINE
           const lineUrl  = `https://line.me/R/oaMessage/@139gqqwy/?${encodeURIComponent(message)}`;
@@ -3366,9 +3551,11 @@
         closeZoom,
         openQuickShop,
         removeFromCart,
+        changeCartQty,
         closeQrModal,
         applyPromoCode,
         removePromoCode,
+        _updatePromoBoxVisibility,
         closeEndedNotice,
       });
     </script>
