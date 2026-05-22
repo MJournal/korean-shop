@@ -2389,6 +2389,9 @@
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      const FREE_SHIPPING_THRESHOLD = 2500;
+      const SHIPPING_FEE = 38;
+
       // === 社群來源偵測 ===
       if (new URLSearchParams(location.search).get('ref') === 'comm') {
         sessionStorage.setItem('_minaRef', 'comm');
@@ -3126,8 +3129,10 @@
                 </div>`;
         });
 
-        let finalTotal = total - currentDiscount;
-        if (finalTotal < 0) finalTotal = 0;
+        let afterDiscount = total - currentDiscount;
+        if (afterDiscount < 0) afterDiscount = 0;
+        const shippingFee = afterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+        let finalTotal = afterDiscount + shippingFee;
 
         if (finalTotal >= 1500) {
           let rawDeposit = finalTotal * 0.1;
@@ -3139,6 +3144,11 @@
         container.innerHTML = html;
         totalEl.style.fontFamily = "'Noto Sans TC', sans-serif";
 
+        const shippingRow = `<div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-top:4px;">
+          <span style="color:#888;">運費</span>
+          <span style="color:${shippingFee === 0 ? '#4caf50' : '#555'};font-weight:500;">${shippingFee === 0 ? '免運 🎉' : 'NT$ ' + shippingFee}</span>
+        </div>`;
+
         if (currentDiscount > 0) {
           let breakdownHtml = '';
           if (_discountBreakdown.length > 0) {
@@ -3149,13 +3159,20 @@
           totalEl.innerHTML = `
             <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#bbb;text-decoration:line-through;margin-bottom:4px;font-weight:normal;"><span>小計</span><span>NT$ ${total}</span></div>
             ${breakdownHtml}
+            ${shippingRow}
             <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;border-top:1px solid #eee;padding-top:6px;">
               <span style="font-size:0.85rem;color:#555;">總金額</span>
               <span style="color:#d65a5a;font-weight:700;font-size:1.15rem;">NT$ ${finalTotal}</span>
             </div>
           `;
         } else {
-          totalEl.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-size:0.85rem;color:#555;">總金額</span><span style="font-weight:700;font-size:1.15rem;">NT$ ${total}</span></div>`;
+          totalEl.innerHTML = `
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:#888;margin-bottom:4px;"><span>小計</span><span>NT$ ${total}</span></div>
+            ${shippingRow}
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;border-top:1px solid #eee;padding-top:6px;">
+              <span style="font-size:0.85rem;color:#555;">總金額</span>
+              <span style="font-weight:700;font-size:1.15rem;">NT$ ${finalTotal}</span>
+            </div>`;
         }
 
         const oldDeposit = document.getElementById("deposit-display");
@@ -3307,7 +3324,10 @@
           // ③ 計算金額
           let total = 0;
           cart.forEach(item => { total += item.price * item.qty; });
-          let finalTotal = total - currentDiscount;
+          let afterDiscount = total - currentDiscount;
+          if (afterDiscount < 0) afterDiscount = 0;
+          const shippingFee = afterDiscount >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+          let finalTotal = afterDiscount + shippingFee;
           if (finalTotal < 0) finalTotal = 0;
 
           // ④ 遞增折扣碼使用次數
@@ -3323,20 +3343,22 @@
           // ⑤ 寫入 orders 集合
           await addDoc(collection(db, 'orders'), {
             orderId,
-            status:    '待確認',
-            cart:      cart.map(item => ({ ...item })),
-            total:     finalTotal,
-            discount:  currentDiscount,
-            promoCode: currentPromoCode || '',
-            shipping:  selectedShipping,
-            source:    isFromComm ? 'community' : 'web',
-            createdAt: serverTimestamp(),
+            status:      '待確認',
+            cart:        cart.map(item => ({ ...item })),
+            total:       finalTotal,
+            discount:    currentDiscount,
+            shippingFee,
+            depositPaid: false,
+            promoCode:   currentPromoCode || '',
+            shipping:    selectedShipping,
+            source:      isFromComm ? 'community' : 'web',
+            createdAt:   serverTimestamp(),
           });
 
           // ⑥ 組 LINE 訊息（訂單編號在第一行）
           const now     = new Date();
           const dateStr = `${now.getMonth() + 1}月${now.getDate()}日`;
-          let message = `【M編號：${orderId}】\n\n`;
+          let message = `【🅼編號：${orderId}】\n\n`;
 
           cart.forEach((item, index) => {
             const cleanName = item.name.replace(/<br\s*\/?>/gi, " ");
@@ -3348,8 +3370,8 @@
           });
 
           message += `\n`;
+          message += `商品小計: NT$ ${total}\n`;
           if (currentDiscount > 0) {
-            message += `小計: NT$ ${total}\n`;
             if (_discountBreakdown.length > 0) {
               _discountBreakdown.forEach(d => {
                 message += `折扣 [${currentPromoCode}] ${d.label}: -NT$${d.amount}\n`;
@@ -3357,10 +3379,9 @@
             } else {
               message += `折扣 [${currentPromoCode}]: -NT$${currentDiscount}\n`;
             }
-            message += `總金額: NT$ ${finalTotal}\n`;
-          } else {
-            message += `總金額: NT$ ${total}\n`;
           }
+          message += `運費: ${shippingFee === 0 ? '免運' : 'NT$ ' + shippingFee}\n`;
+          message += `總金額: NT$ ${finalTotal}\n`;
           if (finalTotal >= 1500) {
             const finalDeposit = Math.min(Math.round(finalTotal * 0.1 / 100) * 100, 500);
             message += `(預付定金10%: NT$ ${finalDeposit})\n`;
