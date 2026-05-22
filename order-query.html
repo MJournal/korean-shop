@@ -730,7 +730,7 @@
 
     {
       const statusCls   = depositPaid ? 'deposit-paid' : 'deposit-unpaid';
-      const statusLabel = depositPaid ? '✓ Paid' : '○ Pending';
+      const statusLabel = depositPaid ? '已付' : '未付';
       const depositAmt  = deposit > 0 ? `-${fmtNT(deposit)}` : '待定';
       const balanceAmt  = deposit > 0 ? fmtNT(balance) : '待定';
       summaryHtml += `
