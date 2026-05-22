@@ -576,9 +576,11 @@
     oos:      { icon: '⚠️', label: '商品缺貨', desc: '訂單中的商品目前缺貨，與您聯繫後續處理方式…', cls: 'sbn-oos' },
     pending:  { icon: '🕐', label: '待確認',   desc: '等待定金匯款⋯確認後將安排採購。',          cls: 'sbn-waiting' },
     cancel:   { icon: '✕',  label: '訂單已取消', desc: '此訂單已取消，如有疑問請聯絡我們',       cls: 'sbn-cancel' },
+    merged:   { icon: '→',  label: '訂單已合併', desc: '此訂單已合併至新訂單，請以最新連結查詢。',  cls: 'sbn-pending' },
   };
 
   function getStatusKey(o) {
+    if (o.status === '已合併') return 'merged';
     if (o.status === '已取消') return 'cancel';
     // 網站下單、尚未後台確認
     if (o.status === '待確認') return 'ordered';
@@ -636,6 +638,18 @@
     document.getElementById('r-status-icon').textContent  = cfg.icon;
     document.getElementById('r-status-label').textContent = cfg.label;
     document.getElementById('r-status-desc').textContent  = cfg.desc;
+
+    // 已合併：只顯示 banner，不顯示明細
+    if (statusKey === 'merged') {
+      document.getElementById('r-items').innerHTML = '';
+      document.getElementById('r-note').innerHTML  = '';
+      document.getElementById('r-price-summary').innerHTML = o.mergedInto
+        ? `<div style="padding:0 28px 20px;font-size:0.75rem;color:#b8a898;text-align:center;letter-spacing:1px;">
+             請使用最新訂單 <strong>${esc(o.mergedInto)}</strong> 的連結查詢
+           </div>` : '';
+      document.getElementById('receipt-area').style.display = 'block';
+      return;
+    }
 
     // Items
     const sortedItems = cart
