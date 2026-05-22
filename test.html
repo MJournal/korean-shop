@@ -2671,20 +2671,22 @@
                 name:  (v.stock === 0) ? `${v.name}(缺)` : (v.name || ""),
                 price: String(v.price || 0),
                 promo: (v.promo != null && v.promo !== "") ? String(v.promo) : "",
+                communityPrice: (v.communityPrice != null && v.communityPrice !== "") ? String(v.communityPrice) : "",
                 gift:  v.gift || "",
                 stock: (v.stock !== undefined && v.stock !== null) ? v.stock : null,
               }));
 
               const images = (p.images || []).filter(url => url && url.trim() !== '');
-              const firstVariant = variants[0] || { price: "0", promo: "" };
+              const firstVariant = variants[0] || { price: "0", promo: "", communityPrice: "" };
 
               const product = {
                 id: allProductsData.length,
                 firestoreId: docSnap.id,
                 name: p.name || "Unnamed",
                 variants,
-                originalPriceStr: firstVariant.price,
-                vipPriceStr:      firstVariant.promo || "",
+                originalPriceStr:  firstVariant.price,
+                vipPriceStr:       firstVariant.promo || "",
+                communityPriceStr: firstVariant.communityPrice || "",
                 imgUrl:    images[0] || "",
                 gallery:   images,
                 tag:       (p.tag || "").toUpperCase(),
@@ -2755,6 +2757,7 @@
           }
 
 // 🌟 動態價格區間魔法 🌟
+          const _isComm = sessionStorage.getItem('_minaRef') === 'comm';
           let priceHtml = "";
           let isPriceRange = false;
           let minPrice = 0;
@@ -2764,9 +2767,8 @@
           if (product.variants.length > 1) {
             let validPrices = [];
             product.variants.forEach(v => {
-              // 抓取每一款的真實售價 (有特價就抓特價，沒特價抓原價)
-              let effectivePriceStr = v.promo ? v.promo : v.price;
-              // 把文字轉成純數字
+              // 社群來源優先用社群價，否則有特價抓特價，沒特價抓原價
+              let effectivePriceStr = (_isComm && v.communityPrice) ? v.communityPrice : (v.promo ? v.promo : v.price);
               let priceNum = parseInt(effectivePriceStr.replace(/[^0-9]/g, ""));
               if (!isNaN(priceNum) && priceNum > 0) {
                 validPrices.push(priceNum);
@@ -2777,7 +2779,6 @@
             if (validPrices.length > 0) {
               minPrice = Math.min(...validPrices);
               maxPrice = Math.max(...validPrices);
-              // 如果最低價跟最高價不一樣，就代表需要顯示區間！
               if (minPrice !== maxPrice) {
                 isPriceRange = true;
               }
@@ -2786,15 +2787,14 @@
 
           // 3. 決定要把什麼價格印在畫面上
           if (isPriceRange) {
-            // 有價差：顯示價格區間 (例如: NT$ 295 - NT$ 888)
             priceHtml = `<span class="price">NT$ ${minPrice} - NT$ ${maxPrice}</span>`;
           } else {
-            // 沒價差：維持原本的顯示方式 (單一價格，或原價畫刪除線)
-            if (product.vipPriceStr) {
+            const displayVip = (_isComm && product.communityPriceStr) ? product.communityPriceStr : product.vipPriceStr;
+            if (displayVip) {
               priceHtml = `
                 <div class="price-container">
                   <span class="price-original">NT$ ${product.originalPriceStr}</span>
-                  <span class="price-vip">NT$ ${product.vipPriceStr}</span>
+                  <span class="price-vip">NT$ ${displayVip}</span>
                 </div>
               `;
             } else {
@@ -2940,7 +2940,7 @@
           // 單一規格沒填的話，隱藏標籤區
           optionsSection.style.display = 'none';
           allOutOfStock = false;
-          updateModalPrice({ price: product.originalPriceStr, promo: product.vipPriceStr });
+          updateModalPrice({ price: product.originalPriceStr, promo: product.vipPriceStr, communityPrice: product.communityPriceStr });
         }
 
         const addBtn = document.getElementById('qs-add-btn');
@@ -3017,18 +3017,19 @@
         const product = allProductsData[currentQsIndex];
         const qty = parseInt(document.getElementById("qs-qty").value);
 
+        const _isCommCart = sessionStorage.getItem('_minaRef') === 'comm';
         let selectedSpecName = "單一規格";
-        let checkoutPriceStr = product.vipPriceStr || product.originalPriceStr || "0";
+        let checkoutPriceStr = (_isCommCart && product.communityPriceStr) ? product.communityPriceStr : (product.vipPriceStr || product.originalPriceStr || "0");
         let selectedGift = "";
 
         const variantSectionEl = document.getElementById("qs-variant-section");
         if (variantSectionEl.style.display !== "none" && _currentVariants.length > 0) {
           const selectedV = _currentVariants[_currentVariantIndex];
-          selectedSpecName = _parseSpecName(selectedV.name).main; // 移除 【】，送出乾淨名稱
+          selectedSpecName = _parseSpecName(selectedV.name).main;
           selectedGift = selectedV.gift || "";
 
-          // 如果有特價抓特價，沒特價抓原價
-          checkoutPriceStr = selectedV.promo ? selectedV.promo : selectedV.price;
+          // 社群來源優先用社群價，否則有特價抓特價，沒特價抓原價
+          checkoutPriceStr = (_isCommCart && selectedV.communityPrice) ? selectedV.communityPrice : (selectedV.promo ? selectedV.promo : selectedV.price);
         }
 
         let priceNum = parseInt(checkoutPriceStr.replace(/[^0-9]/g, ""));
@@ -3256,7 +3257,9 @@
           }
           const v = (p.variants || [])[item.variantIndex];
           if (v) {
-            const cur = parseInt((v.promo || v.price || '0').replace(/[^0-9]/g, ''));
+            const isCommVerify = sessionStorage.getItem('_minaRef') === 'comm';
+            const curPrice = (isCommVerify && v.communityPrice) ? v.communityPrice : (v.promo || v.price || '0');
+            const cur = parseInt(curPrice.replace(/[^0-9]/g, ''));
             if (cur !== item.price) priceChanges.push({ item, oldPrice: item.price, newPrice: cur });
           }
         }
@@ -3515,12 +3518,14 @@
       }
 
       function updateModalPrice(vObj) {
+        const isComm = sessionStorage.getItem('_minaRef') === 'comm';
+        const displayPromo = (isComm && vObj.communityPrice) ? vObj.communityPrice : vObj.promo;
         const priceBox = document.getElementById("qs-price-box");
-        if (vObj.promo) {
+        if (displayPromo) {
           priceBox.innerHTML = `
             <div class="price-container" style="justify-content: flex-start; margin-bottom: 0;">
               <span class="price-original" style="font-size: 1.1rem;">NT$ ${vObj.price}</span>
-              <span class="price-vip" style="font-size: 1.6rem;">NT$ ${vObj.promo}</span>
+              <span class="price-vip" style="font-size: 1.6rem;">NT$ ${displayPromo}</span>
             </div>
           `;
         } else {
