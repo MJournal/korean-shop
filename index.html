@@ -2947,7 +2947,9 @@
           _updateGiftInfo(firstV);
 
         } else {
-          // 單一規格沒填的話，隱藏標籤區
+          // 單一規格沒填的話，隱藏標籤區，但保留 variants 讓庫存上限生效
+          _currentVariants = product.variants;
+          _currentVariantIndex = 0;
           optionsSection.style.display = 'none';
           allOutOfStock = false;
           updateModalPrice({ price: product.originalPriceStr, promo: product.vipPriceStr, communityPrice: product.communityPriceStr });
@@ -2993,7 +2995,10 @@
       function _currentMaxQty() {
         if (_currentVariants.length > 0) {
           const v = _currentVariants[_currentVariantIndex];
-          if (v && v.stock !== null && v.stock !== undefined) return v.stock;
+          if (v && v.stock !== null && v.stock !== undefined) {
+            const s = parseInt(v.stock);
+            return isNaN(s) ? Infinity : s;
+          }
         }
         return Infinity;
       }
