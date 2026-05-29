@@ -2557,7 +2557,11 @@
           if (box)      box.style.display      = 'block';
           if (joinHint) joinHint.style.display  = 'none';
           const labelEl = document.getElementById('promo-label');
-          if (labelEl) labelEl.textContent = `社群限定 · ${_dcSettings.label || ''}`;
+          if (labelEl) {
+            const cats = (_dcSettings.categories || []);
+            const catHint = cats.length > 0 ? `　限 ${cats.join('、')}` : '';
+            labelEl.textContent = `社群限定 · ${_dcSettings.label || ''}${catHint}`;
+          }
         } else {
           if (box)      box.style.display      = 'none';
           if (joinHint) joinHint.style.display  = isFromComm ? 'none' : 'block';
@@ -2576,8 +2580,13 @@
           msgEl.textContent = "此折扣碼已達使用上限"; return;
         }
 
+        const limitCats = (_dcSettings.categories || []);
         let subtotal = 0;
-        cart.forEach(item => subtotal += item.price * item.qty);
+        cart.forEach(item => {
+          if (limitCats.length === 0 || limitCats.includes(item.category || '')) {
+            subtotal += item.price * item.qty;
+          }
+        });
 
         const rules = _dcSettings.rules || [];
         const breakdown = [];
@@ -3095,6 +3104,7 @@
           variantIndex: hasVariantSelector ? _currentVariantIndex : 0,
           type:         (hasVariantSelector ? (_currentVariants[_currentVariantIndex]?.type || product.type) : product.type) || '預購',
           deadline:     product.deadline || '',
+          category:     product.category || '',
         };
 
         const existing = cart.find(i =>
@@ -3144,8 +3154,13 @@
 
       function _recalcDiscount() {
         if (!currentPromoCode || !_dcSettings) return;
+        const limitCats = (_dcSettings.categories || []);
         let subtotal = 0;
-        cart.forEach(i => subtotal += i.price * i.qty);
+        cart.forEach(i => {
+          if (limitCats.length === 0 || limitCats.includes(i.category || '')) {
+            subtotal += i.price * i.qty;
+          }
+        });
         const rules = _dcSettings.rules || [];
         const breakdown = [];
         let after = subtotal;
