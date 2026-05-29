@@ -2411,6 +2411,8 @@
       // === 社群來源偵測 ===
       if (new URLSearchParams(location.search).get('ref') === 'comm') {
         sessionStorage.setItem('_minaRef', 'comm');
+      } else {
+        sessionStorage.removeItem('_minaRef');
       }
 
       // === 🔒 手機版背景鎖定大神器 ===
@@ -2819,9 +2821,13 @@
             else if (product.tag === "SALE") badgeHtml = `<span class="badge sale">SALE</span>`;
           }
 
-          // 現貨商品不受結單影響；或個別商品截止時間已過
+          // 截止時間已過則完全結單；結單時只有全部規格都是預購才視為已結單
           const isDeadlineOver = isDeadlinePassed(product.deadline);
-          const isEnded = (isOrderEnded && product.type !== '現貨') || isDeadlineOver;
+          const availableVariants = (product.variants || []).filter(v => !v.name.includes('(缺)'));
+          const allPreorder = availableVariants.length > 0
+            ? availableVariants.every(v => (v.type || product.type || '預購') === '預購')
+            : (product.type || '預購') !== '現貨';
+          const isEnded = isDeadlineOver || (isOrderEnded && allPreorder);
 
           let btnHtml = "";
           if (isEnded) {
@@ -2860,7 +2866,11 @@
       // 🌟 2. 打開快速購物視窗 (自動顯示變更價格)
       function openQuickShop(index) {
         const product = allProductsData[index];
-        if ((isOrderEnded && product.type !== '現貨') || isDeadlinePassed(product.deadline)) {
+        const _availVars = (product.variants || []).filter(v => !v.name.includes('(缺)'));
+        const _allPreorder = _availVars.length > 0
+          ? _availVars.every(v => (v.type || product.type || '預購') === '預購')
+          : (product.type || '預購') !== '現貨';
+        if ((_allPreorder && isOrderEnded) || isDeadlinePassed(product.deadline)) {
           alert("此商品已結單，感謝您的熱情支持。");
           return;
         }
@@ -2919,10 +2929,16 @@
             const pill = document.createElement('div');
             pill.className = 'variant-pill';
 
-            if (vObj.name.includes('(缺)')) {
+            const vType = vObj.type || product.type || '預購';
+            const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
+            const isVariantUnavailable = vObj.name.includes('(缺)') || isVariantEnded;
+
+            if (isVariantUnavailable) {
               pill.classList.add('pill-disabled');
-              const d = _getVariantDisplay({ ...vObj, name: vObj.name.replace('(缺)', '').trim() });
-              pill.innerHTML = `<span>${d.displayName}</span>`;
+              const displayName = vObj.name.replace('(缺)', '').trim();
+              const d = _getVariantDisplay({ ...vObj, name: displayName });
+              const endedLabel = isVariantEnded ? ' <small style="color:#c0392b;font-size:0.68em;">已結單</small>' : '';
+              pill.innerHTML = `<span>${d.displayName}${endedLabel}</span>`;
             } else {
               const d = _getVariantDisplay(vObj);
               pill.innerHTML = `<span>${d.displayName}</span>`;
@@ -2934,8 +2950,14 @@
             optionsContainer.appendChild(pill);
           });
 
-          // 預設選中第一個有貨的規格
-          let firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
+          // 預設選中第一個有貨且未結單的規格
+          let firstAvailableIdx = product.variants.findIndex(v => {
+            if (v.name.includes('(缺)')) return false;
+            const vt = v.type || product.type || '預購';
+            if (isOrderEnded && vt === '預購') return false;
+            return true;
+          });
+          if (firstAvailableIdx === -1) firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
           if (firstAvailableIdx === -1) firstAvailableIdx = 0;
           _currentVariantIndex = firstAvailableIdx;
 
@@ -3058,7 +3080,7 @@
           gift: selectedGift,
           productId:    product.firestoreId || null,
           variantIndex: hasVariantSelector ? _currentVariantIndex : 0,
-          type:         product.type || '預購',
+          type:         (hasVariantSelector ? (_currentVariants[_currentVariantIndex]?.type || product.type) : product.type) || '預購',
           deadline:     product.deadline || '',
         };
 
