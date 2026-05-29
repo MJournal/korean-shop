@@ -2683,7 +2683,7 @@
           });
 
           // 商品即時監聽（後台任何變動都會自動同步到客人畫面）
-          const q = query(collection(db, 'products'), where('status', '==', '上架'));
+          const q = query(collection(db, 'products'), where('status', 'in', ['上架', '預告']));
           onSnapshot(q, (snapshot) => {
             loading.style.display = "none";
             allProductsData = [];
@@ -2716,6 +2716,7 @@
                 tag:       (p.tag || "").toUpperCase(),
                 deadline:  p.deadline || "",
                 type:      p.type || "預購",
+                status:    p.status || "上架",
                 giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
                 category:  p.category || "其他",
               };
@@ -2792,6 +2793,7 @@
 
 // 🌟 動態價格區間魔法 🌟
           const _isComm = sessionStorage.getItem('_minaRef') === 'comm';
+          const isTeaser = product.status === '預告';
           let priceHtml = "";
           let isPriceRange = false;
           let minPrice = 0;
@@ -2820,7 +2822,9 @@
           }
 
           // 3. 決定要把什麼價格印在畫面上
-          if (isPriceRange) {
+          if (isTeaser) {
+            priceHtml = `<span class="price" style="letter-spacing:3px; color:#bbb;">？？？</span>`;
+          } else if (isPriceRange) {
             priceHtml = `<span class="price">NT$ ${minPrice} - NT$ ${maxPrice}</span>`;
           } else {
             const displayVip = (_isComm && product.communityPriceStr) ? product.communityPriceStr : product.vipPriceStr;
@@ -2852,7 +2856,9 @@
           const isEnded = isDeadlineOver || (isOrderEnded && allPreorder);
 
           let btnHtml = "";
-          if (isEnded) {
+          if (isTeaser) {
+            btnHtml = `<button class="btn-add" onclick="openQuickShop(${globalIdx})" style="background-color: #bfa092; border-color: #bfa092; cursor: pointer; max-width: 200px;">即將開賣</button>`;
+          } else if (isEnded) {
             btnHtml = `<button class="btn-add" style="background-color: #ccc; border-color: #ccc; cursor: not-allowed; max-width: 200px;" disabled>已結單</button>`;
           } else if (isAllOutOfStock) {
             btnHtml = `<button class="btn-add" style="background-color: #ccc; border-color: #ccc; cursor: not-allowed; max-width: 200px;" disabled>已售完</button>`;
@@ -3000,7 +3006,14 @@
         }
 
         const addBtn = document.getElementById('qs-add-btn');
-        if (allOutOfStock) {
+        if (product.status === '預告') {
+          document.getElementById('qs-price-box').innerText = '？？？';
+          addBtn.innerText = "即將開賣";
+          addBtn.style.background = "#bfa092";
+          addBtn.style.borderColor = "#bfa092";
+          addBtn.style.cursor = "not-allowed";
+          addBtn.disabled = true;
+        } else if (allOutOfStock) {
           addBtn.innerText = "已售完 (Sold Out)";
           addBtn.style.background = "#ccc";
           addBtn.style.borderColor = "#ccc";
@@ -3583,6 +3596,7 @@
       }
 
       function updateModalPrice(vObj) {
+        if (currentQsIndex !== null && allProductsData[currentQsIndex]?.status === '預告') return;
         const isComm = sessionStorage.getItem('_minaRef') === 'comm';
         const displayPromo = (isComm && vObj.communityPrice) ? vObj.communityPrice : vObj.promo;
         const priceBox = document.getElementById("qs-price-box");
