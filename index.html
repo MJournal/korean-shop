@@ -3570,11 +3570,10 @@
         if (d.gift) {
           const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
           giftBox.innerHTML = items.map(g => `<span class="gift-pill">🎁 ${g}</span>`).join('');
-          giftSection.style.display = '';
         } else {
           giftBox.innerHTML = '';
-          giftSection.style.display = 'none';
         }
+        giftSection.style.display = '';
       }
 
       function _selectVariantOption(vIndex) {
