@@ -2577,6 +2577,13 @@
         if ((_dcSettings.useCount || 0) >= (_dcSettings.maxUses || 999)) {
           msgEl.textContent = "此折扣碼已達使用上限"; return;
         }
+        const _now = new Date();
+        if (_dcSettings.startTime && _now < new Date(_dcSettings.startTime)) {
+          msgEl.textContent = "折扣活動尚未開始"; return;
+        }
+        if (_dcSettings.endTime && _now > new Date(_dcSettings.endTime)) {
+          msgEl.textContent = "折扣活動已結束"; return;
+        }
 
         const limitCats = (_dcSettings.categories || []);
         let subtotal = 0;
@@ -3570,11 +3577,10 @@
         if (d.gift) {
           const items = d.gift.split('、').map(s => s.trim()).filter(Boolean);
           giftBox.innerHTML = items.map(g => `<span class="gift-pill">🎁 ${g}</span>`).join('');
-          giftSection.style.display = '';
         } else {
           giftBox.innerHTML = '';
-          giftSection.style.display = 'none';
         }
+        giftSection.style.display = '';
       }
 
       function _selectVariantOption(vIndex) {
