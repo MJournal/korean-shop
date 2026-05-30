@@ -2338,7 +2338,7 @@
                 <button onclick="applyPromoCode()"
                   style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
               </div>
-              <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
+<div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
             </div>
 
             <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
@@ -2558,9 +2558,7 @@
           if (joinHint) joinHint.style.display  = 'none';
           const labelEl = document.getElementById('promo-label');
           if (labelEl) {
-            const cats = (_dcSettings.categories || []);
-            const catHint = cats.length > 0 ? `　限 ${cats.join('、')}` : '';
-            labelEl.textContent = `社群限定 · ${_dcSettings.label || ''}${catHint}`;
+            labelEl.textContent = `社群限定 · ${_dcSettings.label || ''}`;
           }
         } else {
           if (box)      box.style.display      = 'none';
