@@ -2330,15 +2330,15 @@
 
             <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
             <div id="promo-box" style="display:none;margin-top:10px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid #e6d0c0;">
+              <div id="promo-label" style="font-size:0.72rem;color:#b07352;margin-bottom:5px;"></div>
               <div style="display:flex;gap:6px;align-items:center;">
-                <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
                 <input type="text" id="promo-code-input" placeholder="折扣碼"
                   style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:16px;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fdfbf7;"
                   onkeydown="if(event.key==='Enter') applyPromoCode()">
                 <button onclick="applyPromoCode()"
                   style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
               </div>
-<div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
+              <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
             </div>
 
             <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
