@@ -3437,7 +3437,22 @@
           // ③ 扣庫存（Transaction，庫存不足直接中止）
           await _deductStock(cart);
 
-          // ③ 計算金額
+          // ③ 結帳時再次驗證折扣碼時間效期
+          if (currentPromoCode && _dcSettings) {
+            const _now2 = new Date();
+            const _expired = _dcSettings.endTime && _now2 > new Date(_dcSettings.endTime);
+            const _notYet  = _dcSettings.startTime && _now2 < new Date(_dcSettings.startTime);
+            if (_expired || _notYet) {
+              currentPromoCode = "";
+              currentDiscount  = 0;
+              renderCart();
+              alert("折扣碼活動已結束，折扣已取消。請重新確認金額後再送出。");
+              if (checkoutBtn) { checkoutBtn.disabled = false; checkoutBtn.textContent = '傳送至 LINE官方帳號'; }
+              return;
+            }
+          }
+
+          // ④ 計算金額
           let total = 0;
           cart.forEach(item => { total += item.price * item.qty; });
           let afterDiscount = total - currentDiscount;
