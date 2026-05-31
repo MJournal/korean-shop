@@ -2450,6 +2450,7 @@
       // ===========================================
 
       let allProductsData = [];
+      const _activeSeries = (new URLSearchParams(location.search).get('series') || '').trim().toLowerCase();
       let cart = [];
       let currentPromoCode    = "";
       let currentDiscount     = 0;
@@ -2684,7 +2685,10 @@
             const notices = snap.exists() ? (snap.data().notices || []) : [];
             renderNoticeboard(notices);
             _updatePromoBoxVisibility();
-            if (allProductsData.length > 0) renderProducts(allProductsData);
+            if (allProductsData.length > 0) {
+              const _toShow = _activeSeries ? allProductsData.filter(p => (p.series||'').toLowerCase() === _activeSeries) : allProductsData;
+              renderProducts(_toShow);
+            }
           });
 
           // 商品即時監聽（後台任何變動都會自動同步到客人畫面）
@@ -2722,6 +2726,7 @@
                 deadline:  p.deadline || "",
                 type:      p.type || "預購",
                 status:    p.status || "上架",
+                series:    p.series || "",
                 giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
                 category:  p.category || "其他",
               };
@@ -2742,8 +2747,14 @@
               return a.name.localeCompare(b.name, "zh-TW");
             });
 
+            // ?series= 篩選：只顯示指定系列，不影響分類 bar
             renderCategoryButtons();
-            renderProducts(allProductsData);
+            if (_activeSeries) {
+              const _filtered = allProductsData.filter(p => (p.series||'').toLowerCase() === _activeSeries);
+              renderProducts(_filtered);
+            } else {
+              renderProducts(allProductsData);
+            }
 
             // 若 URL 帶有 ?pid=商品ID，自動打開該商品的購買彈窗（只執行一次）
             if (!window._pidAutoOpened) {
