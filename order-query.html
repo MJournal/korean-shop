@@ -718,9 +718,11 @@
     const promoCode   = (o.promoCode || '').trim();
     const shippingFee = Number(o.shippingFee) ?? null;   // null = 未記錄（舊訂單）
     const orderTotal  = Number(o.confirmedTotal ?? o.total) || 0;
-    const deposit     = Number(o.confirmedDeposit ?? o.deposit) || 0;
-    const depositPaid = !!o.depositPaid;
-    const balance     = Math.max(0, orderTotal - deposit);
+    const _rawDeposit  = o.confirmedDeposit ?? o.deposit;
+    const depositIsSet = _rawDeposit !== null && _rawDeposit !== undefined;
+    const deposit      = depositIsSet ? Number(_rawDeposit) : null;
+    const depositPaid  = !!o.depositPaid;
+    const balance      = deposit !== null ? Math.max(0, orderTotal - deposit) : null;
 
     const fmtNT = n => `NT$ ${Number(n).toLocaleString()}`;
 
@@ -762,8 +764,8 @@
     {
       const statusCls   = depositPaid ? 'deposit-paid' : 'deposit-unpaid';
       const statusLabel = depositPaid ? '已付' : '未付';
-      const depositAmt  = deposit > 0 ? `-${fmtNT(deposit)}` : '待定';
-      const balanceAmt  = deposit > 0 ? fmtNT(balance) : '待定';
+      const depositAmt  = deposit !== null ? `-${fmtNT(deposit)}` : '待定';
+      const balanceAmt  = balance !== null ? fmtNT(balance) : '待定';
       summaryHtml += `
         <div class="price-row">
           <span class="price-row-label">
