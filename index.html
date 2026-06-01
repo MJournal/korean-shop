@@ -1123,8 +1123,7 @@
 
       .quick-shop-body {
         display: flex;
-        /* 左右排版關鍵 */
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
       }
 
       /* 右側資訊區 */
@@ -1445,10 +1444,10 @@
       .quick-shop-img-box {
         display: flex;
         flex-direction: column;
-        /* 變成直排 */
         padding: 20px;
         gap: 15px;
-        /* 大圖跟縮圖的距離 */
+        flex: 0 0 420px;
+        width: 420px;
       }
 
       /* 大圖設定：關鍵魔法 object-fit */
