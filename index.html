@@ -2577,6 +2577,7 @@
         const msgEl = document.getElementById("promo-message");
         msgEl.style.color = '#c97c7c';
 
+        if (sessionStorage.getItem('_minaRef') !== 'comm') { msgEl.textContent = "此折扣碼僅限社群成員使用"; return; }
         if (!input) { msgEl.textContent = "請輸入折扣碼"; return; }
         if (!_dcSettings || !_dcSettings.active) { msgEl.textContent = "目前沒有可用的折扣活動"; return; }
         if (input !== _dcSettings.code) { msgEl.textContent = "折扣碼不正確，請確認後再試"; return; }
