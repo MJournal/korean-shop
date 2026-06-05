@@ -1123,8 +1123,7 @@
 
       .quick-shop-body {
         display: flex;
-        /* 左右排版關鍵 */
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
       }
 
       /* 右側資訊區 */
@@ -1241,17 +1240,27 @@
       .qs-gift-text {
         font-family: "Noto Sans TC", sans-serif;
         font-size: 0.95rem;
-        /* 字不用太大，精緻為主 */
         color: var(--text-sub);
-        /* 質感深灰 */
         line-height: 1.6;
+      }
 
-        /* 讓它能夠換行 */
-        white-space: pre-wrap;
+      .qs-gift-text ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
 
-        /* 加個左邊框裝飾，更有設計感 (如果不喜歡可以拿掉 border-left 和 padding-left) */
-        border-left: 3px solid var(--accent);
-        padding-left: 12px;
+      .qs-gift-text ul li {
+        position: relative;
+        padding-left: 1.2em;
+        margin-bottom: 4px;
+      }
+
+      .qs-gift-text ul li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
       }
 
       /* 表單元件 */
@@ -1445,10 +1454,10 @@
       .quick-shop-img-box {
         display: flex;
         flex-direction: column;
-        /* 變成直排 */
         padding: 20px;
         gap: 15px;
-        /* 大圖跟縮圖的距離 */
+        flex: 0 0 420px;
+        width: 420px;
       }
 
       /* 大圖設定：關鍵魔法 object-fit */
@@ -1519,6 +1528,12 @@
           min-height: 0;
           overflow-y: auto;
           -webkit-overflow-scrolling: touch;
+          flex-wrap: wrap;
+        }
+
+        .quick-shop-img-box {
+          flex: none;
+          width: 100%;
         }
 
         /* 1. 彈窗內距縮小 (讓空間變大) */
@@ -2329,16 +2344,16 @@
             </div>
 
             <!-- 社群折扣碼（從 ?ref=comm 進入才顯示） -->
-            <div id="promo-box" style="display:none;margin-top:10px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid #e6d0c0;">
+            <div id="promo-box" style="display:none;margin-top:10px;padding:8px 10px;background:#fff;border-radius:6px;border:1px solid #e6d0c0;font-family:'Zen Maru Gothic','M PLUS Rounded 1c',sans-serif;">
+              <div id="promo-label" style="font-size:0.72rem;color:#b07352;margin-bottom:5px;"></div>
               <div style="display:flex;gap:6px;align-items:center;">
-                <span id="promo-label" style="font-size:0.72rem;color:#b07352;white-space:nowrap;"></span>
                 <input type="text" id="promo-code-input" placeholder="折扣碼"
                   style="flex:1;min-width:0;padding:5px 8px;border:1px solid #ddd3c8;border-radius:4px;font-size:16px;font-family:inherit;letter-spacing:2px;outline:none;text-transform:uppercase;background:#fdfbf7;"
                   onkeydown="if(event.key==='Enter') applyPromoCode()">
                 <button onclick="applyPromoCode()"
                   style="padding:5px 10px;background:#b07352;color:#fff;border:none;border-radius:4px;font-size:0.75rem;font-family:inherit;cursor:pointer;white-space:nowrap;">套用</button>
               </div>
-<div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
+              <div id="promo-message" style="font-size:0.72rem;margin-top:3px;min-height:1em;"></div>
             </div>
 
             <div id="cartTotal" class="cart-total">總金額: NT$ 0</div>
@@ -2450,6 +2465,7 @@
       // ===========================================
 
       let allProductsData = [];
+      const _activeSeries = (new URLSearchParams(location.search).get('series') || '').trim().toLowerCase();
       let cart = [];
       let currentPromoCode    = "";
       let currentDiscount     = 0;
@@ -2571,6 +2587,7 @@
         const msgEl = document.getElementById("promo-message");
         msgEl.style.color = '#c97c7c';
 
+        if (sessionStorage.getItem('_minaRef') !== 'comm') { msgEl.textContent = "此折扣碼僅限社群成員使用"; return; }
         if (!input) { msgEl.textContent = "請輸入折扣碼"; return; }
         if (!_dcSettings || !_dcSettings.active) { msgEl.textContent = "目前沒有可用的折扣活動"; return; }
         if (input !== _dcSettings.code) { msgEl.textContent = "折扣碼不正確，請確認後再試"; return; }
@@ -2684,7 +2701,10 @@
             const notices = snap.exists() ? (snap.data().notices || []) : [];
             renderNoticeboard(notices);
             _updatePromoBoxVisibility();
-            if (allProductsData.length > 0) renderProducts(allProductsData);
+            if (allProductsData.length > 0) {
+              const _toShow = _activeSeries ? allProductsData.filter(p => (p.series||'').toLowerCase() === _activeSeries) : allProductsData;
+              renderProducts(_toShow);
+            }
           });
 
           // 商品即時監聽（後台任何變動都會自動同步到客人畫面）
@@ -2722,6 +2742,7 @@
                 deadline:  p.deadline || "",
                 type:      p.type || "預購",
                 status:    p.status || "上架",
+                series:    p.series || "",
                 giftDesc:  (p.desc || "").replace(/\s*<br\s*\/?>\s*/gi, "<br>"),
                 category:  p.category || "其他",
               };
@@ -2742,8 +2763,14 @@
               return a.name.localeCompare(b.name, "zh-TW");
             });
 
+            // ?series= 篩選：只顯示指定系列，不影響分類 bar
             renderCategoryButtons();
-            renderProducts(allProductsData);
+            if (_activeSeries) {
+              const _filtered = allProductsData.filter(p => (p.series||'').toLowerCase() === _activeSeries);
+              renderProducts(_filtered);
+            } else {
+              renderProducts(allProductsData);
+            }
 
             // 若 URL 帶有 ?pid=商品ID，自動打開該商品的購買彈窗（只執行一次）
             if (!window._pidAutoOpened) {
@@ -2941,7 +2968,10 @@
         const giftCard = document.getElementById("qs-gift-card");
         const giftText = document.getElementById("qs-gift-text");
         if (product.giftDesc) {
-          giftText.innerHTML = product.giftDesc;
+          const lines = product.giftDesc.split(/<br\s*\/?>/i)
+            .map(l => l.replace(/^[・•\-\s]+/, '').trim())
+            .filter(l => l);
+          giftText.innerHTML = `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
           giftCard.style.display = "block";
         } else {
           giftCard.style.display = "none";
