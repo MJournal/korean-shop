@@ -1240,17 +1240,31 @@
       .qs-gift-text {
         font-family: "Noto Sans TC", sans-serif;
         font-size: 0.95rem;
-        /* 字不用太大，精緻為主 */
         color: var(--text-sub);
-        /* 質感深灰 */
         line-height: 1.6;
+      }
 
-        /* 讓它能夠換行 */
-        white-space: pre-wrap;
+      .qs-gift-text ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
 
-        /* 加個左邊框裝飾，更有設計感 (如果不喜歡可以拿掉 border-left 和 padding-left) */
-        border-left: 3px solid var(--accent);
+      .qs-gift-text ul li {
+        position: relative;
         padding-left: 12px;
+        margin-bottom: 8px;
+      }
+
+      .qs-gift-text ul li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.15em;
+        bottom: 0.15em;
+        width: 3px;
+        background: var(--accent);
+        border-radius: 2px;
       }
 
       /* 表單元件 */
@@ -2958,7 +2972,12 @@
         const giftCard = document.getElementById("qs-gift-card");
         const giftText = document.getElementById("qs-gift-text");
         if (product.giftDesc) {
-          giftText.innerHTML = product.giftDesc;
+          const hasDoubleBr = /(?:<br\s*\/?>){2}/i.test(product.giftDesc);
+          const splitPat = hasDoubleBr ? /(?:<br\s*\/?>){2}/i : /<br\s*\/?>/i;
+          const lines = product.giftDesc.split(splitPat)
+            .map(l => l.replace(/^[^一-鿿㐀-䶿a-zA-Z0-9（「『【〔〈《]+/, '').trim())
+            .filter(l => l);
+          giftText.innerHTML = `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
           giftCard.style.display = "block";
         } else {
           giftCard.style.display = "none";
