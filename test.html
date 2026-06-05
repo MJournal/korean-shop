@@ -1251,9 +1251,20 @@
       }
 
       .qs-gift-text ul li {
+        position: relative;
         padding-left: 12px;
-        margin-bottom: 6px;
-        border-left: 3px solid var(--accent);
+        margin-bottom: 8px;
+      }
+
+      .qs-gift-text ul li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.15em;
+        bottom: 0.15em;
+        width: 3px;
+        background: var(--accent);
+        border-radius: 2px;
       }
 
       /* 表單元件 */
@@ -2961,7 +2972,7 @@
         const giftCard = document.getElementById("qs-gift-card");
         const giftText = document.getElementById("qs-gift-text");
         if (product.giftDesc) {
-          const lines = product.giftDesc.split(/<br\s*\/?>/i)
+          const lines = product.giftDesc.split(/(?:<br\s*\/?>){2}/i)
             .map(l => l.replace(/^[^一-鿿㐀-䶿a-zA-Z0-9（「『【〔〈《]+/, '').trim())
             .filter(l => l);
           giftText.innerHTML = `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
