@@ -2972,7 +2972,9 @@
         const giftCard = document.getElementById("qs-gift-card");
         const giftText = document.getElementById("qs-gift-text");
         if (product.giftDesc) {
-          const lines = product.giftDesc.split(/(?:<br\s*\/?>){2}/i)
+          const hasDoubleBr = /(?:<br\s*\/?>){2}/i.test(product.giftDesc);
+          const splitPat = hasDoubleBr ? /(?:<br\s*\/?>){2}/i : /<br\s*\/?>/i;
+          const lines = product.giftDesc.split(splitPat)
             .map(l => l.replace(/^[^一-鿿㐀-䶿a-zA-Z0-9（「『【〔〈《]+/, '').trim())
             .filter(l => l);
           giftText.innerHTML = `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
