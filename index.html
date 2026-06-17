@@ -2109,10 +2109,125 @@
         transform: scale(1);
         animation: twinkle 1.6s ease-in-out infinite;
       }
+
+      /* === 📸 預覽截圖工具列 === */
+      #preview-toolbar {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 99997;
+        background: rgba(28, 28, 28, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 8px 16px;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-family: "Noto Sans TC", sans-serif;
+        font-size: 0.8rem;
+        color: #ddd;
+        border-bottom: 1px solid rgba(212, 163, 115, 0.35);
+        box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      }
+      body.preview-mode #preview-toolbar { display: flex; }
+      body.preview-mode { padding-top: 52px; }
+      body.preview-mode .search-wrapper,
+      body.preview-mode #category-container { display: none; }
+      body.preview-mode button.btn-add,
+      body.preview-mode #cart-float-btn { display: none !important; }
+      .pt-label {
+        color: #d4a373;
+        font-size: 0.75rem;
+        letter-spacing: 1.5px;
+        white-space: nowrap;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      #preview-search-input {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(212,163,115,0.35);
+        border-radius: 20px;
+        padding: 4px 14px;
+        color: #fff;
+        font-size: 0.8rem;
+        outline: none;
+        width: 160px;
+        font-family: "Noto Sans TC", sans-serif;
+        transition: border-color 0.2s;
+      }
+      #preview-search-input::placeholder { color: rgba(255,255,255,0.35); }
+      #preview-search-input:focus { border-color: #d4a373; }
+      #preview-brands {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 1;
+      }
+      .preview-brand-chip {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 20px;
+        padding: 3px 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.76rem;
+        color: #bbb;
+        user-select: none;
+        white-space: nowrap;
+      }
+      .preview-brand-chip:hover { background: rgba(212,163,115,0.18); border-color: rgba(212,163,115,0.6); color: #d4a373; }
+      .preview-brand-chip.selected { background: rgba(212,163,115,0.22); border-color: #d4a373; color: #d4a373; }
+      .preview-brand-chip input[type="checkbox"] { accent-color: #d4a373; width: 12px; height: 12px; margin: 0; }
+      #preview-clear-btn, #preview-hide-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #999;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.73rem;
+        cursor: pointer;
+        white-space: nowrap;
+        font-family: "Noto Sans TC", sans-serif;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      #preview-clear-btn:hover { border-color: #d4a373; color: #d4a373; }
+      #preview-hide-btn:hover { border-color: rgba(255,255,255,0.4); color: #ddd; }
+      #preview-restore-btn {
+        display: none;
+        position: fixed;
+        bottom: 100px;
+        left: 16px;
+        z-index: 99997;
+        background: rgba(28,28,28,0.92);
+        border: 1px solid rgba(212,163,115,0.45);
+        color: #d4a373;
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        font-family: "Noto Sans TC", sans-serif;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s;
+      }
+      #preview-restore-btn:hover { background: rgba(212,163,115,0.2); }
     </style>
   </head>
 
   <body>
+    <div id="preview-toolbar">
+      <span class="pt-label">📸 截圖預覽</span>
+      <input type="text" id="preview-search-input" placeholder="搜尋商品名稱..." oninput="applyPreviewFilter()">
+      <div id="preview-brands"></div>
+      <button id="preview-clear-btn" onclick="clearPreviewFilter()">清除篩選</button>
+      <button id="preview-hide-btn" onclick="hidePreviewToolbar()">隱藏工具列</button>
+    </div>
+    <button id="preview-restore-btn" onclick="showPreviewToolbar()">📸 工具列</button>
+
     <div class="bg-aura" aria-hidden="true">
       <div class="aura-blob aura-1"></div>
       <div class="aura-blob aura-2"></div>
@@ -2764,6 +2879,9 @@
             } else {
               renderProducts(allProductsData);
             }
+            // 預覽模式：更新品牌勾選列並重新套用篩選
+            _populatePreviewBrands();
+            if (_isPreview) applyPreviewFilter();
 
             // 若 URL 帶有 ?pid=商品ID，自動打開該商品的購買彈窗（只執行一次）
             if (!window._pidAutoOpened) {
@@ -3656,6 +3774,89 @@
         }
       }
 
+      // === 📸 預覽截圖模式 ===
+      const _isPreview = new URLSearchParams(location.search).get('preview') === '1';
+      if (_isPreview) document.body.classList.add('preview-mode');
+
+      let _previewSelectedBrands = new Set();
+
+      function _extractBrand(name) {
+        const plain = name.replace(/<[^>]+>/g, '').trim();
+        const m = plain.match(/^([^一-鿿㐀-䶿（）（()]+)/);
+        if (!m) return '';
+        const b = m[1].replace(/\s+/g, ' ').trim();
+        return /[A-Za-z0-9]/.test(b) ? b : '';
+      }
+
+      function _populatePreviewBrands() {
+        if (!_isPreview) return;
+        const container = document.getElementById('preview-brands');
+        if (!container) return;
+        const brandSet = new Set();
+        allProductsData.forEach(p => { const b = _extractBrand(p.name); if (b) brandSet.add(b); });
+        container.innerHTML = '';
+        brandSet.forEach(brand => {
+          const isChecked = _previewSelectedBrands.has(brand);
+          const chip = document.createElement('label');
+          chip.className = 'preview-brand-chip' + (isChecked ? ' selected' : '');
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = isChecked;
+          cb.onchange = () => {
+            if (cb.checked) { _previewSelectedBrands.add(brand); chip.classList.add('selected'); }
+            else { _previewSelectedBrands.delete(brand); chip.classList.remove('selected'); }
+            applyPreviewFilter();
+          };
+          chip.appendChild(cb);
+          chip.appendChild(document.createTextNode(' ' + brand));
+          container.appendChild(chip);
+        });
+        requestAnimationFrame(() => {
+          const tb = document.getElementById('preview-toolbar');
+          if (tb && tb.offsetParent !== null) document.body.style.paddingTop = tb.offsetHeight + 'px';
+        });
+      }
+
+      function applyPreviewFilter() {
+        if (!_isPreview) return;
+        const searchVal = (document.getElementById('preview-search-input')?.value || '').toLowerCase().replace(/\s+/g, '');
+        let filtered = allProductsData;
+        if (_previewSelectedBrands.size > 0) {
+          filtered = filtered.filter(p => _previewSelectedBrands.has(_extractBrand(p.name)));
+        }
+        if (searchVal) {
+          filtered = filtered.filter(p => p.name.toLowerCase().replace(/\s+/g, '').includes(searchVal));
+        }
+        renderProducts(filtered);
+      }
+
+      function clearPreviewFilter() {
+        _previewSelectedBrands.clear();
+        const si = document.getElementById('preview-search-input');
+        if (si) si.value = '';
+        document.querySelectorAll('.preview-brand-chip').forEach(chip => {
+          chip.classList.remove('selected');
+          const cb = chip.querySelector('input[type="checkbox"]');
+          if (cb) cb.checked = false;
+        });
+        renderProducts(allProductsData);
+      }
+
+      function hidePreviewToolbar() {
+        document.getElementById('preview-toolbar').style.display = 'none';
+        document.getElementById('preview-restore-btn').style.display = 'block';
+        document.body.style.paddingTop = '0';
+      }
+
+      function showPreviewToolbar() {
+        document.getElementById('preview-toolbar').style.display = 'flex';
+        document.getElementById('preview-restore-btn').style.display = 'none';
+        requestAnimationFrame(() => {
+          const tb = document.getElementById('preview-toolbar');
+          if (tb) document.body.style.paddingTop = tb.offsetHeight + 'px';
+        });
+      }
+
       // 點擊選單以外的地方時自動關閉
       loadCart();
       fetchProducts();
@@ -3685,6 +3886,10 @@
         removePromoCode,
         _updatePromoBoxVisibility,
         closeEndedNotice,
+        applyPreviewFilter,
+        clearPreviewFilter,
+        hidePreviewToolbar,
+        showPreviewToolbar,
       });
     </script>
 
