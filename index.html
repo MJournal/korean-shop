@@ -2215,6 +2215,17 @@
         transition: all 0.2s;
       }
       #preview-restore-btn:hover { background: rgba(212,163,115,0.2); }
+      #preview-pick-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #999; padding: 4px 12px; border-radius: 20px; font-size: 0.73rem; cursor: pointer; white-space: nowrap; font-family: "Noto Sans TC", sans-serif; transition: all 0.2s; flex-shrink: 0; }
+      #preview-pick-btn:hover { border-color: #d4a373; color: #d4a373; }
+      #preview-pick-btn.active { background: rgba(212,163,115,0.22); border-color: #d4a373; color: #d4a373; }
+      #preview-apply-pick-btn { display: none; background: #d4a373; border: none; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.73rem; cursor: pointer; white-space: nowrap; font-family: "Noto Sans TC", sans-serif; flex-shrink: 0; }
+      #preview-pick-count { color: #d4a373; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+      body.pick-mode .product-card { cursor: crosshair !important; position: relative; }
+      body.pick-mode .product-card .img-wrapper { cursor: crosshair !important; }
+      body.pick-mode .product-card::before { content: ''; position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border: 2px solid rgba(212,163,115,0.7); border-radius: 50%; background: rgba(255,255,255,0.85); z-index: 10; pointer-events: none; }
+      body.pick-mode .product-card.card-picked::before { background: #d4a373; border-color: #d4a373; }
+      body.pick-mode .product-card.card-picked::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: bold; z-index: 11; pointer-events: none; }
+      body.pick-mode .product-card.card-picked { border-color: #d4a373 !important; box-shadow: 0 0 0 2px rgba(212,163,115,0.35) !important; }
     </style>
   </head>
 
@@ -2223,6 +2234,9 @@
       <span class="pt-label">📸 截圖預覽</span>
       <input type="text" id="preview-search-input" placeholder="搜尋商品名稱..." oninput="applyPreviewFilter()">
       <div id="preview-brands"></div>
+      <button id="preview-pick-btn" onclick="togglePickMode()">選品模式</button>
+      <span id="preview-pick-count"></span>
+      <button id="preview-apply-pick-btn" onclick="applyPickFilter()">套用已選</button>
       <button id="preview-clear-btn" onclick="clearPreviewFilter()">清除篩選</button>
       <button id="preview-hide-btn" onclick="hidePreviewToolbar()">隱藏工具列</button>
     </div>
@@ -3015,6 +3029,8 @@
 
           const card = document.createElement("div");
           card.className = "product-card";
+          if (product.firestoreId) card.dataset.productId = product.firestoreId;
+          if (_isPreview && _pickedProductIds.has(product.firestoreId)) card.classList.add('card-picked');
           card.innerHTML = `
             <div class="img-wrapper" style="cursor: ${cursorStyle}; background: #fff;" ${clickEvent}>
               ${product.deadline ? `<div class="deadline-overlay">⏰ ${formatDeadline(product.deadline)}</div>` : ''}
@@ -3832,6 +3848,9 @@
 
       function clearPreviewFilter() {
         _previewSelectedBrands.clear();
+        _pickedProductIds.clear();
+        _pickMode = false;
+        document.body.classList.remove('pick-mode');
         const si = document.getElementById('preview-search-input');
         if (si) si.value = '';
         document.querySelectorAll('.preview-brand-chip').forEach(chip => {
@@ -3839,7 +3858,47 @@
           const cb = chip.querySelector('input[type="checkbox"]');
           if (cb) cb.checked = false;
         });
+        const pickBtn = document.getElementById('preview-pick-btn');
+        if (pickBtn) pickBtn.classList.remove('active');
+        _updatePickUI();
         renderProducts(allProductsData);
+      }
+
+      let _pickMode = false;
+      let _pickedProductIds = new Set();
+
+      function togglePickMode() {
+        _pickMode = !_pickMode;
+        document.body.classList.toggle('pick-mode', _pickMode);
+        const btn = document.getElementById('preview-pick-btn');
+        if (btn) btn.classList.toggle('active', _pickMode);
+        _updatePickUI();
+      }
+
+      function _togglePickCard(pid) {
+        if (_pickedProductIds.has(pid)) _pickedProductIds.delete(pid);
+        else _pickedProductIds.add(pid);
+        document.querySelectorAll('.product-card').forEach(card => {
+          if (card.dataset.productId === pid) card.classList.toggle('card-picked', _pickedProductIds.has(pid));
+        });
+        _updatePickUI();
+      }
+
+      function _updatePickUI() {
+        const countEl = document.getElementById('preview-pick-count');
+        const applyBtn = document.getElementById('preview-apply-pick-btn');
+        const n = _pickedProductIds.size;
+        if (countEl) countEl.textContent = n > 0 ? `已選 ${n} 件` : '';
+        if (applyBtn) applyBtn.style.display = n > 0 ? 'block' : 'none';
+      }
+
+      function applyPickFilter() {
+        if (_pickedProductIds.size === 0) return;
+        _pickMode = false;
+        document.body.classList.remove('pick-mode');
+        const btn = document.getElementById('preview-pick-btn');
+        if (btn) btn.classList.remove('active');
+        renderProducts(allProductsData.filter(p => _pickedProductIds.has(p.firestoreId)));
       }
 
       function hidePreviewToolbar() {
@@ -3856,6 +3915,16 @@
           if (tb) document.body.style.paddingTop = tb.offsetHeight + 'px';
         });
       }
+
+      // 選品模式：攔截點擊以免開啟快速購物
+      document.getElementById('product-list').addEventListener('click', (e) => {
+        if (!_pickMode || !_isPreview) return;
+        const card = e.target.closest('.product-card');
+        if (!card || !card.dataset.productId) return;
+        e.stopPropagation();
+        e.preventDefault();
+        _togglePickCard(card.dataset.productId);
+      }, true);
 
       // 點擊選單以外的地方時自動關閉
       loadCart();
@@ -3890,6 +3959,8 @@
         clearPreviewFilter,
         hidePreviewToolbar,
         showPreviewToolbar,
+        togglePickMode,
+        applyPickFilter,
       });
     </script>
 
