@@ -1267,6 +1267,12 @@
         border-radius: 2px;
       }
 
+      .qs-gift-text a {
+        color: var(--accent);
+        text-decoration: underline;
+        word-break: break-all;
+      }
+
       /* 表單元件 */
       .qs-section {
         margin-bottom: 12px;
@@ -3095,11 +3101,15 @@
         const giftCard = document.getElementById("qs-gift-card");
         const giftText = document.getElementById("qs-gift-text");
         if (product.giftDesc) {
-          const hasDoubleBr = /(?:<br\s*\/?>){2}/i.test(product.giftDesc);
-          const splitPat = hasDoubleBr ? /(?:<br\s*\/?>){2}/i : /<br\s*\/?>/i;
-          const lines = product.giftDesc.split(splitPat)
+          // 空一行（雙 <br>）才算新的特色點；單個 <br> 只是同一點內換行
+          const lines = product.giftDesc.split(/(?:<br\s*\/?>){2}/i)
             .map(l => l.replace(/^[^一-鿿㐀-䶿a-zA-Z0-9（「『【〔〈《]+/, '').trim())
-            .filter(l => l);
+            .filter(l => l)
+            .map(l => l.replace(/(https?:\/\/[^\s<]+)/gi, (url) => {
+              const trail = (url.match(/[。，、；！？.,;:)\]）]+$/) || [''])[0];
+              const clean = trail ? url.slice(0, -trail.length) : url;
+              return `<a href="${clean}" target="_blank" rel="noopener">${clean}</a>${trail}`;
+            }));
           giftText.innerHTML = `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
           giftCard.style.display = "block";
         } else {
