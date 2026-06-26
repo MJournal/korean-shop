@@ -406,6 +406,12 @@
         text-align: center;
       }
 
+      /* 品名過長時，自動套用較小字級（由 JS 偵測後加上 class） */
+      .name.name-shrink {
+        font-size: 0.95rem;
+        letter-spacing: 0.2px;
+      }
+
       /* ✅ 貼上這段新的 (時尚副標題樣式) */
       .desc-text {
         display: block;
@@ -1029,6 +1035,12 @@
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+
+        /* 品名過長時，自動套用較小字級（由 JS 偵測後加上 class） */
+        #product-list .name.name-shrink {
+          font-size: 0.78rem;
+          letter-spacing: -0.3px;
         }
 
         /* 4. Badge 手機版：略小，不搶版面 */
@@ -3052,7 +3064,28 @@
           `;
           container.appendChild(card);
         });
+
+        fitProductNames(container);
       }
+
+      // 🌟 偵測品名是否超出 2 行（被截斷顯示...），超出的就加上縮小字級的 class
+      function fitProductNames(container) {
+        container.querySelectorAll(".name").forEach((el) => {
+          el.classList.remove("name-shrink");
+          if (el.scrollHeight > el.clientHeight + 1) {
+            el.classList.add("name-shrink");
+          }
+        });
+      }
+
+      let _nameFitResizeTimer = null;
+      window.addEventListener("resize", () => {
+        clearTimeout(_nameFitResizeTimer);
+        _nameFitResizeTimer = setTimeout(() => {
+          const list = document.getElementById("product-list");
+          if (list) fitProductNames(list);
+        }, 150);
+      });
 
       let currentQsIndex = null;
 
