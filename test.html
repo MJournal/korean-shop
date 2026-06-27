@@ -406,6 +406,7 @@
         text-align: center;
       }
 
+
       /* ✅ 貼上這段新的 (時尚副標題樣式) */
       .desc-text {
         display: block;
@@ -1267,6 +1268,12 @@
         border-radius: 2px;
       }
 
+      .qs-gift-text a {
+        color: var(--accent);
+        text-decoration: underline;
+        word-break: break-all;
+      }
+
       /* 表單元件 */
       .qs-section {
         margin-bottom: 12px;
@@ -1286,6 +1293,17 @@
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 2px;
+      }
+
+      /* 雙規格（款式＋尺碼）時，兩排按鈕之間的小標籤 */
+      .variant-axis-label {
+        font-size: 0.72rem;
+        color: #999;
+        margin: 10px 0 4px;
+      }
+
+      .variant-axis-label:first-child {
+        margin-top: 0;
       }
 
       .variant-pill {
@@ -2109,10 +2127,139 @@
         transform: scale(1);
         animation: twinkle 1.6s ease-in-out infinite;
       }
+
+      /* === 📸 預覽截圖工具列 === */
+      #preview-toolbar {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 99997;
+        background: rgba(28, 28, 28, 0.97);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 8px 16px;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-family: "Noto Sans TC", sans-serif;
+        font-size: 0.8rem;
+        color: #ddd;
+        border-bottom: 1px solid rgba(212, 163, 115, 0.35);
+        box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+      }
+      body.preview-mode #preview-toolbar { display: flex; }
+      body.preview-mode { padding-top: 52px; }
+      body.preview-mode .search-wrapper,
+      body.preview-mode #category-container { display: none; }
+      body.preview-mode button.btn-add,
+      body.preview-mode #cart-float-btn { display: none !important; }
+      .pt-label {
+        color: #d4a373;
+        font-size: 0.75rem;
+        letter-spacing: 1.5px;
+        white-space: nowrap;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      #preview-search-input {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(212,163,115,0.35);
+        border-radius: 20px;
+        padding: 4px 14px;
+        color: #fff;
+        font-size: 0.8rem;
+        outline: none;
+        width: 160px;
+        font-family: "Noto Sans TC", sans-serif;
+        transition: border-color 0.2s;
+      }
+      #preview-search-input::placeholder { color: rgba(255,255,255,0.35); }
+      #preview-search-input:focus { border-color: #d4a373; }
+      #preview-brands {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
+        flex: 1;
+      }
+      .preview-brand-chip {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 20px;
+        padding: 3px 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.76rem;
+        color: #bbb;
+        user-select: none;
+        white-space: nowrap;
+      }
+      .preview-brand-chip:hover { background: rgba(212,163,115,0.18); border-color: rgba(212,163,115,0.6); color: #d4a373; }
+      .preview-brand-chip.selected { background: rgba(212,163,115,0.22); border-color: #d4a373; color: #d4a373; }
+      .preview-brand-chip input[type="checkbox"] { accent-color: #d4a373; width: 12px; height: 12px; margin: 0; }
+      #preview-clear-btn, #preview-hide-btn {
+        background: transparent;
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #999;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.73rem;
+        cursor: pointer;
+        white-space: nowrap;
+        font-family: "Noto Sans TC", sans-serif;
+        transition: all 0.2s;
+        flex-shrink: 0;
+      }
+      #preview-clear-btn:hover { border-color: #d4a373; color: #d4a373; }
+      #preview-hide-btn:hover { border-color: rgba(255,255,255,0.4); color: #ddd; }
+      #preview-restore-btn {
+        display: none;
+        position: fixed;
+        bottom: 100px;
+        left: 16px;
+        z-index: 99997;
+        background: rgba(28,28,28,0.92);
+        border: 1px solid rgba(212,163,115,0.45);
+        color: #d4a373;
+        padding: 7px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        font-family: "Noto Sans TC", sans-serif;
+        backdrop-filter: blur(8px);
+        transition: all 0.2s;
+      }
+      #preview-restore-btn:hover { background: rgba(212,163,115,0.2); }
+      #preview-pick-btn { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #999; padding: 4px 12px; border-radius: 20px; font-size: 0.73rem; cursor: pointer; white-space: nowrap; font-family: "Noto Sans TC", sans-serif; transition: all 0.2s; flex-shrink: 0; }
+      #preview-pick-btn:hover { border-color: #d4a373; color: #d4a373; }
+      #preview-pick-btn.active { background: rgba(212,163,115,0.22); border-color: #d4a373; color: #d4a373; }
+      #preview-apply-pick-btn { display: none; background: #d4a373; border: none; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 0.73rem; cursor: pointer; white-space: nowrap; font-family: "Noto Sans TC", sans-serif; flex-shrink: 0; }
+      #preview-pick-count { color: #d4a373; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0; }
+      body.pick-mode .product-card { cursor: crosshair !important; position: relative; }
+      body.pick-mode .product-card .img-wrapper { cursor: crosshair !important; }
+      body.pick-mode .product-card::before { content: ''; position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; border: 2px solid rgba(212,163,115,0.7); border-radius: 50%; background: rgba(255,255,255,0.85); z-index: 10; pointer-events: none; }
+      body.pick-mode .product-card.card-picked::before { background: #d4a373; border-color: #d4a373; }
+      body.pick-mode .product-card.card-picked::after { content: '✓'; position: absolute; top: 8px; right: 8px; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: bold; z-index: 11; pointer-events: none; }
+      body.pick-mode .product-card.card-picked { border-color: #d4a373 !important; box-shadow: 0 0 0 2px rgba(212,163,115,0.35) !important; }
     </style>
   </head>
 
   <body>
+    <div id="preview-toolbar">
+      <span class="pt-label">📸 截圖預覽</span>
+      <input type="text" id="preview-search-input" placeholder="搜尋商品名稱..." oninput="applyPreviewFilter()">
+      <div id="preview-brands"></div>
+      <button id="preview-pick-btn" onclick="togglePickMode()">選品模式</button>
+      <span id="preview-pick-count"></span>
+      <button id="preview-apply-pick-btn" onclick="applyPickFilter()">套用已選</button>
+      <button id="preview-clear-btn" onclick="clearPreviewFilter()">清除篩選</button>
+      <button id="preview-hide-btn" onclick="hidePreviewToolbar()">隱藏工具列</button>
+    </div>
+    <button id="preview-restore-btn" onclick="showPreviewToolbar()">📸 工具列</button>
+
     <div class="bg-aura" aria-hidden="true">
       <div class="aura-blob aura-1"></div>
       <div class="aura-blob aura-2"></div>
@@ -2333,17 +2480,6 @@
                   <input type="radio" name="shipping" value="iOPEN Mall" class="cart-radio" />
                   iOPEN Mall
                 </label>
-              </div>
-            </div>
-
-            <!-- 社群加入提示（官網模式下顯示，引導加入社群） -->
-            <div id="comm-join-hint" style="display:none;margin-top:10px;padding:8px 10px;background:#fff8f3;border-radius:6px;border:1px solid #e6d0c0;">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-                <span style="font-size:0.75rem;color:#b07352;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:500;">🎁 加入社群享優惠，滿 999 折 100</span>
-                <a href="https://line.me/ti/g2/BSL-wl_s8jBkj_0mQkO1E1dRuhlkC40pbLwAzw?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" rel="noopener"
-                   style="font-size:0.72rem;padding:4px 10px;background:#b07352;color:#fff;border-radius:4px;white-space:nowrap;text-decoration:none;flex-shrink:0;">
-                  點我加入 →
-                </a>
               </div>
             </div>
 
@@ -2775,6 +2911,9 @@
             } else {
               renderProducts(allProductsData);
             }
+            // 預覽模式：更新品牌勾選列並重新套用篩選
+            _populatePreviewBrands();
+            if (_isPreview) applyPreviewFilter();
 
             // 若 URL 帶有 ?pid=商品ID，自動打開該商品的購買彈窗（只執行一次）
             if (!window._pidAutoOpened) {
@@ -2908,6 +3047,8 @@
 
           const card = document.createElement("div");
           card.className = "product-card";
+          if (product.firestoreId) card.dataset.productId = product.firestoreId;
+          if (_isPreview && _pickedProductIds.has(product.firestoreId)) card.classList.add('card-picked');
           card.innerHTML = `
             <div class="img-wrapper" style="cursor: ${cursorStyle}; background: #fff;" ${clickEvent}>
               ${product.deadline ? `<div class="deadline-overlay">⏰ ${formatDeadline(product.deadline)}</div>` : ''}
@@ -2923,7 +3064,39 @@
           `;
           container.appendChild(card);
         });
+
+        fitProductNames(container);
+        // 字體用 swap 載入，初次量測時可能還是用備用字型，
+        // 換成正式字型後寬度會變、行數可能跟著變，所以載入完成要再量一次
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => fitProductNames(container));
+        }
       }
+
+      // 🌟 逐步縮小品名字級，直到 2 行內塞得下為止（最多縮到原始字級的 70%）
+      function fitProductNames(container) {
+        container.querySelectorAll(".name").forEach((el) => {
+          el.style.fontSize = "";
+          const baseSize = parseFloat(getComputedStyle(el).fontSize);
+          const minSize = baseSize * 0.7;
+          let size = baseSize;
+          let guard = 0;
+          while (el.scrollHeight > el.clientHeight + 1 && size > minSize && guard < 8) {
+            size -= 1;
+            el.style.fontSize = size + "px";
+            guard++;
+          }
+        });
+      }
+
+      let _nameFitResizeTimer = null;
+      window.addEventListener("resize", () => {
+        clearTimeout(_nameFitResizeTimer);
+        _nameFitResizeTimer = setTimeout(() => {
+          const list = document.getElementById("product-list");
+          if (list) fitProductNames(list);
+        }, 150);
+      });
 
       let currentQsIndex = null;
 
@@ -2972,11 +3145,15 @@
         const giftCard = document.getElementById("qs-gift-card");
         const giftText = document.getElementById("qs-gift-text");
         if (product.giftDesc) {
-          const hasDoubleBr = /(?:<br\s*\/?>){2}/i.test(product.giftDesc);
-          const splitPat = hasDoubleBr ? /(?:<br\s*\/?>){2}/i : /<br\s*\/?>/i;
-          const lines = product.giftDesc.split(splitPat)
+          // 空一行（雙 <br>）才算新的特色點；單個 <br> 只是同一點內換行
+          const lines = product.giftDesc.split(/(?:<br\s*\/?>){2}/i)
             .map(l => l.replace(/^[^一-鿿㐀-䶿a-zA-Z0-9（「『【〔〈《]+/, '').trim())
-            .filter(l => l);
+            .filter(l => l)
+            .map(l => l.replace(/(https?:\/\/[^\s<]+)/gi, (url) => {
+              const trail = (url.match(/[。，、；！？.,;:)\]）]+$/) || [''])[0];
+              const clean = trail ? url.slice(0, -trail.length) : url;
+              return `<a href="${clean}" target="_blank" rel="noopener">${clean}</a>${trail}`;
+            }));
           giftText.innerHTML = `<ul>${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
           giftCard.style.display = "block";
         } else {
@@ -2994,48 +3171,54 @@
           _currentVariants = product.variants;
           optionsSection.style.display = '';
 
-          product.variants.forEach((vObj, vIndex) => {
-            const pill = document.createElement('div');
-            pill.className = 'variant-pill';
+          const isTwoAxis = product.variants.some(v => _parseAxisName(v.name).style !== null);
 
-            const vType = vObj.type || product.type || '預購';
-            const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
-            const isVariantUnavailable = vObj.name.includes('(缺)') || isVariantEnded;
+          if (isTwoAxis) {
+            allOutOfStock = _renderTwoAxisPicker(product, optionsContainer);
+          } else {
+            product.variants.forEach((vObj, vIndex) => {
+              const pill = document.createElement('div');
+              pill.className = 'variant-pill';
 
-            if (isVariantUnavailable) {
-              pill.classList.add('pill-disabled');
-              const displayName = vObj.name.replace('(缺)', '').trim();
-              const d = _getVariantDisplay({ ...vObj, name: displayName });
-              const endedLabel = isVariantEnded ? ' <small style="color:#c0392b;font-size:0.68em;">已結單</small>' : '';
-              pill.innerHTML = `<span>${d.displayName}${endedLabel}</span>`;
-            } else {
-              const d = _getVariantDisplay(vObj);
-              pill.innerHTML = `<span>${d.displayName}</span>`;
-              pill.onclick = (function(idx) {
-                return function() { _selectVariantOption(idx); };
-              })(vIndex);
-              allOutOfStock = false;
-            }
-            optionsContainer.appendChild(pill);
-          });
+              const vType = vObj.type || product.type || '預購';
+              const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
+              const isVariantUnavailable = vObj.name.includes('(缺)') || isVariantEnded;
 
-          // 預設選中第一個有貨且未結單的規格
-          let firstAvailableIdx = product.variants.findIndex(v => {
-            if (v.name.includes('(缺)')) return false;
-            const vt = v.type || product.type || '預購';
-            if (isOrderEnded && vt === '預購') return false;
-            return true;
-          });
-          if (firstAvailableIdx === -1) firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
-          if (firstAvailableIdx === -1) firstAvailableIdx = 0;
-          _currentVariantIndex = firstAvailableIdx;
+              if (isVariantUnavailable) {
+                pill.classList.add('pill-disabled');
+                const displayName = vObj.name.replace('(缺)', '').trim();
+                const d = _getVariantDisplay({ ...vObj, name: displayName });
+                const endedLabel = isVariantEnded ? ' <small style="color:#c0392b;font-size:0.68em;">已結單</small>' : '';
+                pill.innerHTML = `<span>${d.displayName}${endedLabel}</span>`;
+              } else {
+                const d = _getVariantDisplay(vObj);
+                pill.innerHTML = `<span>${d.displayName}</span>`;
+                pill.onclick = (function(idx) {
+                  return function() { _selectVariantOption(idx); };
+                })(vIndex);
+                allOutOfStock = false;
+              }
+              optionsContainer.appendChild(pill);
+            });
 
-          const firstV = product.variants[firstAvailableIdx];
-          const pills = optionsContainer.querySelectorAll('.variant-pill');
-          if (pills[firstAvailableIdx]) pills[firstAvailableIdx].classList.add('pill-selected');
+            // 預設選中第一個有貨且未結單的規格
+            let firstAvailableIdx = product.variants.findIndex(v => {
+              if (v.name.includes('(缺)')) return false;
+              const vt = v.type || product.type || '預購';
+              if (isOrderEnded && vt === '預購') return false;
+              return true;
+            });
+            if (firstAvailableIdx === -1) firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
+            if (firstAvailableIdx === -1) firstAvailableIdx = 0;
+            _currentVariantIndex = firstAvailableIdx;
 
-          updateModalPrice(firstV);
-          _updateGiftInfo(firstV);
+            const firstV = product.variants[firstAvailableIdx];
+            const pills = optionsContainer.querySelectorAll('.variant-pill');
+            if (pills[firstAvailableIdx]) pills[firstAvailableIdx].classList.add('pill-selected');
+
+            updateModalPrice(firstV);
+            _updateGiftInfo(firstV);
+          }
 
         } else {
           // 單一規格沒填的話，隱藏標籤區，但保留 variants 讓庫存上限生效
@@ -3614,6 +3797,128 @@
       let _currentVariantIndex = 0;
       let _currentVariants = [];
 
+      // === 👕 雙規格（款式＋尺碼）解析：名稱含「 / 」就拆成兩段，否則視為單一維度 ===
+      let _axisStyle = null;
+      let _axisSize = null;
+
+      function _parseAxisName(name) {
+        const clean = name.replace('(缺)', '').trim();
+        const idx = clean.indexOf(' / ');
+        if (idx === -1) return { style: null, size: clean };
+        return { style: clean.slice(0, idx).trim(), size: clean.slice(idx + 3).trim() };
+      }
+
+      function _isVariantUnavailable(vObj, product) {
+        const vType = vObj.type || product.type || '預購';
+        const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
+        return vObj.name.includes('(缺)') || isVariantEnded;
+      }
+
+      function _findVariantIndexByAxis(product, style, size) {
+        return product.variants.findIndex(v => {
+          const p = _parseAxisName(v.name);
+          return p.style === style && p.size === size;
+        });
+      }
+
+      // 渲染「先選款式、再選尺碼」兩排按鈕；回傳 true 代表全部組合都無法選購
+      function _renderTwoAxisPicker(product, container) {
+        const variants = product.variants;
+        const styles = [];
+        const sizes = [];
+        variants.forEach(v => {
+          const p = _parseAxisName(v.name);
+          if (p.style !== null && !styles.includes(p.style)) styles.push(p.style);
+          if (!sizes.includes(p.size)) sizes.push(p.size);
+        });
+
+        let firstAvailableIdx = variants.findIndex(v => !_isVariantUnavailable(v, product));
+        if (firstAvailableIdx === -1) firstAvailableIdx = 0;
+        const firstParsed = _parseAxisName(variants[firstAvailableIdx].name);
+        _axisStyle = firstParsed.style;
+        _axisSize = firstParsed.size;
+
+        const styleLabel = document.createElement('div');
+        styleLabel.className = 'variant-axis-label';
+        styleLabel.textContent = '款式';
+        const styleRow = document.createElement('div');
+        styleRow.className = 'variant-pills';
+        const sizeLabel = document.createElement('div');
+        sizeLabel.className = 'variant-axis-label';
+        sizeLabel.textContent = '尺碼';
+        const sizeRow = document.createElement('div');
+        sizeRow.className = 'variant-pills';
+
+        container.appendChild(styleLabel);
+        container.appendChild(styleRow);
+        container.appendChild(sizeLabel);
+        container.appendChild(sizeRow);
+
+        function applySelection() {
+          const idx = _findVariantIndexByAxis(product, _axisStyle, _axisSize);
+          _currentVariantIndex = idx !== -1 ? idx : firstAvailableIdx;
+          const vObj = variants[_currentVariantIndex];
+
+          const qtyEl = document.getElementById('qs-qty');
+          if (qtyEl) qtyEl.value = 1;
+          updateModalPrice(vObj);
+          _updateStockHint();
+          _updateGiftInfo(vObj);
+        }
+
+        function renderRows() {
+          styleRow.innerHTML = '';
+          sizeRow.innerHTML = '';
+
+          styles.forEach(style => {
+            const hasAvailableSize = sizes.some(size => {
+              const idx = _findVariantIndexByAxis(product, style, size);
+              return idx !== -1 && !_isVariantUnavailable(variants[idx], product);
+            });
+            const pill = document.createElement('div');
+            pill.className = 'variant-pill' + (style === _axisStyle ? ' pill-selected' : '') + (hasAvailableSize ? '' : ' pill-disabled');
+            pill.innerHTML = `<span>${style}</span>`;
+            if (hasAvailableSize) {
+              pill.onclick = () => {
+                _axisStyle = style;
+                const sameSizeIdx = _findVariantIndexByAxis(product, style, _axisSize);
+                if (sameSizeIdx === -1 || _isVariantUnavailable(variants[sameSizeIdx], product)) {
+                  const fallbackSize = sizes.find(size => {
+                    const idx = _findVariantIndexByAxis(product, style, size);
+                    return idx !== -1 && !_isVariantUnavailable(variants[idx], product);
+                  });
+                  if (fallbackSize !== undefined) _axisSize = fallbackSize;
+                }
+                applySelection();
+                renderRows();
+              };
+            }
+            styleRow.appendChild(pill);
+          });
+
+          sizes.forEach(size => {
+            const idx = _findVariantIndexByAxis(product, _axisStyle, size);
+            const isAvailable = idx !== -1 && !_isVariantUnavailable(variants[idx], product);
+            const pill = document.createElement('div');
+            pill.className = 'variant-pill' + (size === _axisSize ? ' pill-selected' : '') + (isAvailable ? '' : ' pill-disabled');
+            pill.innerHTML = `<span>${size}</span>`;
+            if (isAvailable) {
+              pill.onclick = () => {
+                _axisSize = size;
+                applySelection();
+                renderRows();
+              };
+            }
+            sizeRow.appendChild(pill);
+          });
+        }
+
+        renderRows();
+        applySelection();
+
+        return !variants.some(v => !_isVariantUnavailable(v, product));
+      }
+
       function _updateStockHint() {
         const qtyEl  = document.getElementById('qs-qty');
         const maxQty = _currentMaxQty();
@@ -3667,6 +3972,142 @@
         }
       }
 
+      // === 📸 預覽截圖模式 ===
+      const _isPreview = new URLSearchParams(location.search).get('preview') === '1';
+      if (_isPreview) document.body.classList.add('preview-mode');
+
+      let _previewSelectedBrands = new Set();
+
+      function _extractBrand(name) {
+        const plain = name.replace(/<[^>]+>/g, '').trim();
+        const m = plain.match(/^([^一-鿿㐀-䶿（）（()]+)/);
+        if (!m) return '';
+        const b = m[1].replace(/\s+/g, ' ').trim();
+        return /[A-Za-z0-9]/.test(b) ? b : '';
+      }
+
+      function _populatePreviewBrands() {
+        if (!_isPreview) return;
+        const container = document.getElementById('preview-brands');
+        if (!container) return;
+        const brandSet = new Set();
+        allProductsData.forEach(p => { const b = _extractBrand(p.name); if (b) brandSet.add(b); });
+        container.innerHTML = '';
+        brandSet.forEach(brand => {
+          const isChecked = _previewSelectedBrands.has(brand);
+          const chip = document.createElement('label');
+          chip.className = 'preview-brand-chip' + (isChecked ? ' selected' : '');
+          const cb = document.createElement('input');
+          cb.type = 'checkbox';
+          cb.checked = isChecked;
+          cb.onchange = () => {
+            if (cb.checked) { _previewSelectedBrands.add(brand); chip.classList.add('selected'); }
+            else { _previewSelectedBrands.delete(brand); chip.classList.remove('selected'); }
+            applyPreviewFilter();
+          };
+          chip.appendChild(cb);
+          chip.appendChild(document.createTextNode(' ' + brand));
+          container.appendChild(chip);
+        });
+        requestAnimationFrame(() => {
+          const tb = document.getElementById('preview-toolbar');
+          if (tb && tb.offsetParent !== null) document.body.style.paddingTop = tb.offsetHeight + 'px';
+        });
+      }
+
+      function applyPreviewFilter() {
+        if (!_isPreview) return;
+        const searchVal = (document.getElementById('preview-search-input')?.value || '').toLowerCase().replace(/\s+/g, '');
+        let filtered = allProductsData;
+        if (_previewSelectedBrands.size > 0) {
+          filtered = filtered.filter(p => _previewSelectedBrands.has(_extractBrand(p.name)));
+        }
+        if (searchVal) {
+          filtered = filtered.filter(p => p.name.toLowerCase().replace(/\s+/g, '').includes(searchVal));
+        }
+        renderProducts(filtered);
+      }
+
+      function clearPreviewFilter() {
+        _previewSelectedBrands.clear();
+        _pickedProductIds.clear();
+        _pickMode = false;
+        document.body.classList.remove('pick-mode');
+        const si = document.getElementById('preview-search-input');
+        if (si) si.value = '';
+        document.querySelectorAll('.preview-brand-chip').forEach(chip => {
+          chip.classList.remove('selected');
+          const cb = chip.querySelector('input[type="checkbox"]');
+          if (cb) cb.checked = false;
+        });
+        const pickBtn = document.getElementById('preview-pick-btn');
+        if (pickBtn) pickBtn.classList.remove('active');
+        _updatePickUI();
+        renderProducts(allProductsData);
+      }
+
+      let _pickMode = false;
+      let _pickedProductIds = new Set();
+
+      function togglePickMode() {
+        _pickMode = !_pickMode;
+        document.body.classList.toggle('pick-mode', _pickMode);
+        const btn = document.getElementById('preview-pick-btn');
+        if (btn) btn.classList.toggle('active', _pickMode);
+        _updatePickUI();
+      }
+
+      function _togglePickCard(pid) {
+        if (_pickedProductIds.has(pid)) _pickedProductIds.delete(pid);
+        else _pickedProductIds.add(pid);
+        document.querySelectorAll('.product-card').forEach(card => {
+          if (card.dataset.productId === pid) card.classList.toggle('card-picked', _pickedProductIds.has(pid));
+        });
+        _updatePickUI();
+      }
+
+      function _updatePickUI() {
+        const countEl = document.getElementById('preview-pick-count');
+        const applyBtn = document.getElementById('preview-apply-pick-btn');
+        const n = _pickedProductIds.size;
+        if (countEl) countEl.textContent = n > 0 ? `已選 ${n} 件` : '';
+        if (applyBtn) applyBtn.style.display = n > 0 ? 'block' : 'none';
+      }
+
+      function applyPickFilter() {
+        if (_pickedProductIds.size === 0) return;
+        _pickMode = false;
+        document.body.classList.remove('pick-mode');
+        const btn = document.getElementById('preview-pick-btn');
+        if (btn) btn.classList.remove('active');
+        renderProducts(allProductsData.filter(p => _pickedProductIds.has(p.firestoreId)));
+      }
+
+      function hidePreviewToolbar() {
+        document.getElementById('preview-toolbar').style.display = 'none';
+        document.getElementById('preview-restore-btn').style.display = 'block';
+        document.body.style.paddingTop = '0';
+      }
+
+      function showPreviewToolbar() {
+        document.getElementById('preview-toolbar').style.display = 'flex';
+        document.getElementById('preview-restore-btn').style.display = 'none';
+        requestAnimationFrame(() => {
+          const tb = document.getElementById('preview-toolbar');
+          if (tb) document.body.style.paddingTop = tb.offsetHeight + 'px';
+        });
+      }
+
+      // 選品模式：攔截點擊以免開啟快速購物
+      document.getElementById('product-list').addEventListener('click', (e) => {
+        if (!_pickMode || !_isPreview) return;
+        const card = e.target.closest('.product-card');
+        if (!card || !card.dataset.productId) return;
+        e.stopPropagation();
+        e.preventDefault();
+        _togglePickCard(card.dataset.productId);
+      }, true);
+
       // 點擊選單以外的地方時自動關閉
       loadCart();
       fetchProducts();
@@ -3696,6 +4137,12 @@
         removePromoCode,
         _updatePromoBoxVisibility,
         closeEndedNotice,
+        applyPreviewFilter,
+        clearPreviewFilter,
+        hidePreviewToolbar,
+        showPreviewToolbar,
+        togglePickMode,
+        applyPickFilter,
       });
     </script>
 
