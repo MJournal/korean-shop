@@ -1295,14 +1295,21 @@
         margin-top: 2px;
       }
 
-      /* 雙規格（款式＋尺碼）時，兩排按鈕之間的小標籤 */
+      /* 雙規格（款式＋尺碼）時，每一排（標籤+按鈕）要佔滿整行，
+         因為 #qs-variant-options 本身也是 flex 容器，沒有強制 100% 寬度的話
+         標籤跟按鈕會被當成 flex item 並排擠在同一行 */
+      .variant-axis-group {
+        flex-basis: 100%;
+        width: 100%;
+      }
+
       .variant-axis-label {
         font-size: 0.72rem;
         color: #999;
         margin: 10px 0 4px;
       }
 
-      .variant-axis-label:first-child {
+      .variant-axis-group:first-child .variant-axis-label {
         margin-top: 0;
       }
 
@@ -3838,21 +3845,28 @@
         _axisStyle = firstParsed.style;
         _axisSize = firstParsed.size;
 
+        const styleGroup = document.createElement('div');
+        styleGroup.className = 'variant-axis-group';
         const styleLabel = document.createElement('div');
         styleLabel.className = 'variant-axis-label';
         styleLabel.textContent = '款式';
         const styleRow = document.createElement('div');
         styleRow.className = 'variant-pills';
+        styleGroup.appendChild(styleLabel);
+        styleGroup.appendChild(styleRow);
+
+        const sizeGroup = document.createElement('div');
+        sizeGroup.className = 'variant-axis-group';
         const sizeLabel = document.createElement('div');
         sizeLabel.className = 'variant-axis-label';
         sizeLabel.textContent = '尺碼';
         const sizeRow = document.createElement('div');
         sizeRow.className = 'variant-pills';
+        sizeGroup.appendChild(sizeLabel);
+        sizeGroup.appendChild(sizeRow);
 
-        container.appendChild(styleLabel);
-        container.appendChild(styleRow);
-        container.appendChild(sizeLabel);
-        container.appendChild(sizeRow);
+        container.appendChild(styleGroup);
+        container.appendChild(sizeGroup);
 
         function applySelection() {
           const idx = _findVariantIndexByAxis(product, _axisStyle, _axisSize);
