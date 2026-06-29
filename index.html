@@ -320,7 +320,7 @@
       .img-wrapper {
         width: 100%;
         aspect-ratio: 1 / 1;
-        background: #fff;
+        background: #fdfbf7;
         position: relative;
         overflow: hidden;
         /* 陰影移至外層卡片處理，這裡保持乾淨 */
@@ -331,7 +331,7 @@
       .img-wrapper img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
         transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1);
       }
 
@@ -1293,6 +1293,24 @@
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 2px;
+      }
+
+      /* 雙規格（款式＋尺碼）時，每一排（標籤+按鈕）要佔滿整行，
+         因為 #qs-variant-options 本身也是 flex 容器，沒有強制 100% 寬度的話
+         標籤跟按鈕會被當成 flex item 並排擠在同一行 */
+      .variant-axis-group {
+        flex-basis: 100%;
+        width: 100%;
+      }
+
+      .variant-axis-label {
+        font-size: 0.72rem;
+        color: #999;
+        margin: 10px 0 4px;
+      }
+
+      .variant-axis-group:first-child .variant-axis-label {
+        margin-top: 0;
       }
 
       .variant-pill {
@@ -3039,7 +3057,7 @@
           if (product.firestoreId) card.dataset.productId = product.firestoreId;
           if (_isPreview && _pickedProductIds.has(product.firestoreId)) card.classList.add('card-picked');
           card.innerHTML = `
-            <div class="img-wrapper" style="cursor: ${cursorStyle}; background: #fff;" ${clickEvent}>
+            <div class="img-wrapper" style="cursor: ${cursorStyle};" ${clickEvent}>
               ${product.deadline ? `<div class="deadline-overlay">⏰ ${formatDeadline(product.deadline)}</div>` : ''}
               <img src="${product.imgUrl}" alt="${product.name}" loading="lazy" style="${imgOpacity}">
             </div>
@@ -3160,48 +3178,54 @@
           _currentVariants = product.variants;
           optionsSection.style.display = '';
 
-          product.variants.forEach((vObj, vIndex) => {
-            const pill = document.createElement('div');
-            pill.className = 'variant-pill';
+          const isTwoAxis = product.variants.some(v => _parseAxisName(v.name).style !== null);
 
-            const vType = vObj.type || product.type || '預購';
-            const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
-            const isVariantUnavailable = vObj.name.includes('(缺)') || isVariantEnded;
+          if (isTwoAxis) {
+            allOutOfStock = _renderTwoAxisPicker(product, optionsContainer);
+          } else {
+            product.variants.forEach((vObj, vIndex) => {
+              const pill = document.createElement('div');
+              pill.className = 'variant-pill';
 
-            if (isVariantUnavailable) {
-              pill.classList.add('pill-disabled');
-              const displayName = vObj.name.replace('(缺)', '').trim();
-              const d = _getVariantDisplay({ ...vObj, name: displayName });
-              const endedLabel = isVariantEnded ? ' <small style="color:#c0392b;font-size:0.68em;">已結單</small>' : '';
-              pill.innerHTML = `<span>${d.displayName}${endedLabel}</span>`;
-            } else {
-              const d = _getVariantDisplay(vObj);
-              pill.innerHTML = `<span>${d.displayName}</span>`;
-              pill.onclick = (function(idx) {
-                return function() { _selectVariantOption(idx); };
-              })(vIndex);
-              allOutOfStock = false;
-            }
-            optionsContainer.appendChild(pill);
-          });
+              const vType = vObj.type || product.type || '預購';
+              const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
+              const isVariantUnavailable = vObj.name.includes('(缺)') || isVariantEnded;
 
-          // 預設選中第一個有貨且未結單的規格
-          let firstAvailableIdx = product.variants.findIndex(v => {
-            if (v.name.includes('(缺)')) return false;
-            const vt = v.type || product.type || '預購';
-            if (isOrderEnded && vt === '預購') return false;
-            return true;
-          });
-          if (firstAvailableIdx === -1) firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
-          if (firstAvailableIdx === -1) firstAvailableIdx = 0;
-          _currentVariantIndex = firstAvailableIdx;
+              if (isVariantUnavailable) {
+                pill.classList.add('pill-disabled');
+                const displayName = vObj.name.replace('(缺)', '').trim();
+                const d = _getVariantDisplay({ ...vObj, name: displayName });
+                const endedLabel = isVariantEnded ? ' <small style="color:#c0392b;font-size:0.68em;">已結單</small>' : '';
+                pill.innerHTML = `<span>${d.displayName}${endedLabel}</span>`;
+              } else {
+                const d = _getVariantDisplay(vObj);
+                pill.innerHTML = `<span>${d.displayName}</span>`;
+                pill.onclick = (function(idx) {
+                  return function() { _selectVariantOption(idx); };
+                })(vIndex);
+                allOutOfStock = false;
+              }
+              optionsContainer.appendChild(pill);
+            });
 
-          const firstV = product.variants[firstAvailableIdx];
-          const pills = optionsContainer.querySelectorAll('.variant-pill');
-          if (pills[firstAvailableIdx]) pills[firstAvailableIdx].classList.add('pill-selected');
+            // 預設選中第一個有貨且未結單的規格
+            let firstAvailableIdx = product.variants.findIndex(v => {
+              if (v.name.includes('(缺)')) return false;
+              const vt = v.type || product.type || '預購';
+              if (isOrderEnded && vt === '預購') return false;
+              return true;
+            });
+            if (firstAvailableIdx === -1) firstAvailableIdx = product.variants.findIndex(v => !v.name.includes('(缺)'));
+            if (firstAvailableIdx === -1) firstAvailableIdx = 0;
+            _currentVariantIndex = firstAvailableIdx;
 
-          updateModalPrice(firstV);
-          _updateGiftInfo(firstV);
+            const firstV = product.variants[firstAvailableIdx];
+            const pills = optionsContainer.querySelectorAll('.variant-pill');
+            if (pills[firstAvailableIdx]) pills[firstAvailableIdx].classList.add('pill-selected');
+
+            updateModalPrice(firstV);
+            _updateGiftInfo(firstV);
+          }
 
         } else {
           // 單一規格沒填的話，隱藏標籤區，但保留 variants 讓庫存上限生效
@@ -3779,6 +3803,135 @@
       // === 🎛️ 規格選擇的全域狀態與控制函式 ===
       let _currentVariantIndex = 0;
       let _currentVariants = [];
+
+      // === 👕 雙規格（款式＋尺碼）解析：名稱含「 / 」就拆成兩段，否則視為單一維度 ===
+      let _axisStyle = null;
+      let _axisSize = null;
+
+      function _parseAxisName(name) {
+        const clean = name.replace('(缺)', '').trim();
+        const idx = clean.indexOf(' / ');
+        if (idx === -1) return { style: null, size: clean };
+        return { style: clean.slice(0, idx).trim(), size: clean.slice(idx + 3).trim() };
+      }
+
+      function _isVariantUnavailable(vObj, product) {
+        const vType = vObj.type || product.type || '預購';
+        const isVariantEnded = isOrderEnded && vType === '預購' && !isDeadlinePassed(product.deadline);
+        return vObj.name.includes('(缺)') || isVariantEnded;
+      }
+
+      function _findVariantIndexByAxis(product, style, size) {
+        return product.variants.findIndex(v => {
+          const p = _parseAxisName(v.name);
+          return p.style === style && p.size === size;
+        });
+      }
+
+      // 渲染「先選款式、再選尺碼」兩排按鈕；回傳 true 代表全部組合都無法選購
+      function _renderTwoAxisPicker(product, container) {
+        const variants = product.variants;
+        const styles = [];
+        const sizes = [];
+        variants.forEach(v => {
+          const p = _parseAxisName(v.name);
+          if (p.style !== null && !styles.includes(p.style)) styles.push(p.style);
+          if (!sizes.includes(p.size)) sizes.push(p.size);
+        });
+
+        let firstAvailableIdx = variants.findIndex(v => !_isVariantUnavailable(v, product));
+        if (firstAvailableIdx === -1) firstAvailableIdx = 0;
+        const firstParsed = _parseAxisName(variants[firstAvailableIdx].name);
+        _axisStyle = firstParsed.style;
+        _axisSize = firstParsed.size;
+
+        const styleGroup = document.createElement('div');
+        styleGroup.className = 'variant-axis-group';
+        const styleLabel = document.createElement('div');
+        styleLabel.className = 'variant-axis-label';
+        styleLabel.textContent = '款式';
+        const styleRow = document.createElement('div');
+        styleRow.className = 'variant-pills';
+        styleGroup.appendChild(styleLabel);
+        styleGroup.appendChild(styleRow);
+
+        const sizeGroup = document.createElement('div');
+        sizeGroup.className = 'variant-axis-group';
+        const sizeLabel = document.createElement('div');
+        sizeLabel.className = 'variant-axis-label';
+        sizeLabel.textContent = '尺碼';
+        const sizeRow = document.createElement('div');
+        sizeRow.className = 'variant-pills';
+        sizeGroup.appendChild(sizeLabel);
+        sizeGroup.appendChild(sizeRow);
+
+        container.appendChild(styleGroup);
+        container.appendChild(sizeGroup);
+
+        function applySelection() {
+          const idx = _findVariantIndexByAxis(product, _axisStyle, _axisSize);
+          _currentVariantIndex = idx !== -1 ? idx : firstAvailableIdx;
+          const vObj = variants[_currentVariantIndex];
+
+          const qtyEl = document.getElementById('qs-qty');
+          if (qtyEl) qtyEl.value = 1;
+          updateModalPrice(vObj);
+          _updateStockHint();
+          _updateGiftInfo(vObj);
+        }
+
+        function renderRows() {
+          styleRow.innerHTML = '';
+          sizeRow.innerHTML = '';
+
+          styles.forEach(style => {
+            const hasAvailableSize = sizes.some(size => {
+              const idx = _findVariantIndexByAxis(product, style, size);
+              return idx !== -1 && !_isVariantUnavailable(variants[idx], product);
+            });
+            const pill = document.createElement('div');
+            pill.className = 'variant-pill' + (style === _axisStyle ? ' pill-selected' : '') + (hasAvailableSize ? '' : ' pill-disabled');
+            pill.innerHTML = `<span>${style}</span>`;
+            if (hasAvailableSize) {
+              pill.onclick = () => {
+                _axisStyle = style;
+                const sameSizeIdx = _findVariantIndexByAxis(product, style, _axisSize);
+                if (sameSizeIdx === -1 || _isVariantUnavailable(variants[sameSizeIdx], product)) {
+                  const fallbackSize = sizes.find(size => {
+                    const idx = _findVariantIndexByAxis(product, style, size);
+                    return idx !== -1 && !_isVariantUnavailable(variants[idx], product);
+                  });
+                  if (fallbackSize !== undefined) _axisSize = fallbackSize;
+                }
+                applySelection();
+                renderRows();
+              };
+            }
+            styleRow.appendChild(pill);
+          });
+
+          sizes.forEach(size => {
+            const idx = _findVariantIndexByAxis(product, _axisStyle, size);
+            const isAvailable = idx !== -1 && !_isVariantUnavailable(variants[idx], product);
+            const pill = document.createElement('div');
+            pill.className = 'variant-pill' + (size === _axisSize ? ' pill-selected' : '') + (isAvailable ? '' : ' pill-disabled');
+            pill.innerHTML = `<span>${size}</span>`;
+            if (isAvailable) {
+              pill.onclick = () => {
+                _axisSize = size;
+                applySelection();
+                renderRows();
+              };
+            }
+            sizeRow.appendChild(pill);
+          });
+        }
+
+        renderRows();
+        applySelection();
+
+        return !variants.some(v => !_isVariantUnavailable(v, product));
+      }
 
       function _updateStockHint() {
         const qtyEl  = document.getElementById('qs-qty');
