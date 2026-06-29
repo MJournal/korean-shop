@@ -320,7 +320,7 @@
       .img-wrapper {
         width: 100%;
         aspect-ratio: 1 / 1;
-        background: #fff;
+        background: #fdfbf7;
         position: relative;
         overflow: hidden;
         /* 陰影移至外層卡片處理，這裡保持乾淨 */
@@ -3057,7 +3057,7 @@
           if (product.firestoreId) card.dataset.productId = product.firestoreId;
           if (_isPreview && _pickedProductIds.has(product.firestoreId)) card.classList.add('card-picked');
           card.innerHTML = `
-            <div class="img-wrapper" style="cursor: ${cursorStyle}; background: #fff;" ${clickEvent}>
+            <div class="img-wrapper" style="cursor: ${cursorStyle};" ${clickEvent}>
               ${product.deadline ? `<div class="deadline-overlay">⏰ ${formatDeadline(product.deadline)}</div>` : ''}
               <img src="${product.imgUrl}" alt="${product.name}" loading="lazy" style="${imgOpacity}">
             </div>
