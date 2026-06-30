@@ -3005,7 +3005,7 @@
 
           // 3. 決定要把什麼價格印在畫面上
           if (isTeaser) {
-            priceHtml = `<span class="price" style="letter-spacing:3px; color:#bbb;">？？？</span>`;
+            priceHtml = "";
           } else if (isPriceRange) {
             priceHtml = `<span class="price">NT$ ${minPrice} - NT$ ${maxPrice}</span>`;
           } else {
@@ -3039,7 +3039,7 @@
 
           let btnHtml = "";
           if (isTeaser) {
-            btnHtml = `<button class="btn-add" onclick="openQuickShop(${globalIdx})" style="background-color: #bfa092; border-color: #bfa092; cursor: pointer; max-width: 200px;">即將開賣</button>`;
+            btnHtml = `<button class="btn-add" onclick="openQuickShop(${globalIdx})" style="background-color: #bfa092; border-color: #bfa092; cursor: pointer; max-width: 200px;">尚未開賣</button>`;
           } else if (isEnded) {
             btnHtml = `<button class="btn-add" style="background-color: #ccc; border-color: #ccc; cursor: not-allowed; max-width: 200px;" disabled>已結單</button>`;
           } else if (isAllOutOfStock) {
@@ -3238,8 +3238,8 @@
 
         const addBtn = document.getElementById('qs-add-btn');
         if (product.status === '預告') {
-          document.getElementById('qs-price-box').innerText = '？？？';
-          addBtn.innerText = "即將開賣";
+          document.getElementById('qs-price-box').innerText = '';
+          addBtn.innerText = "尚未開賣";
           addBtn.style.background = "#bfa092";
           addBtn.style.borderColor = "#bfa092";
           addBtn.style.cursor = "not-allowed";
